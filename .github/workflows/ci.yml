@@ -1,0 +1,31 @@
+name: Continuous Integration
+run-name: JDK CI
+on:
+  workflow_call: # required when creating a reusable workflow
+#    inputs:
+#      config-path:
+#        required: false
+#        type: string
+#    secrets:
+#      token:
+#        required: false
+jobs:
+  check-code:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+
+#           dependencies automatically installed by gradle
+
+      - name: Lint code
+        run: ./gradlew lint
+
+      - name: Code coverage
+        run: ./gradlew koverhtmlreport
