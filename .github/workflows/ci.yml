@@ -12,6 +12,12 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        gradle-version: [7.3.3, 7.4.2]
+
+
     steps:
       - name: Checkout the code
         uses: actions/checkout@v3
