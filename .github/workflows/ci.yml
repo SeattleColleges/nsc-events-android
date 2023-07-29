@@ -31,10 +31,16 @@ jobs:
         with:
           arguments: -b ci.gradle package
 
-#           dependencies automatically installed by gradle
+      # dependencies automatically installed by gradle
 
       - name: Lint code
         run: ./gradlew lint
+      #TODO: test compilation success check
+      - name: Compile Tests
+        run: ./gradlew compileTestKotlin
+
+      - name: Run unit tests
+        run: ./gradlew test
 
       - name: Code coverage
         run: ./gradlew koverhtmlreport
