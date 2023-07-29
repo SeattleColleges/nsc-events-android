@@ -39,5 +39,5 @@ on:
               git checkout main
               git pull
               git checkout staging
-              git merge main --no-ff  --strategy-option ours 
+              git merge main --no-ff  --strategy-option ours
               git push origin staging
