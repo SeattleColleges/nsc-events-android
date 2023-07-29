@@ -44,3 +44,15 @@ jobs:
 
       - name: Code coverage
         run: ./gradlew koverhtmlreport
+
+      # Build workflow and save as artifact
+      # Gradle will automatically compile Kotlin when running tasks like build. This step explicitly validates Kotlin.
+      # If there are Kotlin compile errors, this step will fail and you'll see the compilation issues in the logs.
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@749f47bda3e44aa060e82d7b3ef7e40d953bd629
+        with:
+          arguments: build
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Package
+          path: build/libs
