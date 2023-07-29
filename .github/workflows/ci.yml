@@ -15,7 +15,7 @@ jobs:
 
     strategy:
       matrix:
-        gradle-version: [8.0]
+        gradle-version: [8.0, 8.0.2]
 
 
     steps:
@@ -29,6 +29,7 @@ jobs:
       - name: Run the Gradle package task
         uses: gradle/gradle-build-action@749f47bda3e44aa060e82d7b3ef7e40d953bd629
 #        with:
+           # Can include this if we decide to add our own customized gradle package
 #          arguments: -b ci.gradle package
 
       # dependencies automatically installed by gradle
@@ -51,7 +52,7 @@ jobs:
       - name: Build with Gradle
         uses: gradle/gradle-build-action@749f47bda3e44aa060e82d7b3ef7e40d953bd629
         with:
-          arguments: build
+          arguments: build --scan
       - uses: actions/upload-artifact@v3
         with:
           name: Package
