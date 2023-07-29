@@ -37,7 +37,7 @@ jobs:
         run: ./gradlew lint
       #TODO: test compilation success check
       - name: Compile Tests
-        run: ./gradlew compileTestKotlin
+        run: ./gradlew compileDebugAndroidTestKotlin
 
       - name: Run unit tests
         run: ./gradlew test
