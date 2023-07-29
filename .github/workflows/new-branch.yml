@@ -5,7 +5,8 @@ run-name: CI On New Branch
 on:
 
   create:
-
+  push:
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
