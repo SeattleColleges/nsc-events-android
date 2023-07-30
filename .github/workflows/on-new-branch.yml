@@ -1,0 +1,12 @@
+name: CI (On New Branch / On Push to Main)
+run-name: CI (On New Branch / On Push to Main)
+
+
+on:
+
+  create:
+
+jobs:
+  CI:
+    uses: ./.github/workflows/ci.yml # reusable workflow file path
+
