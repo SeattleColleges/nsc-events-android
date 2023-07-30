@@ -1,16 +1,12 @@
 """
   Workflow to sync main branch changes into staging branch.
-  
   Triggered on pushes to main branch.
-  
   Jobs:
   - CI-preSyncCheck: Runs CI checks on main branch.
-  
   - sync-branch: 
     - Checks out staging branch
     - Merges main into staging with --no-ff
     - Pushes merged staging branch
-  
   Merging with --no-ff creates a merge commit to track changes.
 """
 name: Sync Main to Staging

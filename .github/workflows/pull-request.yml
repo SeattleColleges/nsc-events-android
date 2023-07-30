@@ -1,10 +1,7 @@
 """
   Pull request workflow to run CI on PRs.
-  
   Triggered on opened or reopened pull requests.
-  
   Defines one job that reuses the ci.yml workflow.
-  
   ci.yml will run lint, tests, coverage, build for the PR.
 """
 
