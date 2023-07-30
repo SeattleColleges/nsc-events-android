@@ -5,7 +5,7 @@
   ci.yml will run lint, tests, coverage, build for the PR.
 """
 
-  name: PR Workflow
+name: PR Workflow
 run-name: PR from branch ${{ github.ref }}
 # Will run CI workflow on an opened or reopened PR for easy reference. For compilation, unit tests, code coverage etc.
 on:
