@@ -1,10 +1,9 @@
-"""
-  CD workflow to deploy Android app to staging and production.
-  Defines deploy-to-staging and deploy-to-production jobs.
-  Each job downloads build artifact and runs deployment scripts.
-  Workflow is reusable and triggered via workflow_call.
-  Inputs and secrets can be passed in.
-"""
+# CD workflow to deploy Android app to staging and production.
+# Defines deploy-to-staging and deploy-to-production jobs.
+# Each job downloads build artifact and runs deployment scripts.
+# Workflow is reusable and triggered via workflow_call.
+# Inputs and secrets can be passed in.
+
 run-name: Gradle CD (staging)
 on:
   workflow_call: # required when creating a reusable workflow

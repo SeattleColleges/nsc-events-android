@@ -1,9 +1,9 @@
-"""
-  Pull request workflow to run CI on PRs.
-  Triggered on opened or reopened pull requests.
-  Defines one job that reuses the ci.yml workflow.
-  ci.yml will run lint, tests, coverage, build for the PR.
-"""
+
+ # Pull request workflow to run CI on PRs.
+ # Triggered on opened or reopened pull requests.
+ # Defines one job that reuses the ci.yml workflow.
+ # ci.yml will run lint, tests, coverage, build for the PR.
+
 
 name: PR Workflow
 run-name: PR from branch ${{ github.ref }}
