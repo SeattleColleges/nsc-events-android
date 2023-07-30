@@ -1,3 +1,11 @@
+"""
+CI workflow to build and test an Android app.
+
+Sets up Java, validates Gradle, runs lint, unit tests, code coverage. 
+Builds unsigned APK and uploads as artifact.
+
+Workflow runs on ubuntu-latest and uses matrix build for gradle version.
+"""
 name: CI (unsigned APK)
 run-name: Gradle CI
 on:

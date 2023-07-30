@@ -1,5 +1,12 @@
-name: CI (On New Branch / On Push to Main)
-run-name: CI (On New Branch / On Push to Main)
+"""
+  CI workflow to run on new branch creation or push to main.
+
+  Triggered on create events.
+    
+  Defines one CI job that reuses ci.yml workflow.
+"""
+name: CI (On Branch Creation)
+run-name: CI (On Branch Creation)
 
 
 on:
