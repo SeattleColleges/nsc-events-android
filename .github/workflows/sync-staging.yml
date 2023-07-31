@@ -1,4 +1,3 @@
-
  # Workflow to sync main branch changes into staging branch.
  # Triggered on pushes to main branch.
  # Jobs:
