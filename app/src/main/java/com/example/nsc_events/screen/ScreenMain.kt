@@ -18,5 +18,8 @@ fun ScreenMain(){
         composable(Routes.SignUp.route) {
             SignUpPage(navController = navController)
         }
+        composable(Routes.AddEvent.route) {
+            AddEventPage(navController = navController)
+        }
     }
 }
