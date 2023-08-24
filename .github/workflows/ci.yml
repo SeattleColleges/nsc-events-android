@@ -20,7 +20,7 @@ jobs:
 
     strategy:
       matrix:
-        gradle-version: [ 8.2.1 ]
+        gradle-version: [ 8.1.0 ]
 
     steps:
       - uses: actions/checkout@v3
