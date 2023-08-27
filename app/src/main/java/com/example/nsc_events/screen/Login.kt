@@ -15,7 +15,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -56,6 +60,13 @@ fun LoginPage(navController: NavHostController) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        IconButton(
+            onClick = { navController.navigate(Routes.HomePage.route) },
+            modifier = Modifier.align(Alignment.Start)
+        ) {
+            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Home")
+        }
+
         Image(
             painter = painterResource(id = R.drawable.packaging),
             contentDescription = stringResource(id = R.string.login_logo_description),
@@ -174,7 +185,10 @@ fun LoginPage(navController: NavHostController) {
                     onClick = {
                         navController.navigate(Routes.AddEvent.route)
                     },
-                    modifier = Modifier.padding(16.dp).width(200.dp).align(Alignment.CenterHorizontally)
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .width(200.dp)
+                        .align(Alignment.CenterHorizontally)
                 ) {
                     Text(text = "Add Event")
                 }
