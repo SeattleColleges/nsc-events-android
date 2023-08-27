@@ -10,8 +10,11 @@ import com.example.nsc_events.Routes
 fun ScreenMain(){
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = Routes.Login.route) {
+    NavHost(navController = navController, startDestination = Routes.HomePage.route) {
 
+        composable(Routes.HomePage.route) {
+            HomePage(navController  = navController)
+        }
         composable(Routes.Login.route) {
             LoginPage(navController = navController)
         }
