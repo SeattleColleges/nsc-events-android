@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -34,8 +33,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -65,7 +62,7 @@ fun ForgotPasswordPage(navController: NavHostController) {
                 .size(50.dp)
         )
         Text(
-            text = stringResource(id = R.string.login_title),
+            text = stringResource(id = R.string.forgot_password_title),
             style = TextStyle(
                 fontSize = 30.sp,
                 fontFamily = FontFamily.Default,
@@ -108,11 +105,11 @@ fun ForgotPasswordPage(navController: NavHostController) {
                     ErrorDisplay(text = stringResource(id = R.string.login_email_error))
                 }
 
-                // Login button
+                // Submit button
                 Button(
                     onClick = {
                         try {
-                            // TODO: Add login functionality after verifying email and password
+                            // TODO: Add functionality to send password reset to email after verifying email
                         } catch (e: Exception) {
                             // TODO: Add error handling
                         }
@@ -123,7 +120,7 @@ fun ForgotPasswordPage(navController: NavHostController) {
                         .align(Alignment.CenterHorizontally),
                 ) {
                     Text(
-                        text = stringResource(id = R.string.login_button_text).uppercase(),
+                        text = stringResource(id = R.string.forgot_password_button_text).uppercase(),
                         style = TextStyle(
                             fontSize = 14.sp,
                             fontFamily = FontFamily.Default,
