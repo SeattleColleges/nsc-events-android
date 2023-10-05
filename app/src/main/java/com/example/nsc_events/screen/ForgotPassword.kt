@@ -94,7 +94,7 @@ fun ForgotPasswordPage(navController: NavHostController) {
                         isEmailValid = validateEmail(it)
                     },
                     isError = !isEmailValid,
-                    label = { Text(text = stringResource(id = R.string.login_email)) },
+                    label = { Text(text = stringResource(id = R.string.forgot_password_email)) },
                     singleLine = true,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -102,7 +102,7 @@ fun ForgotPasswordPage(navController: NavHostController) {
                 )
                 // Email display error
                 if (!isEmailValid) {
-                    ErrorDisplay(text = stringResource(id = R.string.login_email_error))
+                    ErrorDisplay(text = stringResource(id = R.string.forgot_password_email_error))
                 }
 
                 // Submit button
