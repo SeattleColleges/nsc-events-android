@@ -1,6 +1,12 @@
 package com.example.nsc_events
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithText
+import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
@@ -21,13 +27,23 @@ class ForgotPasswordTest {
     val rule =
         createComposeRule()   // compose rule is required to get access to the composable component
 
-    private val navController = TestNavHostController(ApplicationProvider.getApplicationContext())
+    lateinit var navController: TestNavHostController
 
     @Before
     fun setUp() {
         rule.setContent {
-            ForgotPasswordPage(navController)
+            navController = TestNavHostController(LocalContext.current)
+            navController.navigatorProvider.addNavigator(ComposeNavigator())
+            ForgotPasswordPage(navController = navController)
         }
+    }
+
+    @Test
+    fun verify_StartDestinationIsForgotPasswordScreen() {
+        val idToString = R.string.forgot_password_button_text.toString()
+        rule
+            .onNodeWithText("Forgot Password?")
+            .assertIsDisplayed()
     }
 
     @Test
