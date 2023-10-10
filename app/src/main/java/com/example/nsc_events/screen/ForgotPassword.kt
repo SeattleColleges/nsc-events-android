@@ -15,11 +15,13 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,22 +41,26 @@ import androidx.navigation.NavHostController
 import com.example.nsc_events.R
 import com.example.nsc_events.Routes
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ForgotPasswordPage(navController: NavHostController) {
     var email by remember { mutableStateOf("") }
     var isEmailValid by remember { mutableStateOf(true) }
-
+    TopAppBar(
+        title = { Text("Login") },
+        navigationIcon = {
+            IconButton(
+                onClick = { navController.navigate(Routes.Login.route) },
+            ) {
+                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Login")
+            }
+        }
+    )
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        IconButton(
-            onClick = { navController.navigate(Routes.Login.route) },
-            modifier = Modifier.align(Alignment.Start)
-        ) {
-            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Login")
-        }
         Image(
             painter = painterResource(id = R.drawable.packaging),
             contentDescription = stringResource(id = R.string.login_logo_description),
@@ -132,6 +138,8 @@ fun ForgotPasswordPage(navController: NavHostController) {
         }
     }
 }
+
+
 
 
 
