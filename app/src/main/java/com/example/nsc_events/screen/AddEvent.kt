@@ -33,6 +33,27 @@ fun AddEventPage(navController: NavHostController) {
     var eventName by remember { mutableStateOf("") }
     var eventDescription by remember { mutableStateOf("") }
     var eventDate by remember { mutableStateOf("") }
+    var eventCategory by remember { mutableStateOf("") }
+    var eventStartTime by remember { mutableStateOf("") }
+    var eventEndTime by remember { mutableStateOf("") }
+    var eventLocation by remember { mutableStateOf("") }
+    var eventCoverPhoto by remember { mutableStateOf("") }
+    var eventHost by remember { mutableStateOf("") }
+    var eventWebsite by remember { mutableStateOf("") }
+    var eventRegistration by remember { mutableStateOf("") }
+    var eventCapacity by remember { mutableStateOf("") }
+    var eventCost by remember { mutableStateOf("") }
+    var eventTags by remember { mutableStateOf("") }
+    var eventSchedule by remember { mutableStateOf("") }
+    var eventSpeakers by remember { mutableStateOf("") }
+    var eventPrerequisites by remember { mutableStateOf("") }
+    var eventCancellationPolicy by remember { mutableStateOf("") }
+    var eventContact by remember { mutableStateOf("") }
+    var eventPrivacy by remember { mutableStateOf("") }
+    var eventAccessibility by remember { mutableStateOf("") }
+    var eventVisibility by remember { mutableStateOf("") }
+
+
 
 
     /* navigating back to login page */
@@ -81,7 +102,7 @@ fun AddEventPage(navController: NavHostController) {
                     && eventDescription.isNotEmpty()
                     && eventDate.isNotEmpty()
                 ) {
-                    val newEvent = Event(eventName, eventDescription, eventDate)
+                    val newEvent = Event(eventName, eventDescription, eventDate, eventCategory, eventStartTime,eventEndTime, eventLocation,eventCoverPhoto,eventHost,eventWebsite,eventRegistration,eventCapacity,eventCost,eventTags,eventSchedule,eventSpeakers,eventPrerequisites,eventCancellationPolicy,eventContact,eventPrivacy,eventAccessibility,eventVisibility)
                     /* TODO: save new product to db or use a list to hold products (ex: List<Product>) */
                 } else {
                     /* TODO: show error message for empty fields */
