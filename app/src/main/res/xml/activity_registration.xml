@@ -1,56 +1,64 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".RegistrationActivity">
 
     <EditText
-        android:id="@+id/firstNameEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:id="@+id/etFirstName"
         android:hint="First Name"
-        android:inputType="text"
-        android:layout_marginTop="16dp" />
-
-    <EditText
-        android:id="@+id/lastNameEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        />
+
+    <EditText
+        android:id="@+id/etLastName"
         android:hint="Last Name"
-        android:inputType="text"
-        android:layout_below="@id/firstNameEditText"
-        android:layout_marginTop="8dp" />
-
-    <EditText
-        android:id="@+id/studentIdEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        />
+
+    <EditText
+        android:id="@+id/etStudentID"
         android:hint="Student ID Number"
-        android:inputType="number"
-        android:layout_below="@id/lastNameEditText"
-        android:layout_marginTop="8dp" />
-
-    <Spinner
-        android:id="@+id/studentOrFacultySpinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/studentIdEditText"
-        android:layout_marginTop="8dp"/>
+        />
+
+    <RadioGroup
+        android:id="@+id/radioStudentFaculty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/rbStudent"
+            android:text="Student"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+
+        <RadioButton
+            android:id="@+id/rbFaculty"
+            android:text="Faculty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+    </RadioGroup>
 
     <EditText
-        android:id="@+id/emailEditText"
+        android:id="@+id/etEmailAddress"
+        android:hint="Email Address"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Email Address"
-        android:inputType="textEmailAddress"
-        android:layout_below="@id/studentOrFacultySpinner"
-        android:layout_marginTop="8dp" />
+        />
 
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/btnRegister"
         android:text="Register"
-        android:layout_below="@id/emailEditText"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp" />
-</RelativeLayout>
-
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+</LinearLayout>
