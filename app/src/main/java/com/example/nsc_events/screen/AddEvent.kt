@@ -26,14 +26,18 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.nsc_events.Routes
 import com.example.nsc_events.data.Event
+import com.example.nsc_events.data.SocialMedia
+import java.util.Date
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
+@OptIn(ExperimentalMaterial3Api::class)
 fun AddEventPage(navController: NavHostController) {
     var eventName by remember { mutableStateOf("") }
+    var createdByUser by remember { mutableStateOf("") }
     var eventDescription by remember { mutableStateOf("") }
-    var eventDate by remember { mutableStateOf("") }
     var eventCategory by remember { mutableStateOf("") }
+    var eventDate by remember { mutableStateOf("") }
     var eventStartTime by remember { mutableStateOf("") }
     var eventEndTime by remember { mutableStateOf("") }
     var eventLocation by remember { mutableStateOf("") }
@@ -43,9 +47,9 @@ fun AddEventPage(navController: NavHostController) {
     var eventRegistration by remember { mutableStateOf("") }
     var eventCapacity by remember { mutableStateOf("") }
     var eventCost by remember { mutableStateOf("") }
-    var eventTags by remember { mutableStateOf("") }
+    var eventTags by remember { mutableStateOf(emptyList<String>()) }
     var eventSchedule by remember { mutableStateOf("") }
-    var eventSpeakers by remember { mutableStateOf("") }
+    var eventSpeakers by remember { mutableStateOf(emptyList<String>()) }
     var eventPrerequisites by remember { mutableStateOf("") }
     var eventCancellationPolicy by remember { mutableStateOf("") }
     var eventContact by remember { mutableStateOf("") }
@@ -53,12 +57,9 @@ fun AddEventPage(navController: NavHostController) {
     var eventAccessibility by remember { mutableStateOf("") }
     var eventVisibility by remember { mutableStateOf("") }
 
-
-
-
     /* navigating back to login page */
     TopAppBar(
-        title = { Text("Login") }, /* todo: change destination where arrow navigates to */
+        title = { Text("Add Event") },
         navigationIcon = {
             IconButton(
                 onClick = {
@@ -79,31 +80,63 @@ fun AddEventPage(navController: NavHostController) {
     ) {
         EventInfoField(
             eventName = eventName,
-            onEventNameChange = { newEvent -> eventName = newEvent }
+            onEventNameChange = { newEvent: String -> eventName = newEvent }
         )
 
         EventDescriptionField(
             eventDescription = eventDescription,
-            onEventDescriptionChange = { newEventDescription ->
+            onEventDescriptionChange = { newEventDescription: String ->
                 eventDescription = newEventDescription
             }
         )
 
         EventDateField(
             eventDate = eventDate,
-            onEventDateChange = { newDate -> eventDate = newDate }
+            onEventDateChange = { newDate: String -> eventDate = newDate }
         )
 
 
-        /* TODO: finish up product button and validation logic */
+        // Add similar fields for all the other event properties here
+
         Button(
             onClick = {
                 if (eventName.isNotEmpty()
                     && eventDescription.isNotEmpty()
                     && eventDate.isNotEmpty()
+                // Check for other properties as well
                 ) {
-                    val newEvent = Event(eventName, eventDescription, eventDate, eventCategory, eventStartTime,eventEndTime, eventLocation,eventCoverPhoto,eventHost,eventWebsite,eventRegistration,eventCapacity,eventCost,eventTags,eventSchedule,eventSpeakers,eventPrerequisites,eventCancellationPolicy,eventContact,eventPrivacy,eventAccessibility,eventVisibility)
-                    /* TODO: save new product to db or use a list to hold products (ex: List<Product>) */
+                    val newEvent = Event(
+                        createdByUser,
+                        eventTitle = eventName,
+                        eventDescription = eventDescription,
+                        eventCategory,
+                        eventDate = Date(),
+                        eventStartTime,
+                        eventEndTime,
+                        eventLocation,
+                        eventCoverPhoto,
+                        eventHost,
+                        eventWebsite,
+                        eventRegistration,
+                        eventCapacity,
+                        eventCost,
+                        eventTags,
+                        eventSchedule,
+                        eventSpeakers ,
+                        eventPrerequisites,
+                        eventCancellationPolicy,
+                        eventContact,
+                        eventSocialMedia = SocialMedia(
+                            facebook = "Facebook",
+                            twitter = "Twitter",
+                            instagram = "Instagram",
+                            hashtag = "Hashtag"
+                        ),
+                        eventPrivacy,
+                        eventAccessibility ,
+                        eventVisibility
+                    )
+                    /* TODO: save new event to db or use a list to hold events (ex: List<Event>) */
                 } else {
                     /* TODO: show error message for empty fields */
                 }
@@ -117,46 +150,19 @@ fun AddEventPage(navController: NavHostController) {
             Text(text = "Add Event")
         }
     }
-
-}
-
-
-@Composable
-fun EventInfoField(eventName: String, onEventNameChange: (String) -> Unit) {
-    TextField(
-        value = eventName,
-        onValueChange = onEventNameChange,
-        label = { Text(text = "Event name") },
-        singleLine = true,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    )
 }
 
 @Composable
-fun EventDescriptionField(eventDescription: String, onEventDescriptionChange: (String) -> Unit) {
-    TextField(
-        value = eventDescription,
-        onValueChange = onEventDescriptionChange,
-        label = { Text(text = "Event Description") },
-        singleLine = true,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    )
+fun EventDateField(eventDate: String, onEventDateChange: Any) {
+
 }
 
-/* todo: change the evenDate to a date, currently a string */
 @Composable
-fun EventDateField(eventDate: String, onEventDateChange: (String) -> Unit) {
-    TextField(
-        value = eventDate,
-        onValueChange = onEventDateChange,
-        label = { Text(text = "Event Date") },
-        singleLine = true,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    )
+fun EventDescriptionField(eventDescription: String, onEventDescriptionChange: Any) {
+
+}
+
+@Composable
+fun EventInfoField(eventName: String, onEventNameChange: Any) {
+
 }
