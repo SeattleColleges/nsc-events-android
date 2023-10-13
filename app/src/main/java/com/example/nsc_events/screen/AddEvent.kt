@@ -34,7 +34,6 @@ fun AddEventPage(navController: NavHostController) {
     var eventDescription by remember { mutableStateOf("") }
     var eventDate by remember { mutableStateOf("") }
     var eventStartTime by remember { mutableStateOf("") }
-    var eventLocation by remember { mutableStateOf("") }
 
 
 
@@ -81,11 +80,6 @@ fun AddEventPage(navController: NavHostController) {
             onEventStartTimeChange = {newEventStartTime -> eventStartTime = newEventStartTime}
         )
 
-        EventLocationField(
-            eventLocation = eventLocation,
-            onEventLocationChange = {newEventLocation -> eventLocation = newEventLocation}
-        )
-
 
         /* TODO: finish up product button and validation logic */
         Button(
@@ -94,9 +88,8 @@ fun AddEventPage(navController: NavHostController) {
                     && eventDescription.isNotEmpty()
                     && eventDate.isNotEmpty()
                     && eventStartTime.isNotEmpty()
-                    && eventLocation.isNotEmpty()
                 ) {
-                    val newEvent = Event(eventName, eventDescription, eventDate, eventStartTime, eventLocation)
+                    val newEvent = Event(eventName, eventDescription, eventDate, eventStartTime)
                     /* TODO: save new product to db or use a list to hold products (ex: List<Product>) */
                 } else {
                     /* TODO: show error message for empty fields */
@@ -168,15 +161,4 @@ fun EventStartTimeField(eventStartTime: String, onEventStartTimeChange: (String)
     )
 }
 
-@Composable
-fun EventLocationField(eventLocation: String, onEventLocationChange: (String) -> Unit) {
-    TextField(
-        value = eventLocation,
-        onValueChange = onEventLocationChange,
-        label = { Text(text = "Event Location") },
-        singleLine = true,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    )
-}
+

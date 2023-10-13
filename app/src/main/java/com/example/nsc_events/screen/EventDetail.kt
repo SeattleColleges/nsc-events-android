@@ -118,7 +118,6 @@ fun EventDetailCard(event: Event, navController: NavController) {
             Text(text = "eventDescription: ${event.eventDescription}")
             Text(text = "eventDate: ${event.eventDate}")
             Text(text = "eventStartTime: ${event.eventStartTime}")
-            Text(text = "eventLocation: ${event.eventLocation}")
         }
     }
 }
