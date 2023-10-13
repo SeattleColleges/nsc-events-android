@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -71,8 +72,22 @@ fun HomePage(navController: NavHostController) {
         ) {
             Text(text = "Add Event")
         }
-        EventList(events = Datasource().loadProducts(), navController = navController)
+        EventList(events = Datasource().loadEvents(), navController = navController)
     }
+}
+
+@Composable
+fun CustomTextField(text: String, fontSize: TextUnit = 20.sp) {
+    Text(
+        text = text,
+        style = TextStyle(
+            fontSize = fontSize,
+            fontWeight = FontWeight.Bold,
+            fontFamily = FontFamily.Default,
+        ),
+        modifier = Modifier
+            .wrapContentSize()
+    )
 }
 
 @Composable
@@ -80,7 +95,7 @@ fun EventCard(event: Event, navController: NavController) {
     Card(
         modifier = Modifier
             .clickable {
-                navController.navigate(Routes.EventDetail.route)
+                navController.navigate(Routes.EventDetail.route+"/${event.eventTitle}")
             },
     ) {
         Column(
@@ -98,7 +113,7 @@ fun EventCard(event: Event, navController: NavController) {
 //
 //                )
             Text(
-                text = "Name: ${event.eventName}",
+                text = "eventTitle: ${event.eventTitle}",
                 style = TextStyle(
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,

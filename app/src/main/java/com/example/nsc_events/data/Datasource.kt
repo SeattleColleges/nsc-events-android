@@ -1,10 +1,9 @@
 package com.example.nsc_events.data
 
-import com.example.nsc_events.R
 import com.example.nsc_events.model.Event
 
 class Datasource {
-    fun loadProducts(): List<Event> {
+    fun loadEvents(): List<Event> {
         // TODO: Replace with API call to get products from backend
         return listOf(
             Event("Thanksgiving Pageant", "A play put on by the acting department.", "11/3/23", "7PM", "NSC Stage One Theater"),
