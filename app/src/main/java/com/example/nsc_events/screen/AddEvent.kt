@@ -25,7 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.nsc_events.Routes
-import com.example.nsc_events.data.Event
+import com.example.nsc_events.model.Event
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,6 +33,9 @@ fun AddEventPage(navController: NavHostController) {
     var eventName by remember { mutableStateOf("") }
     var eventDescription by remember { mutableStateOf("") }
     var eventDate by remember { mutableStateOf("") }
+    var eventStartTime by remember { mutableStateOf("") }
+    var eventLocation by remember { mutableStateOf("") }
+
 
 
     /* navigating back to login page */
@@ -73,6 +76,16 @@ fun AddEventPage(navController: NavHostController) {
             onEventDateChange = { newDate -> eventDate = newDate }
         )
 
+        EventStartTimeField(
+            eventStartTime = eventStartTime,
+            onEventStartTimeChange = {newEventStartTime -> eventStartTime = newEventStartTime}
+        )
+
+        EventLocationField(
+            eventLocation = eventLocation,
+            onEventLocationChange = {newEventLocation -> eventLocation = newEventLocation}
+        )
+
 
         /* TODO: finish up product button and validation logic */
         Button(
@@ -80,8 +93,10 @@ fun AddEventPage(navController: NavHostController) {
                 if (eventName.isNotEmpty()
                     && eventDescription.isNotEmpty()
                     && eventDate.isNotEmpty()
+                    && eventStartTime.isNotEmpty()
+                    && eventLocation.isNotEmpty()
                 ) {
-                    val newEvent = Event(eventName, eventDescription, eventDate)
+                    val newEvent = Event(eventName, eventDescription, eventDate, eventStartTime, eventLocation)
                     /* TODO: save new product to db or use a list to hold products (ex: List<Product>) */
                 } else {
                     /* TODO: show error message for empty fields */
@@ -133,6 +148,32 @@ fun EventDateField(eventDate: String, onEventDateChange: (String) -> Unit) {
         value = eventDate,
         onValueChange = onEventDateChange,
         label = { Text(text = "Event Date") },
+        singleLine = true,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    )
+}
+
+@Composable
+fun EventStartTimeField(eventStartTime: String, onEventStartTimeChange: (String) -> Unit) {
+    TextField(
+        value = eventStartTime,
+        onValueChange = onEventStartTimeChange,
+        label = { Text(text = "Event Start Time") },
+        singleLine = true,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    )
+}
+
+@Composable
+fun EventLocationField(eventLocation: String, onEventLocationChange: (String) -> Unit) {
+    TextField(
+        value = eventLocation,
+        onValueChange = onEventLocationChange,
+        label = { Text(text = "Event Location") },
         singleLine = true,
         modifier = Modifier
             .fillMaxWidth()
