@@ -167,12 +167,14 @@ fun LoginPage(navController: NavHostController) {
                 ClickableText(
                     text = AnnotatedString("Forgot password?"),
                     onClick = {
+                         navController.navigate(Routes.ForgotPassword.route)
                         // TODO: Add forgot password functionality
                     },
                     style = TextStyle(
                         fontSize = 14.sp,
                         fontFamily = FontFamily.Default,
-                        color = if (isSystemInDarkTheme()) Color.LightGray else Color.Black
+                        textDecoration = TextDecoration.Underline,
+                        color = if (isSystemInDarkTheme()) Color.LightGray else Color.Blue
                     ),
                     modifier = Modifier
                         .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
