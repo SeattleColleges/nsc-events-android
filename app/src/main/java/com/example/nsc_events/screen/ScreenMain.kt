@@ -24,5 +24,8 @@ fun ScreenMain(){
         composable(Routes.AddEvent.route) {
             AddEventPage(navController = navController)
         }
+        composable(Routes.ForgotPassword.route) {
+            ForgotPasswordPage(navController = navController)
+        }
     }
 }
