@@ -60,7 +60,8 @@ class MainActivity : ComponentActivity() {
                                 },
                                 actions = {
                                     IconButton(onClick = { /*TODO*/ }) {
-                                        Icon(
+                                        Ic2BGsmdbf529&)25
+                                        on(
                                             imageVector = Icons.Default.FavoriteBorder,
                                             contententDescription = "Mark as favorite"
                                         )
