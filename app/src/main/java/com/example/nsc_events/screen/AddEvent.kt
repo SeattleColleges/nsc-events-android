@@ -95,6 +95,11 @@ fun AddEventPage(navController: NavHostController) {
             onEventDateChange = { newDate: String -> eventDate = newDate }
         )
 
+        EventCategoryField(
+            eventCategory = eventCategory,
+            onEventCategoryChange = { newDate: String -> eventDate = newDate }
+        )
+
 
         // Add similar fields for all the other event properties here
 
@@ -164,5 +169,10 @@ fun EventDescriptionField(eventDescription: String, onEventDescriptionChange: An
 
 @Composable
 fun EventInfoField(eventName: String, onEventNameChange: Any) {
+
+}
+
+@Composable
+fun EventCategoryField(eventCategory: String, onEventCategoryChange: Any) {
 
 }
