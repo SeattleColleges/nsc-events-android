@@ -16,7 +16,6 @@ A student-developed application for advertising and viewing events hosted by the
 🔗 **Links**:
 - For more details, check out our flyer: <insert link here>
 
-- GitHub Repository (Android): <insert link here>
 - GitHub Repository (Web/Next.js): <insert link here>
 - GitHub Repository (Backend/Nest.js): <insert link here>
 
