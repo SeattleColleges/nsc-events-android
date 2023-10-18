@@ -60,16 +60,16 @@ class MainActivity : ComponentActivity() {
                                 },
                                 actions = {
                                     IconButton(onClick = { /*TODO*/ }) {
-                                        Icon(
-                                            imageVector = Icons.Default.FavoriteBorder,
-                                            contententDescription = "Mark as favorite"
-                                        )
+                                      Icon(
+                                          imageVector = Icons.Default.FavoriteBorder,
+                                          contentDescription = "Mark as favorite"
+                                      )
                                     }
 
                                     IconButton(onClick = { /*TODO*/ }) {
                                         Icon(
                                             imageVector = Icons.Default.Edit,
-                                            contententDescription = "Edit my events"
+                                            contentDescription = "Edit my events"
                                         )
                                     }
                                 },
