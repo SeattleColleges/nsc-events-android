@@ -7,4 +7,7 @@ data class Event(
     val eventDate: String,
     /* TODO: what other event properties should be added? */
     val eventStartTime: String,
+    val eventEndTime: String,
+    val eventLocation: String,
+    val eventCoverPhoto: String,
 )

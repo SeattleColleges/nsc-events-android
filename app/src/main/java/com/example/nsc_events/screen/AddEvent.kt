@@ -34,6 +34,9 @@ fun AddEventPage(navController: NavHostController) {
     var eventDescription by remember { mutableStateOf("") }
     var eventDate by remember { mutableStateOf("") }
     var eventStartTime by remember { mutableStateOf("") }
+    var eventEndTime by remember { mutableStateOf("") }
+    var eventLocation by remember { mutableStateOf("") }
+    var eventCoverPhoto by remember { mutableStateOf("") }
 
 
 
@@ -80,6 +83,11 @@ fun AddEventPage(navController: NavHostController) {
             onEventStartTimeChange = {newEventStartTime -> eventStartTime = newEventStartTime}
         )
 
+        EventEndTimeField(
+            eventEndTime = eventEndTime,
+            onEventEndTimeChange = {newEventEndTime -> eventEndTime = newEventEndTime}
+        )
+
 
         /* TODO: finish up product button and validation logic */
         Button(
@@ -88,8 +96,9 @@ fun AddEventPage(navController: NavHostController) {
                     && eventDescription.isNotEmpty()
                     && eventDate.isNotEmpty()
                     && eventStartTime.isNotEmpty()
+                    && eventEndTime.isNotEmpty()
                 ) {
-                    val newEvent = Event(eventName, eventDescription, eventDate, eventStartTime)
+                    val newEvent = Event(eventName, eventDescription, eventDate, eventStartTime, eventEndTime, eventLocation, eventCoverPhoto)
                     /* TODO: save new product to db or use a list to hold products (ex: List<Product>) */
                 } else {
                     /* TODO: show error message for empty fields */
@@ -160,5 +169,19 @@ fun EventStartTimeField(eventStartTime: String, onEventStartTimeChange: (String)
             .padding(16.dp)
     )
 }
+
+@Composable
+fun EventEndTimeField(eventEndTime: String, onEventEndTimeChange: (String) -> Unit) {
+    TextField(
+        value = eventEndTime,
+        onValueChange = onEventEndTimeChange,
+        label = { Text(text = "Event End Time") },
+        singleLine = true,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    )
+}
+
 
 
