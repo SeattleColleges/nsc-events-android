@@ -30,7 +30,7 @@ import com.example.nsc_events.model.Event
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEventPage(navController: NavHostController) {
-    var eventName by remember { mutableStateOf("") }
+    var eventTitle by remember { mutableStateOf("") }
     var eventDescription by remember { mutableStateOf("") }
     var eventDate by remember { mutableStateOf("") }
     var eventStartTime by remember { mutableStateOf("") }
@@ -62,8 +62,8 @@ fun AddEventPage(navController: NavHostController) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         EventInfoField(
-            eventName = eventName,
-            onEventNameChange = { newEvent -> eventName = newEvent }
+            eventTitle = eventTitle,
+            onEventTitleChange = { newEvent -> eventTitle = newEvent }
         )
 
         EventDescriptionField(
@@ -92,13 +92,13 @@ fun AddEventPage(navController: NavHostController) {
         /* TODO: finish up product button and validation logic */
         Button(
             onClick = {
-                if (eventName.isNotEmpty()
+                if (eventTitle.isNotEmpty()
                     && eventDescription.isNotEmpty()
                     && eventDate.isNotEmpty()
                     && eventStartTime.isNotEmpty()
                     && eventEndTime.isNotEmpty()
                 ) {
-                    val newEvent = Event(eventName, eventDescription, eventDate, eventStartTime, eventEndTime, eventLocation, eventCoverPhoto)
+                    val newEvent = Event(eventTitle, eventDescription, eventDate, eventStartTime, eventEndTime, eventLocation, eventCoverPhoto)
                     /* TODO: save new product to db or use a list to hold products (ex: List<Product>) */
                 } else {
                     /* TODO: show error message for empty fields */
@@ -118,11 +118,11 @@ fun AddEventPage(navController: NavHostController) {
 
 
 @Composable
-fun EventInfoField(eventName: String, onEventNameChange: (String) -> Unit) {
+fun EventInfoField(eventTitle: String, onEventTitleChange: (String) -> Unit) {
     TextField(
-        value = eventName,
-        onValueChange = onEventNameChange,
-        label = { Text(text = "Event name") },
+        value = eventTitle,
+        onValueChange = onEventTitleChange,
+        label = { Text(text = "Event Title") },
         singleLine = true,
         modifier = Modifier
             .fillMaxWidth()
