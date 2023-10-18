@@ -33,5 +33,8 @@ fun ScreenMain(){
                 eventId = backStackEntry.arguments!!.getString("eventId")!!,
             )
         }
+        composable(Routes.ForgotPassword.route) {
+            ForgotPasswordPage(navController = navController)
+        }
     }
 }
