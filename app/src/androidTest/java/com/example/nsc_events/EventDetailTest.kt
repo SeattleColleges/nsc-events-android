@@ -3,9 +3,12 @@ package com.example.nsc_events
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertHasClickAction
+import androidx.compose.ui.test.assertHasNoClickAction
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -40,9 +43,34 @@ class EventDetailTest {
     }
 
     @Test
-    fun assertAddEventIsClickableOnEventDetailPage() {
+    fun assertBackButtonIsClickableOnEventDetailPage() {
         rule
             .onNodeWithContentDescription("Back to Home page")
+            .assertHasClickAction()
+    }
+
+    @Test
+    fun assertHomeHasNoClickActionOnEventDetailPage() {
+        rule
+            .onNodeWithText("Home")
+            .assertHasNoClickAction()
+    }
+
+    @Test
+    fun assertAttendButtonIsDisplayedAndClickableOnEventDetailPage() {
+        rule
+            .onNodeWithText("Attend")
+            .assertIsDisplayed()
+            .assertHasClickAction()
+    }
+
+    @Test
+    fun assertEditAndDeleteButtonsAreClickableOnEventDetailPage() {
+        rule
+            .onNodeWithContentDescription("Edit")
+            .assertHasClickAction()
+        rule
+            .onNodeWithContentDescription("Delete")
             .assertHasClickAction()
     }
 }
