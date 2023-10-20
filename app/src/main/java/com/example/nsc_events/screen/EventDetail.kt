@@ -5,13 +5,17 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -58,18 +62,6 @@ fun EventDetailPage(navController: NavController, eventId: String) {
                         )
                     }
                 },
-                actions = {
-                    IconButton(
-                        onClick = {
-                            //TODO: verify that the user is an admin or the owner of the product
-                            //If yes, then navigate to the update page
-//                            navController.navigate(Routes.Update.route)
-                            //Else, navigate to the login page
-                        }
-                    ) {
-                        Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit")
-                    }
-                }
             )
         },
     ) { innerPadding ->
@@ -82,7 +74,45 @@ fun EventDetailPage(navController: NavController, eventId: String) {
         ) {
             CustomTextField(text = eventId)
             val event = Datasource().loadEvents().find { it.eventTitle == eventId }!!
+            Row(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Button(onClick = {
+                    // TODO: delete functionality
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Delete, contentDescription = "Delete"
+                    )
+                }
+
+                Spacer(modifier = Modifier.padding(16.dp))
+                Button(onClick = {
+                    // TODO: delete functionality
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Edit, contentDescription = "Edit"
+                    )
+                }
+            }
             EventDetailCard(event = event, navController = navController)
+            Row(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .padding(16.dp)
+                    .fillMaxSize(),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Button(onClick = {
+                    // TODO: increment the number of attendees
+                }) {
+                    Text("Attend")
+                }
+            }
         }
     }
 }
