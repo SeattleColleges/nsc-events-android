@@ -1,58 +1,72 @@
-package com.example.nsc_events.screen
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
 
-import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
-import android.widget.RadioButton
-import android.widget.RadioGroup
-import androidx.appcompat.app.AppCompatActivity
-import com.example.nsc_events.R
+@Composable
+fun RegistrationPage() {
+    var firstName by remember { mutableStateOf("") }
+    var lastName by remember { mutableStateOf("") }
+    var studentId by remember { mutableStateOf("") }
+    var selectedRole by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
 
-class RegistrationActivity : AppCompatActivity() {
-    private lateinit var firstNameEditText: EditText
-    private lateinit var lastNameEditText: EditText
-    private lateinit var studentIdEditText: EditText
-    private lateinit var facultyRadioButton: RadioButton
-    private lateinit var studentRadioButton: RadioButton
-    private lateinit var emailEditText: EditText
-    private lateinit var registerButton: Button
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_registration)
-
-        // Initialize views
-        firstNameEditText = findViewById(R.id.et_first_name)
-        lastNameEditText = findViewById(R.id.et_last_name)
-        studentIdEditText = findViewById(R.id.et_student_id)
-        facultyRadioButton = findViewById(R.id.rb_faculty)
-        studentRadioButton = findViewById(R.id.rb_student)
-        emailEditText = findViewById(R.id.et_email)
-        registerButton = findViewById(R.id.btn_register)
-
-        // Set click listener for register button
-        registerButton.setOnClickListener {
-            // Validate form fields
-            if (validateFields()) {
-                // Perform registration logic here
-                val firstName = firstNameEditText.text.toString()
-                val lastName = lastNameEditText.text.toString()
-                val studentId = studentIdEditText.text.toString()
-                val isFaculty = facultyRadioButton.isChecked
-                val email = emailEditText.text.toString()
-
-                // Perform registration logic with the input values
-                // ...
-
-                // Show success message or navigate to the next screen
-                // ...
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        TextField(
+            value = firstName,
+            onValueChange = { firstName = it },
+            label = { Text("First Name") }
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        TextField(
+            value = lastName,
+            onValueChange = { lastName = it },
+            label = { Text("Last Name") }
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        TextField(
+            value = studentId,
+            onValueChange = { studentId = it },
+            label = { Text("Student ID Number") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        DropdownMenu(
+            expanded = selectedRole.isNotEmpty(),
+            onDismissRequest = { },
+        ) {
+            DropdownMenuItem(onClick = { selectedRole = "Student" }) {
+                Text("Student")
+            }
+            DropdownMenuItem(onClick = { selectedRole = "Faculty" }) {
+                Text("Faculty")
             }
         }
-    }
-
-    private fun validateFields(): Boolean {
-        // Perform field validation here
-        // Return true if all fields are valid, otherwise false
-        // ...
+        Spacer(modifier = Modifier.height(16.dp))
+        TextField(
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("Email Address") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(onClick = { /* Perform registration logic here */ }) {
+            Text("Register")
+        }
     }
 }
