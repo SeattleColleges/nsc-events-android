@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.nsc_events.Routes
 
+
 @Composable
 fun HomePage(navController: NavHostController) {
     Column(
