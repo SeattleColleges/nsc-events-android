@@ -24,7 +24,7 @@ import androidx.navigation.NavHostController
 import com.example.nsc_events.Routes
 
 @Composable
-fun HomePage(navController: NavHostController) {
+fun HomePage(navController: NavHostController) { // Create Navbar
     Column(
         modifier = Modifier
             .fillMaxSize()
