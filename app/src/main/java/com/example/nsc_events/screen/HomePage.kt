@@ -52,7 +52,7 @@ fun HomePage(navController: NavHostController) {
                 navController.navigate(Routes.Login.route)
             }
         ) {
-            Text(text = "Sign-in / Sign-up") // sign-in / sign-up
+            Text(text = "Sign-in / Sign-up")
 
         }
         Spacer(modifier = Modifier.height(16.dp))
