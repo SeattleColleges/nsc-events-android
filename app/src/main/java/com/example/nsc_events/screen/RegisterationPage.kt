@@ -50,12 +50,10 @@ fun RegistrationPage() {
             expanded = selectedRole.isNotEmpty(),
             onDismissRequest = { },
         ) {
-            DropdownMenuItem(onClick = { selectedRole = "Student" }) {
-                Text("Student")
-            }
-            DropdownMenuItem(onClick = { selectedRole = "Faculty" }) {
-                Text("Faculty")
-            }
+            buildDropdownMenuItems(
+                listOf("Student", "Faculty"),
+                onItemClick = { selectedRole = it }
+            )
         }
         Spacer(modifier = Modifier.height(16.dp))
         TextField(
@@ -70,3 +68,17 @@ fun RegistrationPage() {
         }
     }
 }
+
+@Composable
+fun buildDropdownMenuItems(
+    items: List<String>,
+    onItemClick: (String) -> Unit
+) {
+    items.forEach { item ->
+        DropdownMenuItem(onClick = { onItemClick(item) }) {
+            Text(item)
+        }
+    }
+}
+
+
