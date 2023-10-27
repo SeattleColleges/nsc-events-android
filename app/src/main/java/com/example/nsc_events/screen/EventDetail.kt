@@ -1,9 +1,14 @@
 package com.example.nsc_events.screen
 
+import android.annotation.SuppressLint
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,6 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,6 +45,7 @@ import com.example.nsc_events.R
 import com.example.nsc_events.Routes
 import com.example.nsc_events.data.Datasource
 import com.example.nsc_events.model.Event
+import dev.chrisbanes.accompanist.glide.GlideImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -81,6 +88,7 @@ fun EventDetailPage(navController: NavController, eventId: String) {
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+
                 Button(onClick = {
                     // TODO: delete functionality
                 }) {
@@ -88,7 +96,6 @@ fun EventDetailPage(navController: NavController, eventId: String) {
                         imageVector = Icons.Default.Delete, contentDescription = "Delete"
                     )
                 }
-
                 Spacer(modifier = Modifier.padding(16.dp))
                 Button(onClick = {
                     // TODO: delete functionality
@@ -98,6 +105,8 @@ fun EventDetailPage(navController: NavController, eventId: String) {
                     )
                 }
             }
+
+
             EventDetailCard(event = event, navController = navController)
             Row(
                 modifier = Modifier
@@ -113,6 +122,32 @@ fun EventDetailPage(navController: NavController, eventId: String) {
                     Text("Attend")
                 }
             }
+        }
+    }
+}
+
+@SuppressLint("UnrememberedMutableState")
+@Composable
+fun photoSelector() {
+    var imageUriState = mutableStateOf<Uri?>(null)
+    val selectImageLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            imageUriState.value = uri
+        }
+    Box(contentAlignment = Alignment.Center, modifier = Modifier.size(100.dp)) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+            if (imageUriState.value != null) {
+                GlideImage(data = imageUriState.value!!)
+            }
+
+            Button(
+                onClick = { selectImageLauncher.launch("image/*") },
+                modifier = Modifier.padding(vertical = 8.dp)
+            ) {
+                Text("Attach Photo")
+            }
+
         }
     }
 }
@@ -139,6 +174,7 @@ fun EventDetailCard(event: Event, navController: NavController) {
                     .size(200.dp)
                     .padding(16.dp),
             )
+            photoSelector()
             Text(
                 text = "eventTitle: ${event.eventTitle}",
                 style = TextStyle(

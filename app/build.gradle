@@ -59,6 +59,7 @@ dependencies {
     implementation 'androidx.core:core-ktx:+'
     implementation 'androidx.core:core-ktx:+'
     implementation 'androidx.navigation:navigation-testing:2.7.3'
+    implementation "androidx.activity:activity-ktx:1.8.0"
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.testng:testng:6.9.6'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
@@ -74,4 +75,6 @@ dependencies {
 
     // Material Design
     implementation "androidx.compose.material3:material3:1.1.1"
+
+    implementation "dev.chrisbanes.accompanist:accompanist-glide:0.4.2"
 }
