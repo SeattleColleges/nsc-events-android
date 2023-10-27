@@ -1,5 +1,9 @@
 package com.example.nsc_events.screen
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -24,6 +28,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.nsc_events.R
 import com.example.nsc_events.Routes
 import com.example.nsc_events.data.Datasource
@@ -118,6 +127,35 @@ fun EventDetailPage(navController: NavController, eventId: String) {
 }
 
 @Composable
+fun SinglePhotoPicker() {
+    var uri by remember {
+        mutableStateOf<Uri?>(null)
+    }
+    val singlePhotoPicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = {
+            uri = it
+        }
+    )
+    Column {
+        AsyncImage(
+            model = uri,
+            contentDescription = null,
+            modifier = Modifier.size(200.dp)
+        )
+        Button(
+            onClick = {
+                singlePhotoPicker.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )
+            }
+        ) {
+            Text(text = "Attach Image")
+        }
+    }
+}
+
+@Composable
 fun EventDetailCard(event: Event, navController: NavController) {
     Card(
         modifier = Modifier
@@ -132,13 +170,16 @@ fun EventDetailCard(event: Event, navController: NavController) {
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                painter = painterResource(id = event.eventCoverPhoto.toInt()),
-                contentDescription = stringResource(id = R.string.event_cover_photo_description),
-                modifier = Modifier
-                    .size(200.dp)
-                    .padding(16.dp),
-            )
+             // commented out the event image for now so there is space to display
+             // an image using the attach button
+//            Image(
+//                painter = painterResource(id = event.eventCoverPhoto.toInt()),
+//                contentDescription = stringResource(id = R.string.event_cover_photo_description),
+//                modifier = Modifier
+//                    .size(200.dp)
+//                    .padding(16.dp),
+//            )
+            SinglePhotoPicker()
             Text(
                 text = "eventTitle: ${event.eventTitle}",
                 style = TextStyle(
