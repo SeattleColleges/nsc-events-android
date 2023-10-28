@@ -23,6 +23,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,10 +35,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.nsc_events.Routes
+import com.example.nsc_events.data.network.EventService
+import com.example.nsc_events.data.network.dto.EventResponse
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePage(navController: NavHostController) { // Create Navbar
+    val service = EventService.create()
+    val events = produceState(initialValue = emptyList<EventResponse>()) {
+        value = service.getEvents()
+    }
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -118,9 +127,12 @@ fun HomePage(navController: NavHostController) { // Create Navbar
                     .fillMaxSize()
                     .padding(values)
             ) {
-                items(100) {
+                //question: I don't understand why this does not work here. It has to be an int but
+                //  works fine in belindas
+                items(events.value) { index ->
+                    val event = events.value[index]
                     Text(
-                        text = "Item$it",
+                        text = event.eventTitle,
                         modifier = Modifier.padding(16.dp)
                     )
                 }
