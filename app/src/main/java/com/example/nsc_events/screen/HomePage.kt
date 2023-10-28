@@ -88,7 +88,57 @@ fun HomePage(navController: NavHostController) { // Create Navbar
         ) {
             Text(text = "Add Event")
         }
-        EventList(events = Datasource().loadEvents(), navController = navController)
+        val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+        Scaffold(
+            modifier = Modifier
+                .fillMaxSize()
+                .nestedScroll(scrollBehavior.nestedScrollConnection),
+            topBar = {
+                CenterAlignedTopAppBar(
+                    title = {
+                        Text(text = "My NSC Events")
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = { navController.navigate("Back") }) {
+                            Icon(
+                                imageVector = Icons.Default.Menu,
+                                contentDescription = "Go back"
+                            )
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = { navController.navigate("Favorite") }) {
+                            Icon(
+                                imageVector = Icons.Default.FavoriteBorder,
+                                contentDescription = "Mark as favorite"
+                            )
+                        }
+
+                        IconButton(onClick = { navController.navigate("Edit") }) {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "Edit my events"
+                            )
+                        }
+                    },
+                    scrollBehavior = scrollBehavior
+                )
+            }
+        ) { values ->
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(values)
+            ) {
+                items(100) {
+                    Text(
+                        text = "Item$it",
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+            }
+            EventList(events = Datasource().loadEvents(), navController = navController)
+        }
     }
 }
 
@@ -151,58 +201,7 @@ fun EventList(events: List<Event>, navController: NavController) {
         items(events) { event ->
             EventCard(event = event, navController = navController)
             Spacer(modifier = Modifier.padding(16.dp))
-        val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-        Scaffold(
-            modifier = Modifier
-                .fillMaxSize()
-                .nestedScroll(scrollBehavior.nestedScrollConnection),
-            topBar = {
-                CenterAlignedTopAppBar(
-                    title = {
-                        Text(text = "My NSC Events")
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = { navController.navigate("Back") }) {
-                            Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = "Go back"
-                            )
-                        }
-                    },
-                    actions = {
-                        IconButton(onClick = { navController.navigate("Favorite") }) {
-                            Icon(
-                                imageVector = Icons.Default.FavoriteBorder,
-                                contentDescription = "Mark as favorite"
-                            )
-                        }
-
-                        IconButton(onClick = { navController.navigate("Edit") }) {
-                            Icon(
-                                imageVector = Icons.Default.Edit,
-                                contentDescription = "Edit my events"
-                            )
-                        }
-                    },
-                    scrollBehavior = scrollBehavior
-                )
-            }
-        ) { values ->
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(values)
-            ) {
-                items(100) {
-                    Text(
-                        text = "Item$it",
-                        modifier = Modifier.padding(16.dp)
-                    )
-                }
-            }
         }
     }
 }
-
-
 
