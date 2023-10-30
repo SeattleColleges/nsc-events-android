@@ -33,6 +33,7 @@ fun AddEventPage(navController: NavHostController) {
     var eventName by remember { mutableStateOf("") }
     var eventDescription by remember { mutableStateOf("") }
     var eventDate by remember { mutableStateOf("") }
+    var eventVisibility by remember { mutableStateOf(true) }
 
 
     /* navigating back to login page */
@@ -81,7 +82,7 @@ fun AddEventPage(navController: NavHostController) {
                     && eventDescription.isNotEmpty()
                     && eventDate.isNotEmpty()
                 ) {
-                    val newEvent = Event(eventName, eventDescription, eventDate)
+                    val newEvent = Event(eventName, eventDescription, eventDate, eventVisibility)
                     /* TODO: save new product to db or use a list to hold products (ex: List<Product>) */
                 } else {
                     /* TODO: show error message for empty fields */
