@@ -1,7 +1,5 @@
 package com.example.nsc_events.screen
 
-import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,7 +24,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -35,9 +32,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.nsc_events.MainActivity
 import com.example.nsc_events.Routes
-import kotlin.math.min
 
 @Composable
 fun SignUpPage( navController: NavHostController) {
@@ -47,7 +42,8 @@ fun SignUpPage( navController: NavHostController) {
     var confirmPassword by remember { mutableStateOf("") }
     var isEmailValid by remember { mutableStateOf(true) }
     var isPasswordValid by remember { mutableStateOf(true) }
-    var passwordMatchValid by remember { mutableStateOf("") }
+    var passwordMatchValid by remember { mutableStateOf(true) }
+    var matchPasswordSupportingText by remember { mutableStateOf("") }
 
     Column (
         modifier = Modifier
@@ -95,6 +91,7 @@ fun SignUpPage( navController: NavHostController) {
                     email = it
                     isEmailValid = validateEmail(email)
                 },
+                    isError = !isEmailValid,
                     label = { Text(text = "Email")},
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Email
@@ -104,7 +101,8 @@ fun SignUpPage( navController: NavHostController) {
                                      if(isEmailValid) {
                                          Text(text = "")
                                      } else {
-                                         Text(text = "Email is not valid!", color = MaterialTheme.colorScheme.error)
+
+                                         Text(text = "Email is not val!", color = MaterialTheme.colorScheme.error)
                                      }
                     },
                     modifier = Modifier
@@ -117,6 +115,7 @@ fun SignUpPage( navController: NavHostController) {
                     password = it
                     isPasswordValid = validatePassword(password)
                 },
+                    isError = !isPasswordValid,
                     label = {Text(text = "Password")},
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions.Default.copy(
@@ -143,19 +142,21 @@ fun SignUpPage( navController: NavHostController) {
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Password
                     ),
+                    isError = !passwordMatchValid,
                     maxLines = 1,
-                    supportingText = { Text(text = passwordMatchValid, color = MaterialTheme.colorScheme.error) },
+                    supportingText = { Text(text = matchPasswordSupportingText, color = MaterialTheme.colorScheme.error) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 30.dp, top = 30.dp, end = 30.dp, bottom = 16.dp)
                 )
                 
                 Button(onClick =
-                { /*TODO*/
+                {
                 if (password == confirmPassword && password.isNotBlank() && confirmPassword.isNotBlank()) {
-                    navController.navigate(Routes.Login.route)
+                    navController.navigate(Routes.HomePage.route)
                 } else {
-                    passwordMatchValid = "Passwords must match!"
+                    passwordMatchValid = false
+                    matchPasswordSupportingText = "Passwords must match!"
                 }
                 },
                     modifier = Modifier
