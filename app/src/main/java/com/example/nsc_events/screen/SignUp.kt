@@ -45,11 +45,7 @@ fun SignUpPage( navController: NavHostController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
-    val context = LocalContext.current
-
-    fun displayToast(context: Context) {
-        Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT).show()
-    }
+    var passwordValidation by remember { mutableStateOf("") }
 
     Column (
         modifier = Modifier
@@ -124,6 +120,7 @@ fun SignUpPage( navController: NavHostController) {
                 // confirmPassword field
                 TextField(value = confirmPassword, onValueChange = {
                     confirmPassword = it
+
                 },
                     label = {Text(text = "Confirm Password")},
                     visualTransformation = PasswordVisualTransformation(),
@@ -131,6 +128,7 @@ fun SignUpPage( navController: NavHostController) {
                         keyboardType = KeyboardType.Password
                     ),
                     maxLines = 1,
+                    supportingText = { Text(text = passwordValidation, color = MaterialTheme.colorScheme.error) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 30.dp, top = 30.dp, end = 30.dp, bottom = 16.dp)
@@ -141,7 +139,7 @@ fun SignUpPage( navController: NavHostController) {
                 if (password == confirmPassword && password.isNotBlank() && confirmPassword.isNotBlank()) {
                     navController.navigate(Routes.Login.route)
                 } else {
-                    displayToast(context)
+                    passwordValidation = "Passwords do not match"
                 }
                 },
                     modifier = Modifier
