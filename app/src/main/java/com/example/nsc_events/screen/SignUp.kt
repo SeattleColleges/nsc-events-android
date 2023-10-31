@@ -45,7 +45,9 @@ fun SignUpPage( navController: NavHostController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
-    var passwordValidation by remember { mutableStateOf("") }
+    var isEmailValid by remember { mutableStateOf(true) }
+    var isPasswordValid by remember { mutableStateOf(true) }
+    var passwordMatchValid by remember { mutableStateOf("") }
 
     Column (
         modifier = Modifier
@@ -91,12 +93,20 @@ fun SignUpPage( navController: NavHostController) {
                 // Email field
                 TextField(value = email, onValueChange ={
                     email = it
+                    isEmailValid = validateEmail(email)
                 },
                     label = { Text(text = "Email")},
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Email
                     ),
                     maxLines = 1,
+                    supportingText = {
+                                     if(isEmailValid) {
+                                         Text(text = "")
+                                     } else {
+                                         Text(text = "Email is not valid!", color = MaterialTheme.colorScheme.error)
+                                     }
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 30.dp, top = 30.dp, end = 30.dp, bottom = 16.dp)
@@ -105,6 +115,7 @@ fun SignUpPage( navController: NavHostController) {
                 // Password field
                 TextField(value = password, onValueChange = {
                     password = it
+                    isPasswordValid = validatePassword(password)
                 },
                     label = {Text(text = "Password")},
                     visualTransformation = PasswordVisualTransformation(),
@@ -112,6 +123,11 @@ fun SignUpPage( navController: NavHostController) {
                         keyboardType = KeyboardType.Password
                     ),
                     maxLines = 1,
+                    supportingText = { if(isPasswordValid){
+                        Text(text = "")
+                    } else {
+                        Text(text = "Password is not valid!", color = MaterialTheme.colorScheme.error)
+                    }},
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 30.dp, top = 30.dp, end = 30.dp, bottom = 16.dp)
@@ -120,7 +136,7 @@ fun SignUpPage( navController: NavHostController) {
                 // confirmPassword field
                 TextField(value = confirmPassword, onValueChange = {
                     confirmPassword = it
-
+//                    isPasswordValid = validatePassword(confirmPassword)
                 },
                     label = {Text(text = "Confirm Password")},
                     visualTransformation = PasswordVisualTransformation(),
@@ -128,7 +144,7 @@ fun SignUpPage( navController: NavHostController) {
                         keyboardType = KeyboardType.Password
                     ),
                     maxLines = 1,
-                    supportingText = { Text(text = passwordValidation, color = MaterialTheme.colorScheme.error) },
+                    supportingText = { Text(text = passwordMatchValid, color = MaterialTheme.colorScheme.error) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 30.dp, top = 30.dp, end = 30.dp, bottom = 16.dp)
@@ -139,7 +155,7 @@ fun SignUpPage( navController: NavHostController) {
                 if (password == confirmPassword && password.isNotBlank() && confirmPassword.isNotBlank()) {
                     navController.navigate(Routes.Login.route)
                 } else {
-                    passwordValidation = "Passwords do not match"
+                    passwordMatchValid = "Passwords must match!"
                 }
                 },
                     modifier = Modifier
