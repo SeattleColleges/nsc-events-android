@@ -48,7 +48,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -67,6 +66,8 @@ fun AddEventPage(navController: NavHostController) {
     var eventStartTime by remember { mutableStateOf("") }
     var eventEndTime by remember { mutableStateOf("") }
     val scrollState = rememberScrollState()
+    var showAlert by remember { mutableStateOf(false) }
+
 
 
 
@@ -153,6 +154,7 @@ fun AddEventPage(navController: NavHostController) {
         /* TODO: finish up product button and validation logic */
         Button(
             onClick = {
+                showAlert = true
                 if (eventTitle.isNotEmpty()
                     && eventDescription.isNotEmpty()
                     && eventDate.isNotEmpty()
@@ -170,6 +172,29 @@ fun AddEventPage(navController: NavHostController) {
         )
         {
             Text(text = "Add Event")
+        }
+        if (showAlert) {
+            AlertDialog(
+                onDismissRequest = { showAlert = false },
+                title = {
+                    Text(text = "Event Details")
+                },
+                text = {
+                    Column {
+                        Text("Title: $eventTitle")
+                        Text("Description: $eventDescription")
+                        Text("Date: $eventDate")
+                        Text("Start Time: $eventStartTime")
+                        Text("End Time: $eventEndTime")
+                        Text("eventCategory: $eventCategory")
+                    }
+                },
+                confirmButton = {
+                    Button(onClick = { showAlert = false }) {
+                        Text("Close")
+                    }
+                }
+            )
         }
     }
 
