@@ -26,29 +26,35 @@ import androidx.navigation.NavHostController
 import com.example.nsc_events.Routes
 import com.example.nsc_events.data.Event
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import com.example.nsc_events.R
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.rounded.AddCircle
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.sp
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,10 +64,9 @@ fun AddEventPage(navController: NavHostController) {
     var eventDescription by remember { mutableStateOf("") }
     var eventCategory by  remember { mutableStateOf("") }
     var eventDate by remember { mutableStateOf("") }
-    var eventLocation by  remember { mutableStateOf("") }
-    var eventStartTime by  remember { mutableStateOf("") }
+    var eventStartTime by remember { mutableStateOf("") }
+    var eventEndTime by remember { mutableStateOf("") }
     val scrollState = rememberScrollState()
-
 
 
 
@@ -87,6 +92,7 @@ fun AddEventPage(navController: NavHostController) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         NSCBanner()
+
         EventInfoField(
             eventName = eventTitle,
             onEventNameChange = { newEvent -> eventTitle = newEvent }
@@ -101,7 +107,7 @@ fun AddEventPage(navController: NavHostController) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(6.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -110,43 +116,40 @@ fun AddEventPage(navController: NavHostController) {
                 DatePicker { selectedDate ->
                     eventDate = selectedDate
                 }
-
-                Spacer(modifier = Modifier.width(8.dp))  // Space between the DatePicker and TimePicker
-
-                TimePicker { selectedTime ->
-                    eventStartTime = selectedTime
-                }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))  // Space between the pickers and the feedback text
+            Spacer(modifier = Modifier.height(8.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
-                Text("Date: $eventDate", style = MaterialTheme.typography.bodySmall)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Time: $eventStartTime", style = MaterialTheme.typography.bodySmall)
+                TimePicker(
+                    label = "Start Time",
+                    onTimeSelected = { selectedStartTime ->
+                        eventStartTime = selectedStartTime
+                    },
+                    selectedTime = eventStartTime
+                )
+
+                Spacer(modifier = Modifier.width(2.dp))
+
+                TimePicker(
+                    label = "End Time",
+                    onTimeSelected = { selectedEndTime ->
+                        eventEndTime = selectedEndTime
+                    },
+                    selectedTime = eventEndTime
+                )
+                Spacer(modifier = Modifier.height(20.dp))
             }
         }
 
-
-        // Category field
-        GenericTextField(
-            value = eventCategory,
-            onValueChange = { newCategory -> eventCategory = newCategory },
-            label = "Event Category"
-        )
+        /*          Category field          */
+        categoryDropDown()
 
 
-        // Location field
-        GenericTextField(
-            value = eventLocation,
-            onValueChange = { newLocation -> eventLocation = newLocation },
-            label = "Event Location"
-        )
-
-
+        Spacer(modifier = Modifier.height(200.dp))
         /* TODO: finish up product button and validation logic */
         Button(
             onClick = {
@@ -175,53 +178,39 @@ fun AddEventPage(navController: NavHostController) {
 
 @Composable
 fun EventInfoField(eventName: String, onEventNameChange: (String) -> Unit) {
-    TextField(
+    OutlinedTextField(
         value = eventName,
         onValueChange = onEventNameChange,
-        label = { Text(text = "Event name") },
+        label = {
+            Text(
+                text = "Event name",
+                style = TextStyle(color = Color.Gray, fontWeight = FontWeight.Medium)
+            )
+        },
         singleLine = true,
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp)
+            .width(400.dp),
+        shape = RoundedCornerShape(10.dp),
+        textStyle = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Normal),
     )
 }
 
 @Composable
 fun EventDescriptionField(eventDescription: String, onEventDescriptionChange: (String) -> Unit) {
-    TextField(
+    OutlinedTextField(
         value = eventDescription,
         onValueChange = onEventDescriptionChange,
-        label = { Text(text = "Event Description") },
-        singleLine = false,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp)
-    )
-}
-
-/* todo: change the evenDate to a date, currently a string */
-@Composable
-fun EventDateField(eventDate: String, onEventDateChange: (String) -> Unit) {
-    TextField(
-        value = eventDate,
-        onValueChange = onEventDateChange,
-        label = { Text(text = "Event Date") },
+        label = {
+            Text(
+                text = "Event description",
+                style = TextStyle(color = Color.Gray, fontWeight = FontWeight.Medium)
+            )
+        },
         singleLine = true,
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    )
-}
-@Composable
-fun GenericTextField(value: String, onValueChange: (String) -> Unit, label: String) {
-    TextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = { Text(text = label) },
-        singleLine = true,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
+            .width(4000.dp),
+        shape = RoundedCornerShape(10.dp),
+        textStyle = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Normal),
     )
 }
 
@@ -243,7 +232,7 @@ fun NSCBanner() {
             Text(
                 text = "Add an Event:",
                 style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(top = 6.dp, bottom = 6.dp)
+                modifier = Modifier.padding(top = 12.dp, bottom = 6.dp)
             )
         }
     }
@@ -255,14 +244,18 @@ fun DatePicker(onDateSelected: (String) -> Unit) {
     val currentOnDateSelected = rememberUpdatedState(onDateSelected)
     val scope = rememberCoroutineScope()
 
+    // Access the global variable
+    var eventDate by remember { mutableStateOf("") }
+
     Button(onClick = {
         val currentCalendar = Calendar.getInstance()
         scope.launch {
             DatePickerDialog(
                 context,
                 { _, year, month, dayOfMonth ->
-                    val selectedDate = "$dayOfMonth/${month + 1}/$year"
-                    currentOnDateSelected.value(selectedDate)
+                    val date = "$dayOfMonth/${month + 1}/$year"
+                    eventDate = date  // Update the global variable
+                    currentOnDateSelected.value(date)
                 },
                 currentCalendar.get(Calendar.YEAR),
                 currentCalendar.get(Calendar.MONTH),
@@ -273,11 +266,17 @@ fun DatePicker(onDateSelected: (String) -> Unit) {
         Icon(imageVector = Icons.Default.DateRange, contentDescription = "Calendar Icon")
         Spacer(modifier = Modifier.width(8.dp))
         Text(text = "Pick a Date")
+
+        if (eventDate.isNotEmpty()) {
+            Spacer(modifier = Modifier.width(8.dp))
+            Icon(imageVector = Icons.Default.Check, contentDescription = null, tint = Color.Green)
+        }
     }
 }
 
+
 @Composable
-fun TimePicker(onTimeSelected: (String) -> Unit) {
+fun TimePicker(label: String, onTimeSelected: (String) -> Unit, selectedTime: String) {
     val context = LocalContext.current
     val currentOnTimeSelected = rememberUpdatedState(onTimeSelected)
     val scope = rememberCoroutineScope()
@@ -300,26 +299,66 @@ fun TimePicker(onTimeSelected: (String) -> Unit) {
             ).show()
         }
     }) {
-        Icon(imageVector = Icons.Default.Edit, contentDescription = "Clock Icon")
         Spacer(modifier = Modifier.width(8.dp))
-        Text(text = "Pick a Time")
+        Text(text = label)
+
+        // Display the checkmark if the time has been selected
+        if (selectedTime.isNotEmpty()) {
+            Spacer(modifier = Modifier.width(8.dp))
+            Icon(imageVector = Icons.Default.Check, contentDescription = null, tint = Color.Green)
+        } else {
+            Icon(imageVector = Icons.Rounded.AddCircle, contentDescription = "Add Icon")
+        }
     }
 }
 
-// This Composable
 @Composable
-fun DateTimePicker(
-    onDateSelected: (String) -> Unit,
-    onTimeSelected: (String) -> Unit
-) {
-    Row(
+fun categoryDropDown() {
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+            .fillMaxSize()
     ) {
-        DatePicker(onDateSelected = onDateSelected)
-        Spacer(modifier = Modifier.width(16.dp)) // Give some space between the pickers
-        TimePicker(onTimeSelected = onTimeSelected)
+        Box(
+            modifier = Modifier
+                .align(Alignment.Center)
+        ) {
+            OutlinedButton(
+                onClick = { expanded = true },
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+            ) {
+                Text(text = "Choose a Category")
+                Spacer(modifier = Modifier.width(4.dp))  // Add some spacing between text and icon
+                Icon(Icons.Default.ArrowDropDown, contentDescription = "Open dropdown menu")
+            }
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                offset = DpOffset(2.dp, 10.dp)
+            ) {
+                DropdownMenuItem(
+                    text = { Text("Category1") },
+                    onClick = { /* Handle Stuff1! */ },
+                )
+                DropdownMenuItem(
+                    text = { Text("Category2") },
+                    onClick = { /* Handle Stuff1! */ },
+                )
+                DropdownMenuItem(
+                    text = { Text("Category3") },
+                    onClick = { /* Handle Stuff1! */ },
+                )
+                DropdownMenuItem(
+                    text = { Text("Category4") },
+                    onClick = { /* Handle Stuff1! */ },
+                )
+                DropdownMenuItem(
+                    text = { Text("Category5") },
+                    onClick = { /* Handle Stuff1! */ },
+                )
+            }
+        }
     }
 }
