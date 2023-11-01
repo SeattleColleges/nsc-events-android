@@ -243,8 +243,6 @@ fun DatePicker(onDateSelected: (String) -> Unit) {
     val context = LocalContext.current
     val currentOnDateSelected = rememberUpdatedState(onDateSelected)
     val scope = rememberCoroutineScope()
-
-    // Access the global variable
     var eventDate by remember { mutableStateOf("") }
 
     Button(onClick = {
@@ -254,7 +252,7 @@ fun DatePicker(onDateSelected: (String) -> Unit) {
                 context,
                 { _, year, month, dayOfMonth ->
                     val date = "$dayOfMonth/${month + 1}/$year"
-                    eventDate = date  // Update the global variable
+                    eventDate = date
                     currentOnDateSelected.value(date)
                 },
                 currentCalendar.get(Calendar.YEAR),
@@ -301,8 +299,6 @@ fun TimePicker(label: String, onTimeSelected: (String) -> Unit, selectedTime: St
     }) {
         Spacer(modifier = Modifier.width(8.dp))
         Text(text = label)
-
-        // Display the checkmark if the time has been selected
         if (selectedTime.isNotEmpty()) {
             Spacer(modifier = Modifier.width(8.dp))
             Icon(imageVector = Icons.Default.Check, contentDescription = null, tint = Color.Green)
@@ -329,7 +325,7 @@ fun categoryDropDown() {
                 contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
             ) {
                 Text(text = "Choose a Category")
-                Spacer(modifier = Modifier.width(4.dp))  // Add some spacing between text and icon
+                Spacer(modifier = Modifier.width(4.dp))
                 Icon(Icons.Default.ArrowDropDown, contentDescription = "Open dropdown menu")
             }
 
