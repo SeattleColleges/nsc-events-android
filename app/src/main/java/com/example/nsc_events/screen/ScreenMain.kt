@@ -1,5 +1,6 @@
 package com.example.nsc_events.screen
 
+import SignUpPage
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
