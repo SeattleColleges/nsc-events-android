@@ -25,7 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.nsc_events.Routes
-import com.example.nsc_events.data.Event
+import com.example.nsc_events.model.Event
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,6 +33,10 @@ fun AddEventPage(navController: NavHostController) {
     var eventTitle by remember { mutableStateOf("") }
     var eventDescription by remember { mutableStateOf("") }
     var eventDate by remember { mutableStateOf("") }
+    var eventStartTime by remember { mutableStateOf("") }
+    var eventEndTime by remember { mutableStateOf("") }
+    var eventLocation by remember { mutableStateOf("") }
+    var eventCoverPhoto by remember { mutableStateOf("") }
     var eventVisibility by remember { mutableStateOf(true) }
 
 
@@ -74,6 +78,16 @@ fun AddEventPage(navController: NavHostController) {
             onEventDateChange = { newDate -> eventDate = newDate }
         )
 
+        EventStartTimeField(
+            eventStartTime = eventStartTime,
+            onEventStartTimeChange = {newEventStartTime -> eventStartTime = newEventStartTime}
+        )
+
+        EventEndTimeField(
+            eventEndTime = eventEndTime,
+            onEventEndTimeChange = {newEventEndTime -> eventEndTime = newEventEndTime}
+        )
+
 
         /* TODO: finish up product button and validation logic */
         Button(
@@ -81,8 +95,10 @@ fun AddEventPage(navController: NavHostController) {
                 if (eventTitle.isNotEmpty()
                     && eventDescription.isNotEmpty()
                     && eventDate.isNotEmpty()
+                    && eventStartTime.isNotEmpty()
+                    && eventEndTime.isNotEmpty()
                 ) {
-                    val newEvent = Event(eventTitle, eventDescription, eventDate, eventVisibility)
+                    val newEvent = Event(eventTitle, eventDescription, eventDate, eventStartTime, eventEndTime, eventLocation, eventCoverPhoto, eventVisibility)
                     /* TODO: save new product to db or use a list to hold products (ex: List<Product>) */
                 } else {
                     /* TODO: show error message for empty fields */
@@ -134,6 +150,33 @@ fun EventDateField(eventDate: String, onEventDateChange: (String) -> Unit) {
         value = eventDate,
         onValueChange = onEventDateChange,
         label = { Text(text = "Event Date") },
+        singleLine = true,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    )
+}
+
+
+@Composable
+fun EventStartTimeField(eventStartTime: String, onEventStartTimeChange: (String) -> Unit) {
+    TextField(
+        value = eventStartTime,
+        onValueChange = onEventStartTimeChange,
+        label = { Text(text = "Event Start Time") },
+        singleLine = true,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    )
+}
+
+@Composable
+fun EventEndTimeField(eventEndTime: String, onEventEndTimeChange: (String) -> Unit) {
+    TextField(
+        value = eventEndTime,
+        onValueChange = onEventEndTimeChange,
+        label = { Text(text = "Event End Time") },
         singleLine = true,
         modifier = Modifier
             .fillMaxWidth()
