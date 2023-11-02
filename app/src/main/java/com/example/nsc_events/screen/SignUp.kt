@@ -10,16 +10,16 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 
 @Composable
 fun SignUpPage(navController: NavHostController) {
-    var firstName by mutableStateOf("")
-    var lastName by mutableStateOf("")
-    var idNumber by mutableStateOf("")
-    var studentOrFaculty by mutableStateOf("")
-    var emailAddress by mutableStateOf("")
-
+    var firstName by remember {mutableStateOf("")}
+    var lastName by  remember {mutableStateOf("")}
+    var idNumber by remember {mutableStateOf("")}
+    var studentOrFaculty by remember { mutableStateOf("")}
+    var emailAddress by remember {mutableStateOf("")}
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
