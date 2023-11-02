@@ -12,7 +12,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -75,7 +74,16 @@ import coil.compose.rememberAsyncImagePainter
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEventPage(navController: NavHostController) {
+
+    /* variables and control logic for eventTitle */
     var eventTitle by remember { mutableStateOf("") }
+    var eventTitleError by remember { mutableStateOf(false) }
+    val onEventNameChange = { newEvent: String ->
+        eventTitleError = newEvent.isEmpty()
+        eventTitle = newEvent
+    }
+
+
     var eventDescription by remember { mutableStateOf("") }
     var eventLocation by  remember { mutableStateOf("") }
     var eventCategory by  remember { mutableStateOf("") }
@@ -84,6 +92,8 @@ fun AddEventPage(navController: NavHostController) {
     var eventEndTime by remember { mutableStateOf("") }
     val scrollState = rememberScrollState()
     var showAlert by remember { mutableStateOf(false) }
+    var newEvent by remember { mutableStateOf<Event?>(null) }
+
 
 
 
@@ -113,7 +123,8 @@ fun AddEventPage(navController: NavHostController) {
 
         EventInfoField(
             eventName = eventTitle,
-            onEventNameChange = { newEvent -> eventTitle = newEvent }
+            onEventNameChange = onEventNameChange,
+            isError = eventTitleError
         )
 
         EventDescriptionField(
@@ -177,13 +188,17 @@ fun AddEventPage(navController: NavHostController) {
         Spacer(modifier = Modifier.height(20.dp))
         /* TODO: finish up product button and validation logic */
         Button(
+
             onClick = {
                 showAlert = true
-                if (eventTitle.isNotEmpty()
-                    && eventDescription.isNotEmpty()
+                eventTitleError = eventTitle.isEmpty()
+                if (eventDescription.isNotEmpty()
                     && eventDate.isNotEmpty()
+                    && eventStartTime.isNotEmpty()
+                    && eventEndTime.isNotEmpty()
                 ) {
-                    val newEvent = Event(eventTitle, eventDescription, eventDate)
+                    newEvent = Event(eventTitle, eventDescription, eventDate, eventStartTime, eventEndTime)
+
                     /* TODO: save new product to db or use a list to hold products (ex: List<Product>) */
                 } else {
                     /* TODO: show error message for empty fields */
@@ -205,12 +220,12 @@ fun AddEventPage(navController: NavHostController) {
                 },
                 text = {
                     Column {
-                        Text("Title: $eventTitle")
-                        Text("Description: $eventDescription")
-                        Text("Date: $eventDate")
-                        Text("Start Time: $eventStartTime")
-                        Text("End Time: $eventEndTime")
-                        Text("eventCategory: $eventCategory")
+                        Text("Title: ${newEvent?.eventName}")
+                        Text("Description: ${newEvent?.description}")
+                        Text("Date: ${newEvent?.date}")
+                        Text("Start Time: ${newEvent?.startTime}")
+                        Text("End Time: ${newEvent?.endTime}")
+                        // Text("Category: ${event.category}")
                     }
                 },
                 confirmButton = {
@@ -226,24 +241,32 @@ fun AddEventPage(navController: NavHostController) {
 
 
 @Composable
-fun EventInfoField(eventName: String, onEventNameChange: (String) -> Unit) {
-    OutlinedTextField(
-        value = eventName,
-        onValueChange = onEventNameChange,
-        label = {
+fun EventInfoField(
+    eventName: String,
+    onEventNameChange: (String) -> Unit,
+    isError: Boolean
+) {
+    Column {
+        OutlinedTextField(
+            value = eventName,
+            onValueChange = onEventNameChange,
+            label = {
+                Text("Event name *") // Asterisk to indicate required field
+            },
+            singleLine = true,
+            modifier = Modifier.width(400.dp),
+            isError = isError
+            // other parameters
+        )
+        if (isError) {
             Text(
-                text = "Event name",
-                style = TextStyle(color = Color.Gray, fontWeight = FontWeight.Medium)
+                text = "Event name is required.",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.labelSmall
             )
-        },
-        singleLine = true,
-        modifier = Modifier
-            .width(400.dp),
-        shape = RoundedCornerShape(10.dp),
-        textStyle = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Normal),
-    )
+        }
+    }
 }
-
 @Composable
 fun EventDescriptionField(eventDescription: String, onEventDescriptionChange: (String) -> Unit) {
     OutlinedTextField(
@@ -257,7 +280,7 @@ fun EventDescriptionField(eventDescription: String, onEventDescriptionChange: (S
         },
         singleLine = true,
         modifier = Modifier
-            .width(4000.dp),
+            .width(400.dp),
         shape = RoundedCornerShape(10.dp),
         textStyle = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Normal),
     )
