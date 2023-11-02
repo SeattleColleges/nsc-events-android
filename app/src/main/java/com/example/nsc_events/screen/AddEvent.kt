@@ -12,7 +12,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
+
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -38,6 +38,12 @@ import androidx.compose.ui.text.font.FontWeight
 import com.example.nsc_events.R
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.net.Uri
+import androidx.compose.ui.graphics.PathEffect
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.rememberCoroutineScope
@@ -45,15 +51,25 @@ import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.ui.composed
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,6 +77,7 @@ import androidx.compose.ui.unit.sp
 fun AddEventPage(navController: NavHostController) {
     var eventTitle by remember { mutableStateOf("") }
     var eventDescription by remember { mutableStateOf("") }
+    var eventLocation by  remember { mutableStateOf("") }
     var eventCategory by  remember { mutableStateOf("") }
     var eventDate by remember { mutableStateOf("") }
     var eventStartTime by remember { mutableStateOf("") }
@@ -147,10 +164,17 @@ fun AddEventPage(navController: NavHostController) {
         }
 
         /*          Category field          */
-        categoryDropDown()
+        CategoryDropDown()
 
+        /*          Location field          */
+        LocationInputField(onLocationChange = { newLocation ->
+            eventLocation = newLocation
+        })
 
-        Spacer(modifier = Modifier.height(200.dp))
+        /*          Image upload button     */
+        ImageUploadButton(onImagePicked = { uri -> /**/ })
+
+        Spacer(modifier = Modifier.height(20.dp))
         /* TODO: finish up product button and validation logic */
         Button(
             onClick = {
@@ -167,7 +191,7 @@ fun AddEventPage(navController: NavHostController) {
             },
             modifier = Modifier
                 .padding(16.dp)
-                .width(200.dp)
+                .width(240.dp)
                 .align(Alignment.CenterHorizontally)
         )
         {
@@ -334,7 +358,7 @@ fun TimePicker(label: String, onTimeSelected: (String) -> Unit, selectedTime: St
 }
 
 @Composable
-fun categoryDropDown() {
+fun CategoryDropDown() {
     var expanded by remember { mutableStateOf(false) }
 
     Box(
@@ -382,4 +406,107 @@ fun categoryDropDown() {
             }
         }
     }
+}
+
+@Composable
+fun LocationInputField(onLocationChange: (String) -> Unit) {
+    var location by remember { mutableStateOf("") }
+
+    OutlinedTextField(
+        value = location,
+        onValueChange = { newValue ->
+            location = newValue
+            onLocationChange(newValue)
+        },
+        leadingIcon = {
+            Icon(
+                Icons.Filled.LocationOn,
+                contentDescription = "Location Icon",
+                tint = Color.Gray
+            )
+        },
+        label = {
+            Text(
+                text = "Location",
+                style = TextStyle(color = Color.Gray, fontWeight = FontWeight.Medium)
+            )
+        },
+        singleLine = true,
+        modifier = Modifier
+            .width(400.dp),
+        shape = RoundedCornerShape(10.dp),
+        textStyle = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Normal),
+    )
+}
+
+@Composable
+fun ImageUploadButton(onImagePicked: (Uri?) -> Unit) {
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        imageUri = uri
+        onImagePicked(imageUri)
+    }
+
+    val boxSize = Modifier
+        .fillMaxWidth()
+        .padding(26.dp)
+        .height(200.dp)
+
+    Box(
+        modifier = boxSize
+            .background(Color.White, shape = RoundedCornerShape(16.dp))
+            .clickable {
+                launcher.launch("image/*")
+            }
+            .clip(RoundedCornerShape(4.dp))
+            .drawDottedBorder(2.dp, Color.DarkGray, 12.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        if (imageUri == null) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Spacer(modifier = Modifier.height(12.dp))
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Upload Icon",
+                    tint = Color.Gray,
+                    modifier = Modifier.size(36.dp)
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(text = "Upload Event Image", fontSize = 16.sp, color = Color.Black)
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+        } else {
+            imageUri?.let { uri ->
+                Image(
+                    painter = rememberAsyncImagePainter(model = uri),
+                    contentDescription = "Selected Image",
+                    modifier = boxSize,
+                    contentScale = ContentScale.Crop
+                )
+            }
+        }
+    }
+}
+@Composable
+fun Modifier.drawDottedBorder(
+    strokeWidth: Dp,
+    color: Color,
+    dashWidth: Dp
+): Modifier = composed {
+    this.then(
+        drawWithContent {
+            drawContent()
+            val pathEffect = PathEffect.dashPathEffect(floatArrayOf(dashWidth.toPx(), dashWidth.toPx()), 0f)
+            val halfStrokeWidth = strokeWidth.toPx() / 3
+            translate(top = halfStrokeWidth, left = halfStrokeWidth) {
+                drawRoundRect(
+                    color = color,
+                    size = size.copy(width = size.width - strokeWidth.toPx(), height = size.height - strokeWidth.toPx()),
+                    style = Stroke(width = strokeWidth.toPx(), pathEffect = pathEffect as PathEffect?)
+                )
+            }
+        }
+    )
 }
