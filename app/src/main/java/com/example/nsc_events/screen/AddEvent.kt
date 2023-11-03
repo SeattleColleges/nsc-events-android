@@ -84,14 +84,25 @@ fun AddEventPage(navController: NavHostController) {
     }
 
 
+    /* variables and control logic for eventTitle */
     var eventDescription by remember { mutableStateOf("") }
-    var eventLocation by  remember { mutableStateOf("") }
-    var eventCategory by  remember { mutableStateOf("") }
+    var eventDescriptionError by remember { mutableStateOf(false)}
+    val onEventDescriptionChange = { newEvent: String ->
+        eventDescriptionError = newEvent.isEmpty()
+        eventDescription = newEvent
+    }
+
     var eventDate by remember { mutableStateOf("") }
     var eventStartTime by remember { mutableStateOf("") }
     var eventEndTime by remember { mutableStateOf("") }
+    var eventLocation by  remember { mutableStateOf("") }
+    var eventCategory by  remember { mutableStateOf("") }
+
+
     val scrollState = rememberScrollState()
     var showAlert by remember { mutableStateOf(false) }
+
+    /* Assembled event object */
     var newEvent by remember { mutableStateOf<Event?>(null) }
 
 
@@ -119,20 +130,24 @@ fun AddEventPage(navController: NavHostController) {
             .padding(6.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+        // Banner with text
         NSCBanner()
 
+        // Event Name with error
         EventInfoField(
             eventName = eventTitle,
             onEventNameChange = onEventNameChange,
             isError = eventTitleError
         )
 
+        // Event Description with error
         EventDescriptionField(
             eventDescription = eventDescription,
-            onEventDescriptionChange = { newEventDescription ->
-                eventDescription = newEventDescription
-            }
+            onEventDescriptionChange = onEventDescriptionChange,
+            isError = eventDescriptionError
         )
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -190,19 +205,15 @@ fun AddEventPage(navController: NavHostController) {
         Button(
 
             onClick = {
+                // Double Checking values, TODO: remove and composable
                 showAlert = true
                 eventTitleError = eventTitle.isEmpty()
-                if (eventDescription.isNotEmpty()
-                    && eventDate.isNotEmpty()
-                    && eventStartTime.isNotEmpty()
-                    && eventEndTime.isNotEmpty()
-                ) {
-                    newEvent = Event(eventTitle, eventDescription, eventDate, eventStartTime, eventEndTime)
+                eventDescriptionError = eventDescription.isEmpty()
+                newEvent = Event(eventTitle, eventDescription, eventDate, eventStartTime, eventEndTime)
 
                     /* TODO: save new product to db or use a list to hold products (ex: List<Product>) */
-                } else {
+                // } else {
                     /* TODO: show error message for empty fields */
-                }
             },
             modifier = Modifier
                 .padding(16.dp)
@@ -239,53 +250,7 @@ fun AddEventPage(navController: NavHostController) {
 
 }
 
-
-@Composable
-fun EventInfoField(
-    eventName: String,
-    onEventNameChange: (String) -> Unit,
-    isError: Boolean
-) {
-    Column {
-        OutlinedTextField(
-            value = eventName,
-            onValueChange = onEventNameChange,
-            label = {
-                Text("Event name *") // Asterisk to indicate required field
-            },
-            singleLine = true,
-            modifier = Modifier.width(400.dp),
-            isError = isError
-            // other parameters
-        )
-        if (isError) {
-            Text(
-                text = "Event name is required.",
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.labelSmall
-            )
-        }
-    }
-}
-@Composable
-fun EventDescriptionField(eventDescription: String, onEventDescriptionChange: (String) -> Unit) {
-    OutlinedTextField(
-        value = eventDescription,
-        onValueChange = onEventDescriptionChange,
-        label = {
-            Text(
-                text = "Event description",
-                style = TextStyle(color = Color.Gray, fontWeight = FontWeight.Medium)
-            )
-        },
-        singleLine = true,
-        modifier = Modifier
-            .width(400.dp),
-        shape = RoundedCornerShape(10.dp),
-        textStyle = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Normal),
-    )
-}
-
+/* Begin composable */
 @Composable
 fun NSCBanner() {
     Box(
@@ -303,12 +268,75 @@ fun NSCBanner() {
             )
             Text(
                 text = "Add an Event:",
-                style = MaterialTheme.typography.headlineMedium,
+                style = MaterialTheme.typography.headlineLarge,
                 modifier = Modifier.padding(top = 12.dp, bottom = 6.dp)
             )
         }
     }
 }
+
+@Composable
+fun EventInfoField(
+    eventName: String,
+    onEventNameChange: (String) -> Unit,
+    isError: Boolean
+) {
+        OutlinedTextField(
+            value = eventName,
+            onValueChange = onEventNameChange,
+            label = {
+                Text("Event name *")
+            },
+            singleLine = true,
+            modifier = Modifier.width(400.dp),
+            isError = isError,
+            trailingIcon = {
+                if (eventName.isNotEmpty() && !isError) {
+                    Icon(imageVector = Icons.Default.Check, contentDescription = null, tint = Color.Green)
+                }
+            }
+        )
+        if (isError) {
+            Text(
+                text = "Event name is required.",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.labelSmall
+            )
+        }
+}
+@Composable
+fun EventDescriptionField(
+    eventDescription: String,
+    onEventDescriptionChange: (String) -> Unit,
+    isError: Boolean
+) {
+    Column {
+        OutlinedTextField(
+            value = eventDescription,
+            onValueChange = onEventDescriptionChange,
+            label = {
+                Text("Event description *")
+            },
+            singleLine = false,
+            modifier = Modifier.width(400.dp),
+            isError = isError,
+            maxLines = 4,
+            trailingIcon = {
+                if (eventDescription.isNotEmpty() && !isError) {
+                    Icon(imageVector = Icons.Default.Check, contentDescription = null, tint = Color.Green)
+                }
+            }
+        )
+        if (isError) {
+            Text(
+                text = "Event description is required.",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.labelSmall
+            )
+        }
+    }
+}
+
 
 @Composable
 fun DatePicker(onDateSelected: (String) -> Unit) {
