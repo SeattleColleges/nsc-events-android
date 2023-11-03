@@ -93,6 +93,7 @@ fun AddEventPage(navController: NavHostController) {
     }
 
     var eventDate by remember { mutableStateOf("") }
+    var isDateError by remember { mutableStateOf(false) }
     var eventStartTime by remember { mutableStateOf("") }
     var eventEndTime by remember { mutableStateOf("") }
     var eventLocation by  remember { mutableStateOf("") }
@@ -123,6 +124,7 @@ fun AddEventPage(navController: NavHostController) {
         }
     )
 
+    /* Center Column */
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -148,6 +150,7 @@ fun AddEventPage(navController: NavHostController) {
             isError = eventDescriptionError
         )
 
+        /* Date and time pickers */
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -157,9 +160,14 @@ fun AddEventPage(navController: NavHostController) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
-                DatePicker { selectedDate ->
-                    eventDate = selectedDate
-                }
+                DatePicker(
+                    onDateSelected = { newDate ->
+                        eventDate = newDate
+                        isDateError = false
+                    },
+                    isError = isDateError
+                )
+
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -205,10 +213,11 @@ fun AddEventPage(navController: NavHostController) {
         Button(
 
             onClick = {
-                // Double Checking values, TODO: remove and composable
+                // Double Checking values via the alert
                 showAlert = true
                 eventTitleError = eventTitle.isEmpty()
                 eventDescriptionError = eventDescription.isEmpty()
+                isDateError = eventDate.isEmpty()
                 newEvent = Event(eventTitle, eventDescription, eventDate, eventStartTime, eventEndTime)
 
                     /* TODO: save new product to db or use a list to hold products (ex: List<Product>) */
@@ -250,7 +259,7 @@ fun AddEventPage(navController: NavHostController) {
 
 }
 
-/* Begin composable */
+/* Begin composables */
 @Composable
 fun NSCBanner() {
     Box(
@@ -339,35 +348,52 @@ fun EventDescriptionField(
 
 
 @Composable
-fun DatePicker(onDateSelected: (String) -> Unit) {
+fun DatePicker(
+    onDateSelected: (String) -> Unit,
+    isError: Boolean
+    ) {
     val context = LocalContext.current
     val currentOnDateSelected = rememberUpdatedState(onDateSelected)
     val scope = rememberCoroutineScope()
     var eventDate by remember { mutableStateOf("") }
 
-    Button(onClick = {
-        val currentCalendar = Calendar.getInstance()
-        scope.launch {
-            DatePickerDialog(
-                context,
-                { _, year, month, dayOfMonth ->
-                    val date = "$dayOfMonth/${month + 1}/$year"
-                    eventDate = date
-                    currentOnDateSelected.value(date)
-                },
-                currentCalendar.get(Calendar.YEAR),
-                currentCalendar.get(Calendar.MONTH),
-                currentCalendar.get(Calendar.DAY_OF_MONTH)
-            ).show()
-        }
-    }) {
-        Icon(imageVector = Icons.Default.DateRange, contentDescription = "Calendar Icon")
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(text = "Pick a Date")
+    Column {
+        Button(onClick = {
+            val currentCalendar = Calendar.getInstance()
+            scope.launch {
+                DatePickerDialog(
+                    context,
+                    { _, year, month, dayOfMonth ->
+                        val date = "$dayOfMonth/${month + 1}/$year"
+                        eventDate = date
+                        currentOnDateSelected.value(date)
+                    },
+                    currentCalendar.get(Calendar.YEAR),
+                    currentCalendar.get(Calendar.MONTH),
+                    currentCalendar.get(Calendar.DAY_OF_MONTH)
+                ).show()
+            }
 
-        if (eventDate.isNotEmpty()) {
+        }) {
+            Icon(imageVector = Icons.Default.DateRange, contentDescription = "Calendar Icon")
             Spacer(modifier = Modifier.width(8.dp))
-            Icon(imageVector = Icons.Default.Check, contentDescription = null, tint = Color.Green)
+            Text(text = "Pick a Date")
+            if (eventDate.isNotEmpty()) {
+                Spacer(modifier = Modifier.width(8.dp))
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = null,
+                    tint = Color.Green
+                )
+            }
+        }
+        if (isError) {
+            Text(
+                text = "A date must be selected",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.labelSmall,
+                modifier = Modifier.padding(start = 16.dp, top = 2.dp)
+            )
         }
     }
 }
