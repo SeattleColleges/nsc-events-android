@@ -70,7 +70,6 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEventPage(navController: NavHostController) {
@@ -92,11 +91,16 @@ fun AddEventPage(navController: NavHostController) {
         eventDescription = newEvent
     }
 
+    /* variables and control logic for dates and times */
     var eventDate by remember { mutableStateOf("") }
     var isDateError by remember { mutableStateOf(false) }
     var eventStartTime by remember { mutableStateOf("") }
     var eventEndTime by remember { mutableStateOf("") }
+    var isTimeError by remember { mutableStateOf(false) }
+
+
     var eventLocation by  remember { mutableStateOf("") }
+    
     var eventCategory by  remember { mutableStateOf("") }
 
 
@@ -181,16 +185,19 @@ fun AddEventPage(navController: NavHostController) {
                     onTimeSelected = { selectedStartTime ->
                         eventStartTime = selectedStartTime
                     },
+                    isError = isTimeError,
                     selectedTime = eventStartTime
+
                 )
 
-                Spacer(modifier = Modifier.width(2.dp))
+                Spacer(modifier = Modifier.width(6.dp))
 
                 TimePicker(
                     label = "End Time",
                     onTimeSelected = { selectedEndTime ->
                         eventEndTime = selectedEndTime
                     },
+                    isError = isTimeError,
                     selectedTime = eventEndTime
                 )
                 Spacer(modifier = Modifier.height(20.dp))
@@ -400,36 +407,51 @@ fun DatePicker(
 
 
 @Composable
-fun TimePicker(label: String, onTimeSelected: (String) -> Unit, selectedTime: String) {
+fun TimePicker(
+    label: String,
+    onTimeSelected: (String) -> Unit,
+    selectedTime: String,
+    isError: Boolean
+) {
     val context = LocalContext.current
     val currentOnTimeSelected = rememberUpdatedState(onTimeSelected)
     val scope = rememberCoroutineScope()
 
-    Button(onClick = {
-        val currentCalendar = Calendar.getInstance()
-        val currentHour = currentCalendar.get(Calendar.HOUR_OF_DAY)
-        val currentMinute = currentCalendar.get(Calendar.MINUTE)
+    Column {
+        Button(onClick = {
+            val currentCalendar = Calendar.getInstance()
+            val currentHour = currentCalendar.get(Calendar.HOUR_OF_DAY)
+            val currentMinute = currentCalendar.get(Calendar.MINUTE)
 
-        scope.launch {
-            TimePickerDialog(
-                context,
-                { _, hour, minute ->
-                    val selectedTime = String.format("%02d:%02d", hour, minute)
-                    currentOnTimeSelected.value(selectedTime)
-                },
-                currentHour,
-                currentMinute,
-                true // 24 hour format, set to false for 12 hour format
-            ).show()
-        }
-    }) {
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(text = label)
-        if (selectedTime.isNotEmpty()) {
+            scope.launch {
+                TimePickerDialog(
+                    context,
+                    { _, hour, minute ->
+                        val time = String.format("%02d:%02d", hour, minute)
+                        currentOnTimeSelected.value(time)
+                    },
+                    currentHour,
+                    currentMinute,
+                    false // Indicates whether to use the 24-hour view or not
+                ).show()
+            }
+        }) {
+            Icon(
+                imageVector = if (selectedTime.isNotEmpty()) Icons.Default.Check else Icons.Rounded.AddCircle,
+                contentDescription = if (selectedTime.isNotEmpty()) "Check Icon" else "Add Icon",
+                tint = if (selectedTime.isNotEmpty()) Color.Green else MaterialTheme.colorScheme.onSurface
+            )
             Spacer(modifier = Modifier.width(8.dp))
-            Icon(imageVector = Icons.Default.Check, contentDescription = null, tint = Color.Green)
-        } else {
-            Icon(imageVector = Icons.Rounded.AddCircle, contentDescription = "Add Icon")
+            Text(text = label)
+        }
+
+        if (isError) {
+            Text(
+                text = "A time must be selected",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.labelSmall,
+                modifier = Modifier.padding(start = 16.dp, top = 2.dp)
+            )
         }
     }
 }
