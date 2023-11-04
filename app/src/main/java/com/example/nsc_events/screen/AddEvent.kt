@@ -3,13 +3,16 @@ package com.example.nsc_events.screen
 import android.app.DatePickerDialog
 import android.content.Context
 import android.widget.DatePicker
+import androidx.compose.foundation.layout.Box
 
 import androidx.compose.runtime.remember
 import androidx.compose.foundation.lazy.LazyColumn
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -38,7 +41,7 @@ import java.util.Calendar
 import java.util.Date
 
 
-
+/*TODO: Fix overlapping fields*/
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEventPage(navController: NavHostController) {
@@ -46,8 +49,8 @@ fun AddEventPage(navController: NavHostController) {
     var eventDescription by remember { mutableStateOf("") }
     var eventCategory by remember { mutableStateOf("") }
     var eventDate by remember { mutableStateOf(Calendar.getInstance().time) }
-    var eventStartDate by remember { mutableStateOf(Calendar.getInstance().time) }
-    var eventEndDate by remember { mutableStateOf(Calendar.getInstance().time) }
+    var eventStartDate by remember { mutableStateOf("") }
+    var eventEndDate by remember { mutableStateOf("") }
     var eventLocation by remember { mutableStateOf("") }
     var eventCoverPhoto by remember { mutableStateOf("") }
     var eventHost by remember { mutableStateOf("") }
@@ -55,9 +58,9 @@ fun AddEventPage(navController: NavHostController) {
     var eventRegistration by remember { mutableStateOf("") }
     var eventCapacity by remember { mutableStateOf("") }
     var eventCost by remember { mutableStateOf("") }
-    var eventTags by remember { mutableStateOf(listOf<String>()) }
+    var eventTags by remember { mutableStateOf(arrayOf<String>()) }
     var eventSchedule by remember { mutableStateOf("") }
-    var eventSpeakers by remember { mutableStateOf(listOf<String>()) }
+    var eventSpeakers by remember { mutableStateOf(arrayOf<String>()) }
     var eventPrerequisites by remember { mutableStateOf("") }
     var eventCancellationPolicy by remember { mutableStateOf("") }
     var eventContact by remember { mutableStateOf("") }
@@ -80,217 +83,225 @@ fun AddEventPage(navController: NavHostController) {
         }
     )
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        item {
-            EventInfoField(
-                eventTitle = eventTitle,
-                onEventTitleChange = { newTitle -> eventTitle = newTitle }
-            )
-        }
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 72.dp, start = 16.dp, end = 16.dp, bottom = 16.dp) //avoid overlapping top app bar
+        ) {
+            item {
+                EventInfoField(
+                    eventTitle = eventTitle,
+                    onEventTitleChange = { newTitle -> eventTitle = newTitle }
+                )
+            }
 
 
-        item {
-            EventDescriptionField(
-                eventDescription = eventDescription,
-                onEventDescriptionChange = { newEventDescription ->
-                    eventDescription = newEventDescription
-                }
-            )
-        }
-
-        item {
-            EventCategoryField(
-                eventCategory = eventCategory,
-                onEventCategoryChange = { newCategory -> eventCategory = newCategory }
-            )
-
-        }
-
-        item {
-            EventDateField(
-                eventDate = eventDate,
-                onEventDateChange = { newDate -> eventDate = newDate }
-            )
-        }
-
-        item {
-            EventStartDateField(
-                eventStartDate = eventStartDate,
-                onEventStartDateChange = { newDate -> eventStartDate = newDate }
-            )
-        }
-
-        item {
-            EventEndDateField(
-                eventEndDate = eventEndDate,
-                onEventEndDateChange = { newDate -> eventEndDate = newDate }
-            )
-        }
-
-        item {
-            EventLocationField(
-                eventLocation = eventLocation,
-                onEventLocationChange = { newLocation -> eventLocation = newLocation }
-            )
-        }
-
-        item {
-            EventCoverPhotoField(
-                eventCoverPhoto = eventCoverPhoto,
-                onEventCoverPhotoChange = { newCoverPhoto -> eventCoverPhoto = newCoverPhoto }
-            )
-        }
-
-        item {
-            EventHostField(
-                eventHost = eventHost,
-                onEventHostChange = { newHost -> eventHost = newHost }
-            )
-        }
-
-        item {
-            EventWebsiteField(
-                eventWebsite = eventWebsite,
-                onEventWebsiteChange = { newWebsite -> eventWebsite = newWebsite }
-            )
-        }
-
-        item {
-            EventRegistrationField(
-                eventRegistration = eventRegistration,
-                onEventRegistrationChange = { newRegistration -> eventRegistration = newRegistration }
-            )
-        }
-
-        item {
-            EventCapacityField(
-                eventCapacity = eventCapacity,
-                onEventCapacityChange = { newCapacity -> eventCapacity = newCapacity }
-            )
-        }
-
-        item {
-            EventCostField(
-                eventCost = eventCost,
-                onEventCostChange = { newCost -> eventCost = newCost }
-            )
-        }
-
-        item {
-            TagsField(
-                eventTags = eventTags,
-                onEventTagsChange = { newTags -> eventTags = newTags }
-            )
-        }
-
-        item {
-            EventScheduleField(
-                eventSchedule = eventSchedule,
-                onEventScheduleChange = { newSchedule -> eventSchedule = newSchedule }
-            )
-        }
-
-        item {
-            SpeakersField(
-                eventSpeakers = eventTags,
-                onEventSpeakersChange = { newSpeakers -> eventSpeakers = newSpeakers }
-            )
-        }
-
-        item {
-            EventPrerequisitesField(
-                eventPrerequisites = eventPrerequisites,
-                onEventPrerequisitesChange = { newPrerequisites -> eventPrerequisites = newPrerequisites }
-            )
-        }
-
-        item {
-            EventCancellationPolicyField(
-                eventCancellationPolicy = eventCancellationPolicy,
-                onEventCancellationPolicyChange = { newCancellationPolicy -> eventCancellationPolicy = newCancellationPolicy }
-            )
-        }
-
-        item {
-            EventContactField(
-                eventContact = eventContact,
-                onEventContactChange = { newContact -> eventContact = newContact }
-            )
-        }
-
-        item {
-            SocialMediaField(
-                socialMedia = eventSocialMedia,
-                onSocialMediaChange = { newSocialMedia -> eventSocialMedia = newSocialMedia }
-            )
-        }
-
-        item {
-            EventPrivacyField(
-                eventPrivacy = eventPrivacy,
-                onEventPrivacyChange = { newPrivacy -> eventPrivacy = newPrivacy }
-            )
-        }
-
-        item {
-            EventAccessibilityField(
-                eventAccessibility = eventAccessibility,
-                onEventAccessibilityChange = { newAccessibility -> eventAccessibility = newAccessibility }
-            )
-        }
-
-
-        /* TODO: finish up product button and validation logic */
-        item {
-            Button(
-                onClick = {
-                    if (eventTitle.isNotEmpty()
-                        && eventDescription.isNotEmpty()
-                        && eventCategory.isNotEmpty()
-                    ) {
-                        val newEvent = Event(
-                            eventTitle,
-                            eventDescription,
-                            eventCategory,
-                            eventDate,
-                            eventStartDate,
-                            eventEndDate,
-                            eventLocation,
-                            eventCoverPhoto,
-                            eventHost,
-                            eventWebsite,
-                            eventRegistration,
-                            eventCapacity,
-                            eventCost,
-                            eventTags,
-                            eventSchedule,
-                            eventSpeakers,
-                            eventPrerequisites,
-                            eventCancellationPolicy,
-                            eventContact,
-                            eventSocialMedia,
-                            eventPrivacy,
-                            eventAccessibility,
-                            eventVisibility
-                        )
-                        /* TODO: save new event to db or use a list to hold events (ex: List<Event>) */
-                    } else {
-                        /* TODO: show error message for empty fields */
+            item {
+                EventDescriptionField(
+                    eventDescription = eventDescription,
+                    onEventDescriptionChange = { newEventDescription ->
+                        eventDescription = newEventDescription
                     }
-                },
-                modifier = Modifier
-                    .padding(16.dp)
-                    .width(200.dp)
-            )
-            {
-                Text(text = "Add Event")
+                )
+            }
+
+            item {
+                EventCategoryField(
+                    eventCategory = eventCategory,
+                    onEventCategoryChange = { newCategory -> eventCategory = newCategory }
+                )
+
+            }
+
+            item {
+                EventDateField(
+                    eventDate = eventDate,
+                    onEventDateChange = { newDate -> eventDate = newDate }
+                )
+            }
+
+            item {
+                EventStartDateField(
+                    eventStartDate = eventStartDate,
+                    onEventStartDateChange = { newDate -> eventStartDate = newDate }
+                )
+            }
+
+            item {
+                EventEndDateField(
+                    eventEndDate = eventEndDate,
+                    onEventEndDateChange = { newDate -> eventEndDate = newDate }
+                )
+            }
+
+            item {
+                EventLocationField(
+                    eventLocation = eventLocation,
+                    onEventLocationChange = { newLocation -> eventLocation = newLocation }
+                )
+            }
+
+            item {
+                EventCoverPhotoField(
+                    eventCoverPhoto = eventCoverPhoto,
+                    onEventCoverPhotoChange = { newCoverPhoto -> eventCoverPhoto = newCoverPhoto }
+                )
+            }
+
+            item {
+                EventHostField(
+                    eventHost = eventHost,
+                    onEventHostChange = { newHost -> eventHost = newHost }
+                )
+            }
+
+            item {
+                EventWebsiteField(
+                    eventWebsite = eventWebsite,
+                    onEventWebsiteChange = { newWebsite -> eventWebsite = newWebsite }
+                )
+            }
+
+            item {
+                EventRegistrationField(
+                    eventRegistration = eventRegistration,
+                    onEventRegistrationChange = { newRegistration ->
+                        eventRegistration = newRegistration
+                    }
+                )
+            }
+
+            item {
+                EventCapacityField(
+                    eventCapacity = eventCapacity,
+                    onEventCapacityChange = { newCapacity -> eventCapacity = newCapacity }
+                )
+            }
+
+            item {
+                EventCostField(
+                    eventCost = eventCost,
+                    onEventCostChange = { newCost -> eventCost = newCost }
+                )
+            }
+
+            item {
+                TagsField(
+                    eventTags = eventTags,
+                    onEventTagsChange = { newTags -> eventTags = newTags }
+                )
+            }
+
+            item {
+                EventScheduleField(
+                    eventSchedule = eventSchedule,
+                    onEventScheduleChange = { newSchedule -> eventSchedule = newSchedule }
+                )
+            }
+
+            item {
+                SpeakersField(
+                    eventSpeakers = eventSpeakers,
+                    onEventSpeakersChange = { newSpeakers -> eventSpeakers = newSpeakers }
+                )
+            }
+
+            item {
+                EventPrerequisitesField(
+                    eventPrerequisites = eventPrerequisites,
+                    onEventPrerequisitesChange = { newPrerequisites ->
+                        eventPrerequisites = newPrerequisites
+                    }
+                )
+            }
+
+            item {
+                EventCancellationPolicyField(
+                    eventCancellationPolicy = eventCancellationPolicy,
+                    onEventCancellationPolicyChange = { newCancellationPolicy ->
+                        eventCancellationPolicy = newCancellationPolicy
+                    }
+                )
+            }
+
+            item {
+                EventContactField(
+                    eventContact = eventContact,
+                    onEventContactChange = { newContact -> eventContact = newContact }
+                )
+            }
+
+            item {
+                SocialMediaField(
+                    socialMedia = eventSocialMedia,
+                    onSocialMediaChange = { newSocialMedia -> eventSocialMedia = newSocialMedia }
+                )
+            }
+
+            item {
+                EventPrivacyField(
+                    eventPrivacy = eventPrivacy,
+                    onEventPrivacyChange = { newPrivacy -> eventPrivacy = newPrivacy }
+                )
+            }
+
+            item {
+                EventAccessibilityField(
+                    eventAccessibility = eventAccessibility,
+                    onEventAccessibilityChange = { newAccessibility ->
+                        eventAccessibility = newAccessibility
+                    }
+                )
+            }
+
+
+            /* TODO: finish up product button and validation logic */
+            item {
+                Button(
+                    onClick = {
+                        if (eventTitle.isNotEmpty()
+                            && eventDescription.isNotEmpty()
+                            && eventCategory.isNotEmpty()
+                        ) {
+                            val newEvent = Event(
+                                eventTitle,
+                                eventDescription,
+                                eventCategory,
+                                eventDate,
+                                eventStartDate,
+                                eventEndDate,
+                                eventLocation,
+                                eventCoverPhoto,
+                                eventHost,
+                                eventWebsite,
+                                eventRegistration,
+                                eventCapacity,
+                                eventCost,
+                                eventTags,
+                                eventSchedule,
+                                eventSpeakers,
+                                eventPrerequisites,
+                                eventCancellationPolicy,
+                                eventContact,
+                                eventSocialMedia,
+                                eventPrivacy,
+                                eventAccessibility,
+                                eventVisibility
+                            )
+                            /* TODO: save new event to db or use a list to hold events (ex: List<Event>) */
+                        } else {
+                            /* TODO: show error message for empty fields */
+                        }
+                    },
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .width(200.dp)
+                )
+                {
+                    Text(text = "Add Event")
+                }
             }
         }
-    }
 }
 
 
@@ -354,43 +365,29 @@ fun EventDateField(eventDate: Date, onEventDateChange: (Date) -> Unit) {
 }
 
 @Composable
-fun EventStartDateField(eventStartDate: Date, onEventStartDateChange: (Date) -> Unit) {
-    val selectedDate = remember { mutableStateOf(Calendar.getInstance()) }
-    val context = LocalContext.current
-    Column(
+fun EventStartDateField(eventStartDate: String, onEventStartDateChange: (String) -> Unit) {
+    TextField(
+        value = eventStartDate,
+        onValueChange = onEventStartDateChange,
+        label = { Text(text = "Event Start Date") },
+        singleLine = true,
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
-    ) {
-        Text(text = "Event Start Date")
-        Button(
-            onClick = {
-                showDatePicker(selectedDate.value, onEventStartDateChange, context)
-            }
-        ) {
-            Text(text = "Select Start Date")
-        }
-    }
+    )
 }
 
 @Composable
-fun EventEndDateField(eventEndDate: Date, onEventEndDateChange: (Date) -> Unit) {
-    val selectedDate = remember { mutableStateOf(Calendar.getInstance()) }
-    val context = LocalContext.current
-    Column(
+fun EventEndDateField(eventEndDate: String, onEventEndDateChange: (String) -> Unit) {
+    TextField(
+        value = eventEndDate,
+        onValueChange = onEventEndDateChange,
+        label = { Text(text = "Event End Date") },
+        singleLine = true,
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
-    ) {
-        Text(text = "Event End Date")
-        Button(
-            onClick = {
-                showDatePicker(selectedDate.value, onEventEndDateChange, context)
-            }
-        ) {
-            Text(text = "Select End Date")
-        }
-    }
+    )
 }
 
 fun showDatePicker(initialDate: Calendar, onDateSelected: (Date) -> Unit, context: Context) {
@@ -501,11 +498,11 @@ fun EventCostField(eventCost: String, onEventCostChange: (String) -> Unit) {
 }
 
 @Composable
-fun TagsField(eventTags: List<String>, onEventTagsChange: (List<String>) -> Unit) {
+fun TagsField(eventTags: Array<String>, onEventTagsChange: (Array<String>) -> Unit) {
     TextField(
         value = eventTags.joinToString(", "),
         onValueChange = {
-            val tags = it.split(",").map { it.trim() }
+            val tags = it.split(",").map { it.trim() }.toTypedArray()
             onEventTagsChange(tags)
         },
         label = { Text(text = "Event Tags") },
@@ -515,6 +512,7 @@ fun TagsField(eventTags: List<String>, onEventTagsChange: (List<String>) -> Unit
             .padding(16.dp)
     )
 }
+
 
 @Composable
 fun EventScheduleField(eventSchedule: String, onEventScheduleChange: (String) -> Unit) {
@@ -530,12 +528,12 @@ fun EventScheduleField(eventSchedule: String, onEventScheduleChange: (String) ->
 }
 
 @Composable
-fun SpeakersField(eventSpeakers: List<String>, onEventSpeakersChange: (List<String>) -> Unit) {
+fun SpeakersField(eventSpeakers: Array<String>, onEventSpeakersChange: (Array<String>) -> Unit) {
     TextField(
         value = eventSpeakers.joinToString(", "),
         onValueChange = {
-            val tags = it.split(",").map { it.trim() }
-            onEventSpeakersChange(tags)
+            val speakers = it.split(",").map { it.trim() }.toTypedArray()
+            onEventSpeakersChange(speakers)
         },
         label = { Text(text = "Event Speakers") },
         singleLine = true,
@@ -544,6 +542,8 @@ fun SpeakersField(eventSpeakers: List<String>, onEventSpeakersChange: (List<Stri
             .padding(16.dp)
     )
 }
+
+
 
 @Composable
 fun EventPrerequisitesField(eventPrerequisites: String, onEventPrerequisitesChange: (String) -> Unit) {
