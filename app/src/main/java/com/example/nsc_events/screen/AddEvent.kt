@@ -98,10 +98,10 @@ fun AddEventPage(navController: NavHostController) {
     var eventEndTime by remember { mutableStateOf("") }
     var isTimeError by remember { mutableStateOf(false) }
 
-
-    var eventLocation by  remember { mutableStateOf("") }
-    
     var eventCategory by  remember { mutableStateOf("") }
+    var eventLocation by  remember { mutableStateOf("") }
+
+
 
 
     val scrollState = rememberScrollState()
@@ -226,7 +226,6 @@ fun AddEventPage(navController: NavHostController) {
                 eventDescriptionError = eventDescription.isEmpty()
                 isDateError = eventDate.isEmpty()
                 newEvent = Event(eventTitle, eventDescription, eventDate, eventStartTime, eventEndTime)
-
                     /* TODO: save new product to db or use a list to hold products (ex: List<Product>) */
                 // } else {
                     /* TODO: show error message for empty fields */
@@ -436,15 +435,15 @@ fun TimePicker(
                 ).show()
             }
         }) {
-            Icon(
-                imageVector = if (selectedTime.isNotEmpty()) Icons.Default.Check else Icons.Rounded.AddCircle,
-                contentDescription = if (selectedTime.isNotEmpty()) "Check Icon" else "Add Icon",
-                tint = if (selectedTime.isNotEmpty()) Color.Green else MaterialTheme.colorScheme.onSurface
-            )
-            Spacer(modifier = Modifier.width(8.dp))
+            if (selectedTime.isNotEmpty()) {
+                Spacer(modifier = Modifier.width(2.dp))
+                Icon(imageVector = Icons.Default.Check, contentDescription = null, tint = Color.Green)
+            } else {
+                Icon(imageVector = Icons.Rounded.AddCircle, contentDescription = "Add Icon")
+            }
+            Spacer(modifier = Modifier.width(2.dp))
             Text(text = label)
         }
-
         if (isError) {
             Text(
                 text = "A time must be selected",
@@ -453,7 +452,7 @@ fun TimePicker(
                 modifier = Modifier.padding(start = 16.dp, top = 2.dp)
             )
         }
-    }
+        }
 }
 
 @Composable

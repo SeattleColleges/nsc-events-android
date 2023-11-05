@@ -10,4 +10,5 @@ data class Event(
     /* TODO: what other event properties should be added? */
     val startTime: String,
     val endTime: String,
+
 )
