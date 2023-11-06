@@ -12,7 +12,6 @@ data class SocialMedia(
 data class Event(
     val eventTitle: String,
     val eventDescription: String,
-    /* TODO: change date variable to a Date data type instead of string */
     val eventCategory: String,
     val date: Date,
     val eventStartTime: String,
@@ -33,8 +32,11 @@ data class Event(
     val eventSocialMedia: SocialMedia,
     val eventPrivacy: String,
     val eventAccessibility: String,
-    val eventVisibility: Boolean
+    var eventVisibility : Boolean
+){
+    fun deleteEvent() {
+        this.eventVisibility = false
 
+    }
+}
 
-    /* TODO: what other event properties should be added? */
-)

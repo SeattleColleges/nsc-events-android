@@ -83,6 +83,7 @@ fun AddEventPage(navController: NavHostController) {
         }
     )
 
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -94,7 +95,6 @@ fun AddEventPage(navController: NavHostController) {
                     onEventTitleChange = { newTitle -> eventTitle = newTitle }
                 )
             }
-
 
             item {
                 EventDescriptionField(

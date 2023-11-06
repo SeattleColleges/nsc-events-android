@@ -6,4 +6,5 @@ sealed class Routes(val route: String) {
 
     object AddEvent: Routes("Add Event")
     object HomePage: Routes("Home")
+    object ForgotPassword: Routes("Forgot Password")
 }
