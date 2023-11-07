@@ -48,5 +48,6 @@
             android:layout_height="wrap_content"
             android:text="Register" />
 
+
     </LinearLayout>
 </PreferenceScreen>
