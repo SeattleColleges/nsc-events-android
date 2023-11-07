@@ -70,6 +70,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEventPage(navController: NavHostController) {
@@ -94,14 +95,21 @@ fun AddEventPage(navController: NavHostController) {
     /* variables and control logic for dates and times */
     var eventDate by remember { mutableStateOf("") }
     var isDateError by remember { mutableStateOf(false) }
+
     var eventStartTime by remember { mutableStateOf("") }
+    var isStartTimeError by remember { mutableStateOf(false) }
     var eventEndTime by remember { mutableStateOf("") }
-    var isTimeError by remember { mutableStateOf(false) }
+    var isEndTimeError by remember { mutableStateOf(false) }
+    val validateStartTime = {
+        isStartTimeError = eventStartTime.isBlank()
+    }
+    val validateEndTime = {
+        isEndTimeError = eventEndTime.isBlank()
+    }
 
     var eventCategory by  remember { mutableStateOf("") }
     var eventLocation by  remember { mutableStateOf("") }
-
-
+    var eventImage by  remember { mutableStateOf("") }
 
 
     val scrollState = rememberScrollState()
@@ -155,23 +163,20 @@ fun AddEventPage(navController: NavHostController) {
         )
 
         /* Date and time pickers */
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(6.dp)
-        ) {
+        /* Date and time pickers */
+        Column {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
+                Spacer(modifier = Modifier.height(8.dp))
                 DatePicker(
                     onDateSelected = { newDate ->
                         eventDate = newDate
-                        isDateError = false
+                        isDateError = false  // Reset error state when a date is picked
                     },
                     isError = isDateError
                 )
-
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -180,27 +185,33 @@ fun AddEventPage(navController: NavHostController) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
-                TimePicker(
-                    label = "Start Time",
-                    onTimeSelected = { selectedStartTime ->
-                        eventStartTime = selectedStartTime
-                    },
-                    isError = isTimeError,
-                    selectedTime = eventStartTime
+                // TimePicker for the start time
+                Column(modifier = Modifier.wrapContentWidth()) {
+                    TimePicker(
+                        label = "Start Time",
+                        selectedTime = eventStartTime,
+                        isError = isStartTimeError,
+                        onTimeSelected = { time ->
+                            eventStartTime = time
+                            isStartTimeError = time.isEmpty()
+                        }
+                    )
+                }
 
-                )
+                Spacer(modifier = Modifier.width(16.dp))
 
-                Spacer(modifier = Modifier.width(6.dp))
-
-                TimePicker(
-                    label = "End Time",
-                    onTimeSelected = { selectedEndTime ->
-                        eventEndTime = selectedEndTime
-                    },
-                    isError = isTimeError,
-                    selectedTime = eventEndTime
-                )
-                Spacer(modifier = Modifier.height(20.dp))
+                // TimePicker for the end time
+                Column(modifier = Modifier.wrapContentWidth()) {
+                    TimePicker(
+                        label = "End Time",
+                        selectedTime = eventEndTime,
+                        isError = isEndTimeError,
+                        onTimeSelected = { time ->
+                            eventEndTime = time
+                            isEndTimeError = time.isEmpty()
+                        }
+                    )
+                }
             }
         }
 
@@ -213,7 +224,7 @@ fun AddEventPage(navController: NavHostController) {
         })
 
         /*          Image upload button     */
-        ImageUploadButton(onImagePicked = { uri -> /**/ })
+        ImageUploadButton(onImagePicked = { uri -> /* TODO: Do something with this */ })
 
         Spacer(modifier = Modifier.height(20.dp))
         /* TODO: finish up product button and validation logic */
@@ -225,15 +236,22 @@ fun AddEventPage(navController: NavHostController) {
                 eventTitleError = eventTitle.isEmpty()
                 eventDescriptionError = eventDescription.isEmpty()
                 isDateError = eventDate.isEmpty()
-                newEvent = Event(eventTitle, eventDescription, eventDate, eventStartTime, eventEndTime)
-                    /* TODO: save new product to db or use a list to hold products (ex: List<Product>) */
-                // } else {
+                isStartTimeError = eventStartTime.isEmpty()
+                isEndTimeError = eventEndTime.isEmpty()
+                if (!eventTitleError && !eventDescriptionError && !isDateError && !isStartTimeError && !isEndTimeError) {
+                    newEvent =
+                        Event(eventTitle, eventDescription, eventDate, eventStartTime, eventEndTime)
+                    showAlert = true
+                /* TODO: save new product to db or use a list to hold products (ex: List<Product>) */
+                } else {
                     /* TODO: show error message for empty fields */
+                }
+
+
             },
             modifier = Modifier
                 .padding(16.dp)
                 .width(240.dp)
-                .align(Alignment.CenterHorizontally)
         )
         {
             Text(text = "Add Event")
@@ -262,8 +280,8 @@ fun AddEventPage(navController: NavHostController) {
             )
         }
     }
-
 }
+
 
 /* Begin composables */
 @Composable
@@ -408,54 +426,46 @@ fun DatePicker(
 @Composable
 fun TimePicker(
     label: String,
-    onTimeSelected: (String) -> Unit,
     selectedTime: String,
-    isError: Boolean
+    isError: Boolean,
+    onTimeSelected: (String) -> Unit
 ) {
     val context = LocalContext.current
     val currentOnTimeSelected = rememberUpdatedState(onTimeSelected)
     val scope = rememberCoroutineScope()
 
-    Column {
-        Button(onClick = {
-            val currentCalendar = Calendar.getInstance()
-            val currentHour = currentCalendar.get(Calendar.HOUR_OF_DAY)
-            val currentMinute = currentCalendar.get(Calendar.MINUTE)
-
-            scope.launch {
-                TimePickerDialog(
+    Column(modifier = Modifier.wrapContentSize()) {
+        Button(
+            onClick = {
+                val timePickerDialog = TimePickerDialog(
                     context,
-                    { _, hour, minute ->
-                        val time = String.format("%02d:%02d", hour, minute)
+                    { _, hourOfDay, minute ->
+                        val time = String.format("%02d:%02d", hourOfDay, minute)
                         currentOnTimeSelected.value(time)
                     },
-                    currentHour,
-                    currentMinute,
-                    false // Indicates whether to use the 24-hour view or not
-                ).show()
+                    Calendar.getInstance().get(Calendar.HOUR_OF_DAY),
+                    Calendar.getInstance().get(Calendar.MINUTE),
+                    true // or false if you want 12 hour time
+                )
+                timePickerDialog.show()
+            },
+        ) {
+            Text(text = selectedTime.ifEmpty { label })
+            if (selectedTime.isNotEmpty() && !isError) {
+                Icon(imageVector = Icons.Default.Check, contentDescription = "Selected", tint = Color.Green)
             }
-        }) {
-            if (selectedTime.isNotEmpty()) {
-                Spacer(modifier = Modifier.width(2.dp))
-                Icon(imageVector = Icons.Default.Check, contentDescription = null, tint = Color.Green)
-            } else {
-                Icon(imageVector = Icons.Rounded.AddCircle, contentDescription = "Add Icon")
-            }
-            Spacer(modifier = Modifier.width(2.dp))
-            Text(text = label)
         }
         if (isError) {
             Text(
-                text = "A time must be selected",
+                text = "Time is required",
                 color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.labelSmall,
-                modifier = Modifier.padding(start = 16.dp, top = 2.dp)
+                style = MaterialTheme.typography.bodySmall
             )
         }
-        }
+    }
 }
 
-@Composable
+    @Composable
 fun CategoryDropDown() {
     var expanded by remember { mutableStateOf(false) }
 
