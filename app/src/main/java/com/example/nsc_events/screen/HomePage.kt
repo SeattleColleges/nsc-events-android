@@ -1,5 +1,6 @@
 package com.example.nsc_events.screen
 
+//comment for test pr
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
