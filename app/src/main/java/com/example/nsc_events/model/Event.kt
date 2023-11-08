@@ -1,4 +1,4 @@
-package com.example.nsc_events.data
+package com.example.nsc_events.model
 
 import java.util.Date
 
@@ -39,4 +39,3 @@ data class Event(
 
     }
 }
-

@@ -3,16 +3,13 @@ package com.example.nsc_events.screen
 import android.app.DatePickerDialog
 import android.content.Context
 import android.widget.DatePicker
-import androidx.compose.foundation.layout.Box
 
 import androidx.compose.runtime.remember
 import androidx.compose.foundation.lazy.LazyColumn
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -35,8 +32,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.nsc_events.Routes
-import com.example.nsc_events.data.Event
-import com.example.nsc_events.data.SocialMedia
+import com.example.nsc_events.model.Event
+import com.example.nsc_events.model.SocialMedia
 import java.util.Calendar
 import java.util.Date
 
