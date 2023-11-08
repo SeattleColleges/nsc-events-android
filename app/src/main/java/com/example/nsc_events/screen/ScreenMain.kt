@@ -27,5 +27,8 @@ fun ScreenMain(){
         composable(Routes.ForgotPassword.route) {
             ForgotPasswordPage(navController = navController)
         }
+        composable(Routes.CreatorView.route) {
+            CreatorView(navController = navController)
+        }
     }
 }
