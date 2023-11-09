@@ -48,7 +48,6 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.launch
-import java.util.Calendar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -69,7 +68,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
-
+import com.example.nsc_events.data.SocialMedia
+import java.util.Calendar
+import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -83,7 +84,6 @@ fun AddEventPage(navController: NavHostController) {
         eventTitle = newEvent
     }
 
-
     /* variables and control logic for eventTitle */
     var eventDescription by remember { mutableStateOf("") }
     var eventDescriptionError by remember { mutableStateOf(false)}
@@ -93,7 +93,7 @@ fun AddEventPage(navController: NavHostController) {
     }
 
     /* variables and control logic for dates and times */
-    var eventDate by remember { mutableStateOf("") }
+    var eventDate by remember { mutableStateOf<Date?>(null) }
     var isDateError by remember { mutableStateOf(false) }
 
     var eventStartTime by remember { mutableStateOf("") }
@@ -235,10 +235,10 @@ fun AddEventPage(navController: NavHostController) {
                 showAlert = true
                 eventTitleError = eventTitle.isEmpty()
                 eventDescriptionError = eventDescription.isEmpty()
-                isDateError = eventDate.isEmpty()
+                isDateError = eventDate == null
                 isStartTimeError = eventStartTime.isEmpty()
                 isEndTimeError = eventEndTime.isEmpty()
-                if (!eventTitleError && !eventDescriptionError && !isDateError && !isStartTimeError && !isEndTimeError) {
+                if (!eventTitleError && !eventDescriptionError && eventDate != null && !isStartTimeError && !isEndTimeError) {
                     newEvent =
                         Event(eventTitle, eventDescription, eventDate, eventStartTime, eventEndTime)
                     showAlert = true
@@ -264,12 +264,11 @@ fun AddEventPage(navController: NavHostController) {
                 },
                 text = {
                     Column {
-                        Text("Title: ${newEvent?.eventName}")
-                        Text("Description: ${newEvent?.description}")
+                        Text("Title: ${newEvent?.eventTitle}")
+                        Text("Description: ${newEvent?.eventDescription}")
                         Text("Date: ${newEvent?.date}")
-                        Text("Start Time: ${newEvent?.startTime}")
-                        Text("End Time: ${newEvent?.endTime}")
-                        // Text("Category: ${event.category}")
+                        Text("Start Time: ${newEvent?.eventStartTime}")
+                        Text("End Time: ${newEvent?.eventEndTime}")
                     }
                 },
                 confirmButton = {
@@ -373,13 +372,13 @@ fun EventDescriptionField(
 
 @Composable
 fun DatePicker(
-    onDateSelected: (String) -> Unit,
+    onDateSelected: (Date) -> Unit,
     isError: Boolean
     ) {
     val context = LocalContext.current
     val currentOnDateSelected = rememberUpdatedState(onDateSelected)
     val scope = rememberCoroutineScope()
-    var eventDate by remember { mutableStateOf("") }
+    var eventDate by remember { mutableStateOf<Date?>(null) }
 
     Column {
         Button(onClick = {
@@ -388,9 +387,10 @@ fun DatePicker(
                 DatePickerDialog(
                     context,
                     { _, year, month, dayOfMonth ->
-                        val date = "$dayOfMonth/${month + 1}/$year"
-                        eventDate = date
-                        currentOnDateSelected.value(date)
+                        val calendar = Calendar.getInstance()
+                        calendar.set(year, month, dayOfMonth)
+                        val selectedDate = calendar.time
+                        currentOnDateSelected.value(selectedDate)
                     },
                     currentCalendar.get(Calendar.YEAR),
                     currentCalendar.get(Calendar.MONTH),
