@@ -26,7 +26,6 @@ import com.example.nsc_events.Routes
 import com.example.nsc_events.data.Event
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.res.painterResource
