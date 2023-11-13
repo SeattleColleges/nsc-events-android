@@ -35,6 +35,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.nsc_events.Routes
 
+//comment for testing CI!
+
+// another comment for testing CI!
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePage(navController: NavHostController) { // Create Navbar
