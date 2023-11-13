@@ -40,7 +40,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import com.example.nsc_events.R
-import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.net.Uri
 import androidx.compose.ui.graphics.PathEffect
