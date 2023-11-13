@@ -35,6 +35,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.nsc_events.Routes
 
+//comment for testing CI!
+
+// another comment for testing CI!
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePage(navController: NavHostController) { // Create Navbar
@@ -66,6 +70,14 @@ fun HomePage(navController: NavHostController) { // Create Navbar
             }
         ) {
             Text(text = "Sign-in / Sign-up")
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = {
+                navController.navigate(Routes.SignUp.route)
+        }
+        ) {
+            Text(text="Sign-up")
         }
         Spacer(modifier = Modifier.height(16.dp))
         Button(
