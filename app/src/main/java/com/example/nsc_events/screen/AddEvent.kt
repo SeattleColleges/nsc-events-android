@@ -2,7 +2,6 @@ package com.example.nsc_events.screen
 
 import android.app.DatePickerDialog
 import android.content.Context
-import android.widget.DatePicker
 import androidx.compose.foundation.layout.Box
 
 import androidx.compose.runtime.remember
@@ -65,6 +64,7 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
