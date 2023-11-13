@@ -110,8 +110,6 @@ fun AddEventPage(navController: NavHostController) {
     var eventLocation by remember { mutableStateOf("") }
     var eventImage by remember { mutableStateOf("") }
 
-
-    val scrollState = rememberScrollState()
     var showAlert by remember { mutableStateOf(false) }
 
     /* Assembled event object */
@@ -260,20 +258,41 @@ fun AddEventPage(navController: NavHostController) {
                 Button(
 
                     onClick = {
-                        if (eventTitle.isNotEmpty()
-                            && eventDescription.isNotEmpty()
-                            && eventCategory.isNotEmpty()
-                        ) {
-                            showAlert = true
-                            eventTitleError = eventTitle.isEmpty()
-                            eventDescriptionError = eventDescription.isEmpty()
-                            isDateError = eventDate == null
-                            isStartTimeError = eventStartTime.isEmpty()
-                            isEndTimeError = eventEndTime.isEmpty()
-                            showAlert = true
+                        eventTitleError = eventTitle.isEmpty()
+                        eventDescriptionError = eventDescription.isEmpty()
+                        isDateError = eventDate == null
+                        isStartTimeError = eventStartTime.isEmpty()
+                        isEndTimeError = eventEndTime.isEmpty()
+                        val isInputValid = eventTitle.isNotEmpty() && eventDescription.isNotEmpty() && eventCategory.isNotEmpty() && eventDate != null && eventStartTime.isNotEmpty() && eventEndTime.isNotEmpty()
+                            newEvent = eventDate?.let {
+                                Event(
+                                    eventTitle,
+                                    eventDescription,
+                                    eventCategory,
+                                    it,
+                                    eventStartTime,
+                                    eventEndTime,
+                                    eventLocation,
+                                    eventCoverPhoto,
+                                    eventHost,
+                                    eventWebsite,
+                                    eventRegistration,
+                                    eventCapacity,
+                                    eventCost,
+                                    eventTags,
+                                    eventSchedule,
+                                    eventSpeakers,
+                                    eventPrerequisites,
+                                    eventCancellationPolicy,
+                                    eventContact,
+                                    eventSocialMedia,
+                                    eventPrivacy,
+                                    eventAccessibility,
+                                    eventVisibility
+                                )
+                            }
+                        showAlert = true
                             /* TODO: save new product to db or use a list to hold products (ex: List<Product>) */
-                        }
-
                     },
                     modifier = Modifier
                         .padding(4.dp)
@@ -547,6 +566,7 @@ fun AddEventPage(navController: NavHostController) {
                             val calendar = Calendar.getInstance()
                             calendar.set(year, month, dayOfMonth)
                             val selectedDate = calendar.time
+                            eventDate = selectedDate
                             currentOnDateSelected.value(selectedDate)
                         },
                         currentCalendar.get(Calendar.YEAR),
@@ -559,14 +579,14 @@ fun AddEventPage(navController: NavHostController) {
                 Icon(imageVector = Icons.Default.DateRange, contentDescription = "Calendar Icon")
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(text = "Pick a Date")
-                /*if (eventDate) {
+                if (eventDate !== null) {
                 Spacer(modifier = Modifier.width(8.dp))
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = null,
                     tint = Color.Green
                 )
-            }*/
+            }
             }
             if (isError) {
                 Text(
