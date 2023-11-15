@@ -1,4 +1,4 @@
-package com.example.nsc_events.data
+package com.example.nsc_events.model
 
 import java.util.Date
 
@@ -13,7 +13,7 @@ data class Event(
     val eventTitle: String,
     val eventDescription: String,
     val eventCategory: String,
-    val date: Date,
+    val eventDate: Date,
     val eventStartTime: String,
     val eventEndTime: String,
     val eventLocation: String,
@@ -32,11 +32,10 @@ data class Event(
     val eventSocialMedia: SocialMedia,
     val eventPrivacy: String,
     val eventAccessibility: String,
-    var eventVisibility : Boolean
+    var eventVisibility: Boolean
 ){
     fun deleteEvent() {
         this.eventVisibility = false
 
     }
 }
-
