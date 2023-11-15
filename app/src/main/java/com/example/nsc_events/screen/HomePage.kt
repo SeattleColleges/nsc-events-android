@@ -74,7 +74,7 @@ fun HomePage(navController: NavHostController) { // Create Navbar
                 navController.navigate(Routes.CreatorView.route)
         }
         ) {
-            Text(text="Sign-up")
+            Text(text="Creator View")
         }
         Spacer(modifier = Modifier.height(16.dp))
         Button(
