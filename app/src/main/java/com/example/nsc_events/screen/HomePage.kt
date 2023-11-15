@@ -84,13 +84,14 @@ fun HomePage(navController: NavHostController) { // Create Navbar
         ) {
             Text(text = "Sign-in / Sign-up")
         }
+
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = {
-                navController.navigate(Routes.SignUp.route)
+                navController.navigate(Routes.CreatorView.route)
         }
         ) {
-            Text(text="Sign-up")
+            Text(text="Creator View")
         }
         Spacer(modifier = Modifier.height(16.dp))
         Button(

@@ -8,4 +8,6 @@ sealed class Routes(val route: String) {
     object HomePage: Routes("Home")
     object EventDetail: Routes("Event Detail")
     object ForgotPassword: Routes("Forgot Password")
+
+    object CreatorView: Routes("Creator View")
 }
