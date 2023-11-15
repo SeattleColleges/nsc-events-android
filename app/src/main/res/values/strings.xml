@@ -9,6 +9,8 @@
     <string name="login_logo_description">packaging</string>
     <string name="login_email_error">Invalid email!</string>
     <string name="login_password_error">Invalid password!</string>
+    <!--    HomePage Screen Strings    -->
+    <string name="event_cover_photo_description">Event</string>
     <!--    Forgot Password Screen Strings    -->
     <string name="forgot_password_title">Forgot Password?</string>
     <string name="forgot_password_button_text">Submit</string>
