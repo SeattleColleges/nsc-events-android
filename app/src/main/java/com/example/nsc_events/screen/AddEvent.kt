@@ -30,7 +30,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.nsc_events.Routes
-import com.example.nsc_events.data.Event
+import com.example.nsc_events.model.Event
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -74,7 +74,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
-import com.example.nsc_events.data.SocialMedia
+import com.example.nsc_events.model.SocialMedia
 import java.util.Calendar
 import java.util.Date
 
