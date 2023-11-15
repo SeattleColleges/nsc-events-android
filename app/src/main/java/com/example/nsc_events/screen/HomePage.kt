@@ -48,6 +48,10 @@ import com.example.nsc_events.Routes
 import com.example.nsc_events.data.Datasource
 import com.example.nsc_events.model.Event
 
+//comment for testing CI!
+
+// another comment for testing CI!
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePage(navController: NavHostController) { // Create Navbar
