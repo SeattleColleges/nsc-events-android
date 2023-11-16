@@ -16,4 +16,8 @@
     <string name="forgot_password_button_text">Submit</string>
     <string name="forgot_password_email">Email</string>
     <string name="forgot_password_email_error">Invalid email!</string>
+
+    <!--    Sign Up Screen Strings    -->
+    <string name="signup_successful_toast">Sign up successful!</string>
+    <string name="signup_failed_toast">Sign up failed, please try again!</string>
 </resources>

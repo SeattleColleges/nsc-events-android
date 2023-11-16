@@ -1,5 +1,8 @@
 package com.example.nsc_events.screen
 
+import android.content.Context
+import android.net.http.HttpException
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,9 +24,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -32,8 +39,15 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.nsc_events.MainActivity
+import com.example.nsc_events.R
 import com.example.nsc_events.Routes
+import com.example.nsc_events.data.network.auth.SignUpService
+import com.example.nsc_events.data.network.dto.auth_dto.Role
+import com.example.nsc_events.data.network.dto.auth_dto.SignUpRequest
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SignUpPage( navController: NavHostController) {
     var name by remember { mutableStateOf("") }
@@ -44,6 +58,9 @@ fun SignUpPage( navController: NavHostController) {
     var isPasswordValid by remember { mutableStateOf(true) }
     var passwordMatchValid by remember { mutableStateOf(true) }
     var matchPasswordSupportingText by remember { mutableStateOf("") }
+    val coroutineScope = rememberCoroutineScope()
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val current = LocalContext.current
 
     Column (
         modifier = Modifier
@@ -149,22 +166,29 @@ fun SignUpPage( navController: NavHostController) {
                         .fillMaxWidth()
                         .padding(start = 30.dp, top = 30.dp, end = 30.dp, bottom = 16.dp)
                 )
-                
-                Button(onClick =
-                {
-                if (password == confirmPassword && password.isNotBlank() && confirmPassword.isNotBlank()) {
-                    navController.navigate(Routes.HomePage.route)
-                } else {
-                    passwordMatchValid = false
-                    matchPasswordSupportingText = "Passwords must match!"
-                }
-                },
+
+                Button(
+                    onClick = {
+                        keyboardController?.hide()
+                        if (name.isNotBlank() && email.isNotBlank()
+                            && password.isNotBlank() && confirmPassword.isNotBlank()
+                            && password == confirmPassword
+                            && isEmailValid && isPasswordValid) {
+                            coroutineScope.launch {
+                                signUp(name, email, password, navController, current)
+                            }
+                        } else {
+                            passwordMatchValid = false
+                            matchPasswordSupportingText = "Passwords must match!"
+                        }
+                    },
                     modifier = Modifier
                         .padding(16.dp)
                         .width(200.dp)
                         .align(Alignment.CenterHorizontally),
                 ) {
-                    Text(text = "SIGN UP",
+                    Text(
+                        text = "SIGN UP",
                         style = TextStyle(
                             fontSize = 14.sp,
                             fontFamily = FontFamily.Default,
@@ -172,16 +196,42 @@ fun SignUpPage( navController: NavHostController) {
                         )
                     )
                 }
-                
-
             }
-
-
-
-            }
-
-
-
-
         }
     }
+}
+
+suspend fun signUp(
+    name: String,
+    email: String,
+    password: String,
+    navController: NavHostController,
+    current: Context
+) {
+    return try {
+        val signUpRequest = SignUpRequest(
+            name = name,
+            email = email,
+            password = password,
+            role = Role.ADMIN
+        )
+        val signUpResponse = SignUpService.create().signup(signUpRequest)
+        if (signUpResponse != null) {
+            MainActivity.getPref().edit().putString("token", signUpResponse.token).apply()
+            navController.navigate(Routes.Login.route)
+            Toast.makeText(
+                current,
+                R.string.signup_successful_toast,
+                Toast.LENGTH_SHORT
+            ).show()
+        } else {
+            Toast.makeText(
+                current,
+                R.string.signup_failed_toast,
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    } catch (e: HttpException) {
+        e.printStackTrace()
+    }
+}
