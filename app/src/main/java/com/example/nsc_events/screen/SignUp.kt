@@ -1,5 +1,8 @@
 package com.example.nsc_events.screen
 
+import android.content.Context
+import android.net.http.HttpException
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,12 +30,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -43,8 +48,14 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.nsc_events.MainActivity
 import com.example.nsc_events.R
 import com.example.nsc_events.Routes
+import com.example.nsc_events.data.network.auth.SignUpService
+import com.example.nsc_events.data.network.dto.auth_dto.Role
+import com.example.nsc_events.data.network.dto.auth_dto.SignUpRequest
+import kotlinx.coroutines.launch
+
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -60,9 +71,12 @@ fun SignUpPage(navController: NavHostController) {
     var passwordMatchValid by remember { mutableStateOf(true) }
     var isPasswordVisible by remember { mutableStateOf(false) }
     var isConfirmPasswordVisible by remember { mutableStateOf(false) }
-    val keyboardController = LocalSoftwareKeyboardController.current
 
     var matchPasswordSupportingText by remember { mutableStateOf("") }
+    val coroutineScope = rememberCoroutineScope()
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val current = LocalContext.current
+
     var isFirstNameValid by remember { mutableStateOf(true) }
     var isLastNameValid by remember { mutableStateOf(true) }
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -272,17 +286,17 @@ fun SignUpPage(navController: NavHostController) {
                         Button(
                             onClick =
                             {
-                                if (validateEmail(email) && validatePassword(password)
-                                    && validateConfirmPassword(password, confirmPassword)
-                                ) {
-                                    navController.navigate(Routes.HomePage.route)
-                                } else {
-                                    // Update error flags to show error messages
-                                    isEmailValid = validateEmail(email)
-                                    isPasswordValid = validatePassword(password)
-                                    passwordMatchValid =
-                                        validateConfirmPassword(password, confirmPassword)
+                              keyboardController?.hide()
+                              if (firstName.isNotBlank() && validateEmail(email) && validatePassword(password) && validateConfirmPassword(password, confirmPassword)) {
+                                coroutineScope.launch {
+                                  signUp(firstName, email, password, navController, current)
                                 }
+                              } else {
+                                // Update error flags to show error messages
+                                isEmailValid = validateEmail(email)
+                                isPasswordValid = validatePassword(password)
+                                passwordMatchValid = validateConfirmPassword(password, confirmPassword)
+                              }
                             },
                             modifier = Modifier
                                 .padding(16.dp)
@@ -298,6 +312,7 @@ fun SignUpPage(navController: NavHostController) {
                                 )
                             )
                         }
+                    
                     }
 
                 }
@@ -305,7 +320,6 @@ fun SignUpPage(navController: NavHostController) {
         }
     )
 }
-
 
 
 // Validation functions
@@ -323,3 +337,38 @@ fun validateLastName(name: String): Boolean {
     return name.isNotBlank()
 }
 
+
+suspend fun signUp(
+    firstName: String,
+    email: String,
+    password: String,
+    navController: NavHostController,
+    current: Context
+) {
+    return try {
+        val signUpRequest = SignUpRequest(
+            firstName = firstName,
+            email = email,
+            password = password,
+            role = Role.ADMIN
+        )
+        val signUpResponse = SignUpService.create().signup(signUpRequest)
+        if (signUpResponse != null) {
+            MainActivity.getPref().edit().putString("token", signUpResponse.token).apply()
+            navController.navigate(Routes.Login.route)
+            Toast.makeText(
+                current,
+                R.string.signup_successful_toast,
+                Toast.LENGTH_SHORT
+            ).show()
+        } else {
+            Toast.makeText(
+                current,
+                R.string.signup_failed_toast,
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    } catch (e: HttpException) {
+        e.printStackTrace()
+    }
+}
