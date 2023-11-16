@@ -27,6 +27,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -47,10 +48,6 @@ import com.example.nsc_events.R
 import com.example.nsc_events.Routes
 import com.example.nsc_events.data.Datasource
 import com.example.nsc_events.model.Event
-
-//comment for testing CI!
-
-// another comment for testing CI!
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,15 +76,6 @@ fun HomePage(navController: NavHostController) { // Create Navbar
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = {
-                navController.navigate(Routes.Login.route)
-            }
-        ) {
-            Text(text = "Sign-in / Sign-up")
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(
-            onClick = {
                 navController.navigate(Routes.CreatorView.route)
         }
         ) {
@@ -110,25 +98,29 @@ fun HomePage(navController: NavHostController) { // Create Navbar
             topBar = {
                 CenterAlignedTopAppBar(
                     title = {
-                        Text(text = "My NSC Events")
                     },
                     navigationIcon = {
-                        IconButton(onClick = { navController.navigate("Back") }) {
+                        // TODO: give this button an action when clicked
+                        IconButton(onClick = { }) {
                             Icon(
                                 imageVector = Icons.Default.Menu,
-                                contentDescription = "Go back"
+                                contentDescription = "Open Menu"
                             )
                         }
                     },
                     actions = {
-                        IconButton(onClick = { navController.navigate("Favorite") }) {
+                        TextButton(onClick = { navController.navigate(Routes.Login.route) }) {
+                            Text("Login", color = Color.Black)
+                        }
+                        // TODO: give this button an action when clicked
+                        IconButton(onClick = { }) {
                             Icon(
                                 imageVector = Icons.Default.FavoriteBorder,
                                 contentDescription = "Mark as favorite"
                             )
                         }
-
-                        IconButton(onClick = { navController.navigate("Edit") }) {
+                        // TODO: give this button an action when clicked
+                        IconButton(onClick = { }) {
                             Icon(
                                 imageVector = Icons.Default.Edit,
                                 contentDescription = "Edit my events"
@@ -144,12 +136,6 @@ fun HomePage(navController: NavHostController) { // Create Navbar
                     .fillMaxSize()
                     .padding(values)
             ) {
-//                items(100) {
-//                    Text(
-//                        text = "Item$it",
-//                        modifier = Modifier.padding(16.dp)
-//                    )
-//                }
             }
             EventList(events = Datasource().loadEvents(), navController = navController)
         }
