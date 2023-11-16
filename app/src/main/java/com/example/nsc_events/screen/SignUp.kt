@@ -339,7 +339,7 @@ fun validateLastName(name: String): Boolean {
 
 
 suspend fun signUp(
-    firstName: String,
+    name: String,
     email: String,
     password: String,
     navController: NavHostController,
@@ -347,7 +347,7 @@ suspend fun signUp(
 ) {
     return try {
         val signUpRequest = SignUpRequest(
-            firstName = firstName,
+            name = name,
             email = email,
             password = password,
             role = Role.ADMIN
