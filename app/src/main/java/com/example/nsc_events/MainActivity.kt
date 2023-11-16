@@ -1,5 +1,7 @@
 package com.example.nsc_events
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,6 +17,7 @@ import com.example.nsc_events.ui.theme.Nsc_eventsTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        pref = getSharedPreferences("nscHidden", Context.MODE_PRIVATE)
         super.onCreate(savedInstanceState)
         setContent {
             Nsc_eventsTheme {
@@ -26,6 +29,13 @@ class MainActivity : ComponentActivity() {
                     ScreenMain()
                 }
             }
+        }
+    }
+
+    companion object {
+        private lateinit var pref: SharedPreferences
+        fun getPref(): SharedPreferences {
+            return pref
         }
     }
 }
