@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -28,7 +29,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -43,7 +46,7 @@ import androidx.navigation.NavHostController
 import com.example.nsc_events.R
 import com.example.nsc_events.Routes
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun SignUpPage(navController: NavHostController) {
 
@@ -57,6 +60,7 @@ fun SignUpPage(navController: NavHostController) {
     var passwordMatchValid by remember { mutableStateOf(true) }
     var isPasswordVisible by remember { mutableStateOf(false) }
     var isConfirmPasswordVisible by remember { mutableStateOf(false) }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     var matchPasswordSupportingText by remember { mutableStateOf("") }
     var isFirstNameValid by remember { mutableStateOf(true) }
@@ -231,7 +235,12 @@ fun SignUpPage(navController: NavHostController) {
                                 visualTransformation = if (isConfirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                                 keyboardOptions = KeyboardOptions.Default.copy(
                                     keyboardType = KeyboardType.Password,
-                                    imeAction = ImeAction.Next
+                                    // setting ImeAction to done since this is last field to complete
+                                    imeAction = ImeAction.Done
+                                ),
+                                // Using KeyboardActions composable to define an action that should be taken when ImeAction.Done is triggered, in this case hiding the keyboard
+                                keyboardActions = KeyboardActions(
+                                    onDone = { keyboardController?.hide() }
                                 ),
                                 singleLine = true,
                                 isError = !passwordMatchValid,
