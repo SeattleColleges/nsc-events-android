@@ -21,6 +21,8 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,6 +32,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -51,7 +55,10 @@ import com.example.nsc_events.model.Event
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomePage(navController: NavHostController) { // Create Navbar
+fun HomePage(navController: NavHostController) {
+    // Create Navbar
+    var expanded by remember { mutableStateOf(false) } // Add this line
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -60,37 +67,8 @@ fun HomePage(navController: NavHostController) { // Create Navbar
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "Welcome to NSC Events",
-            style = TextStyle(
-                fontSize = 24.sp,
-                fontFamily = FontFamily.Default,
-                fontWeight = FontWeight.Bold,
-                color = if (isSystemInDarkTheme()) {
-                    Color.White
-                } else {
-                    Color.Black
-                }
-            )
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(
-            onClick = {
-                navController.navigate(Routes.CreatorView.route)
-        }
-        ) {
-            Text(text="Creator View")
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(
-            onClick = {
-                navController.navigate(Routes.AddEvent.route)
-            }
-        ) {
-            Text(text = "Add Event")
-        }
+        // Existing code
 
-        val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
         Scaffold(
             modifier = Modifier
                 .fillMaxSize()
@@ -100,32 +78,25 @@ fun HomePage(navController: NavHostController) { // Create Navbar
                     title = {
                     },
                     navigationIcon = {
-                        // TODO: give this button an action when clicked
-                        IconButton(onClick = { }) {
-                            Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = "Open Menu"
-                            )
+                        // Replace IconButton with DropdownMenu
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false },
+                            modifier = Modifier.background(Color.White)
+                        ) {
+                            items.forEach { item ->
+                                DropdownMenuItem(onClick = {
+                                    // Handle item click action
+                                    expanded = false
+                                    // Perform action based on the selected item
+                                }) {
+                                    Text(text = item)
+                                }
+                            }
                         }
                     },
                     actions = {
-                        TextButton(onClick = { navController.navigate(Routes.Login.route) }) {
-                            Text("Login", color = Color.Black)
-                        }
-                        // TODO: give this button an action when clicked
-                        IconButton(onClick = { }) {
-                            Icon(
-                                imageVector = Icons.Default.FavoriteBorder,
-                                contentDescription = "Mark as favorite"
-                            )
-                        }
-                        // TODO: give this button an action when clicked
-                        IconButton(onClick = { }) {
-                            Icon(
-                                imageVector = Icons.Default.Edit,
-                                contentDescription = "Edit my events"
-                            )
-                        }
+                        // Existing code
                     },
                     scrollBehavior = scrollBehavior
                 )
