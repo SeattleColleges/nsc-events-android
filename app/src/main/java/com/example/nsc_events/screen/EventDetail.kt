@@ -92,7 +92,7 @@ fun EventDetailPage(navController: NavController, eventId: String) {
 
                 Spacer(modifier = Modifier.padding(16.dp))
                 Button(onClick = {
-                    // TODO: delete functionality
+                    navController.navigate("${Routes.EventEdit.route}/$eventId")
                 }) {
                     Icon(
                         imageVector = Icons.Default.Edit, contentDescription = "Edit"
