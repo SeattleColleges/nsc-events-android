@@ -9,4 +9,6 @@ sealed class Routes(val route: String) {
     object ForgotPassword: Routes("Forgot Password")
 
     object CreatorView: Routes("Creator View")
+
+    object AdminView: Routes(" Admin View")
 }
