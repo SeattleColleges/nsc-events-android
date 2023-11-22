@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
@@ -82,20 +83,6 @@ fun EventEditPage(navController: NavController, eventId: String) {
             CustomTextField(text = eventId)
             val event = Datasource().loadEvents().find { it.eventTitle == eventId }!!
             EventEditCard(event = event, navController = navController)
-            Row(
-                modifier = Modifier
-                    .wrapContentSize()
-                    .padding(16.dp)
-                    .fillMaxSize(),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Button(onClick = {
-                    // TODO: Submit the data
-                }) {
-                    Text("Submit")
-                }
-            }
         }
     }
 }
@@ -157,6 +144,12 @@ fun EventEditCard(event: Event, navController: NavController) {
                 label = { Text("Location") },
                 modifier = Modifier.fillMaxWidth()
             )
+            Spacer(modifier = Modifier.height(12.dp))
+            Button(onClick = {
+                // TODO: Submit the data
+            }) {
+                Text("Submit")
+            }
         }
     }
 }
