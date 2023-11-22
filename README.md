@@ -1,7 +1,7 @@
 ## NSC Events Android
 
 
-A North Seattle College Events Application allows users to view and manage numerous events.  
+A North Seattle College Events Application that allows users to view and manage numerous events.  
 
 ## Introduction
 👋 Welcome to the demo of our NSC-Events GitHub project, a student-led initiative supported by mentors and hosted through North Seattle College!
