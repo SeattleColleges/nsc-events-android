@@ -103,13 +103,13 @@ fun EventDetailPage(navController: NavController, eventId: String) {
             Row(
                 modifier = Modifier
                     .wrapContentSize()
-                    .padding(16.dp)
+                    .padding(2.dp)
                     .fillMaxSize(),
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(onClick = {
-                    // TODO: increment the number of attendees
+                    // TODO: save this locally or in teh cloud
                 }) {
                     Text("Attend")
                 }
