@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
@@ -90,7 +91,7 @@ fun EventEditPage(navController: NavController, eventId: String) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(onClick = {
-                    // TODO: increment the number of attendees
+                    // TODO: Submit the data
                 }) {
                     Text("Submit")
                 }
@@ -114,7 +115,8 @@ fun EventEditCard(event: Event, navController: NavController) {
     ) {
         Column(
             modifier = Modifier
-                .padding(16.dp),
+                .padding(16.dp)
+                .fillMaxWidth(),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -123,32 +125,37 @@ fun EventEditCard(event: Event, navController: NavController) {
                 contentDescription = stringResource(id = R.string.event_cover_photo_description),
                 modifier = Modifier
                     .size(200.dp)
-                    .padding(16.dp),
+                    .padding(2.dp),
             )
             OutlinedTextField(
                 value = eventTitleState.value,
                 onValueChange = { eventTitleState.value = it },
-                label = { Text("Title") }
+                label = { Text("Title") },
+                modifier = Modifier.fillMaxWidth()
             )
             OutlinedTextField(
                 value = eventDescriptionState.value,
                 onValueChange = { eventDescriptionState.value = it },
-                label = { Text("Description") }
+                label = { Text("Description") },
+                modifier = Modifier.fillMaxWidth()
             )
             OutlinedTextField(
                 value = eventStartTimeState.value,
                 onValueChange = { eventStartTimeState.value = it },
-                label = { Text("Start Time") }
+                label = { Text("Start Time") },
+                modifier = Modifier.fillMaxWidth()
             )
             OutlinedTextField(
                 value = eventEndTimeState.value,
                 onValueChange = { eventEndTimeState.value = it },
-                label = { Text("End Time") }
+                label = { Text("End Time") },
+                modifier = Modifier.fillMaxWidth()
             )
             OutlinedTextField(
                 value = eventLocationState.value,
                 onValueChange = { eventLocationState.value = it },
-                label = { Text("Location") }
+                label = { Text("Location") },
+                modifier = Modifier.fillMaxWidth()
             )
         }
     }
