@@ -40,6 +40,11 @@ import androidx.compose.ui.platform.LocalContext
 import java.text.SimpleDateFormat
 import java.util.*
 import android.app.DatePickerDialog
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.window.Dialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,6 +59,7 @@ fun EventEditPage(navController: NavController, eventId: String) {
                 navigationIcon = {
                     IconButton(
                         onClick = {
+                            // This goes back to the event it came from
                             navController.navigate("${Routes.EventDetail.route}/$eventId")
                         }
                     ) {
@@ -90,6 +96,7 @@ fun EventEditCard(event: Event, navController: NavController) {
     var datePickerDialogShown by remember { mutableStateOf(false) }
     val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     var selectedDate by remember { mutableStateOf<Date?>(null) }
+    var isSave by remember { mutableStateOf(false) }
 
     if (datePickerDialogShown) {
         val calendar = Calendar.getInstance()
@@ -162,14 +169,26 @@ fun EventEditCard(event: Event, navController: NavController) {
             )
             Spacer(modifier = Modifier.height(12.dp))
             Button(onClick = {
-                // TODO: Submit the data or store locally
+                isSave = !isSave
             }) {
-                Text("Submit")
+                Text(text = "Save  ")
+                Icon(
+                    imageVector = Icons.Default.Check, contentDescription = "Save"
+                )
+
+            }
+            if (isSave) {
+                ConfirmSaveDialogIndividual(onConfirm = {
+                    // TODO: Save the event to the database
+                    // Update the event with the new data
+                    isSave = false
+                }, onDismiss = {
+                    isSave = false
+                })
             }
         }
     }
 }
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MaterialDatePickerDialog(
     initialDate: Date,
@@ -191,5 +210,49 @@ fun MaterialDatePickerDialog(
     ).apply {
         setOnDismissListener { onDismissRequest() }
         show()
+    }
+}
+
+@Composable
+fun ConfirmSaveDialogIndividual(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    Dialog(onDismissRequest = {
+        onDismiss()
+    }) {
+        Card(
+            modifier = Modifier
+                .padding(16.dp)
+                .border(1.dp, Color.White),
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("Are you sure?")
+                Spacer(modifier = Modifier.padding(8.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Button(
+                        onClick = { onDismiss() }, modifier = Modifier.padding(8.dp)
+                    ) {
+                        Text("No")
+                    }
+                    Button(
+                        onClick = { onConfirm() }, modifier = Modifier.padding(8.dp)
+                    ) {
+                        Text("Yes")
+                    }
+                }
+            }
+        }
     }
 }
