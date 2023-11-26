@@ -21,4 +21,8 @@
     <!--    Sign Up Screen Strings    -->
     <string name="signup_successful_toast">Sign up successful!</string>
     <string name="signup_failed_toast">Sign up failed, please try again!</string>
+
+    <!--    Reset Password Screen Strings    -->
+    <string name="forgot_password_success_reset_token">Success reset token! Please check Logcat!</string>
+    <string name="forgot_password_invalid_email">Invalid email, please try again!</string>
 </resources>
