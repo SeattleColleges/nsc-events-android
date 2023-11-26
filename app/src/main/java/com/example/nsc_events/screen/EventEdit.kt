@@ -16,17 +16,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -35,18 +31,18 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.nsc_events.R
 import com.example.nsc_events.Routes
 import com.example.nsc_events.data.Datasource
 import com.example.nsc_events.model.Event
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
+import java.text.SimpleDateFormat
+import java.util.*
+import android.app.DatePickerDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -91,10 +87,30 @@ fun EventEditPage(navController: NavController, eventId: String) {
 fun EventEditCard(event: Event, navController: NavController) {
     val eventTitleState = remember { mutableStateOf(event.eventTitle) }
     val eventDescriptionState = remember { mutableStateOf(event.eventDescription) }
-    // val eventDateState = remember { mutableStateOf(event.eventDate) }
     val eventStartTimeState = remember { mutableStateOf(event.eventStartTime) }
     val eventEndTimeState = remember { mutableStateOf(event.eventEndTime) }
     val eventLocationState = remember { mutableStateOf(event.eventLocation) }
+    var datePickerDialogShown by remember { mutableStateOf(false) }
+    val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    var selectedDate by remember { mutableStateOf<Date?>(null) }
+
+    // ... other components of EventEditCard
+
+    if (datePickerDialogShown) {
+        val calendar = Calendar.getInstance()
+        MaterialDatePickerDialog(
+            initialDate = calendar.time,
+            onDateSelected = { date ->
+                selectedDate = date
+                datePickerDialogShown = false
+                // Update your event or other state here
+            },
+            onDismissRequest = {
+                datePickerDialogShown = false
+            }
+        )
+    }
+
 
     Card(
         modifier = Modifier
@@ -126,6 +142,12 @@ fun EventEditCard(event: Event, navController: NavController) {
                 label = { Text("Description") },
                 modifier = Modifier.fillMaxWidth()
             )
+            Button(onClick = { datePickerDialogShown = true }) {
+                Text(text = "Select Date")
+            }
+            selectedDate?.let {
+                Text("Selected Date: ${dateFormatter.format(it)}")
+            }
             OutlinedTextField(
                 value = eventStartTimeState.value,
                 onValueChange = { eventStartTimeState.value = it },
@@ -146,10 +168,34 @@ fun EventEditCard(event: Event, navController: NavController) {
             )
             Spacer(modifier = Modifier.height(12.dp))
             Button(onClick = {
-                // TODO: Submit the data
+                // TODO: Submit the data or store locally
             }) {
                 Text("Submit")
             }
         }
+    }
+}
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MaterialDatePickerDialog(
+    initialDate: Date,
+    onDateSelected: (Date) -> Unit,
+    onDismissRequest: () -> Unit
+) {
+    val context = LocalContext.current
+    val calendar = Calendar.getInstance().apply { time = initialDate }
+
+    DatePickerDialog(
+        context,
+        { _, year, month, dayOfMonth ->
+            calendar.set(year, month, dayOfMonth)
+            onDateSelected(calendar.time)
+        },
+        calendar.get(Calendar.YEAR),
+        calendar.get(Calendar.MONTH),
+        calendar.get(Calendar.DAY_OF_MONTH)
+    ).apply {
+        setOnDismissListener { onDismissRequest() }
+        show()
     }
 }
