@@ -103,7 +103,6 @@ fun EventEditCard(event: Event, navController: NavController) {
             onDateSelected = { date ->
                 selectedDate = date
                 datePickerDialogShown = false
-                // Update your event or other state here
             },
             onDismissRequest = {
                 datePickerDialogShown = false
