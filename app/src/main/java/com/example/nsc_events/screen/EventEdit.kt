@@ -6,14 +6,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -93,8 +90,6 @@ fun EventEditCard(event: Event, navController: NavController) {
     var datePickerDialogShown by remember { mutableStateOf(false) }
     val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     var selectedDate by remember { mutableStateOf<Date?>(null) }
-
-    // ... other components of EventEditCard
 
     if (datePickerDialogShown) {
         val calendar = Calendar.getInstance()
