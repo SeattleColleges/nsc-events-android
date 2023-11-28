@@ -1,13 +1,16 @@
 package com.example.nsc_events.screen
 
+import android.content.Context
+import android.net.http.HttpException
+import android.widget.Toast
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -15,8 +18,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
@@ -27,19 +33,31 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
+import com.example.nsc_events.MainActivity
 import com.example.nsc_events.R
 import com.example.nsc_events.Routes
 import com.example.nsc_events.data.Datasource
+import com.example.nsc_events.data.network.auth.DeleteService
+import com.example.nsc_events.data.network.dto.auth_dto.DeleteRequest
+import com.example.nsc_events.data.network.dto.auth_dto.Role
 import com.example.nsc_events.model.Event
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,6 +93,9 @@ fun EventDetailPage(navController: NavController, eventId: String) {
         ) {
             CustomTextField(text = eventId)
             val event = Datasource().loadEvents().find { it.eventTitle == eventId }!!
+            var isDelete by remember { mutableStateOf(false) }
+            val coroutineScope = rememberCoroutineScope()
+            val current = LocalContext.current
             Row(
                 modifier = Modifier
                     .wrapContentSize()
@@ -83,11 +104,29 @@ fun EventDetailPage(navController: NavController, eventId: String) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(onClick = {
-                    // TODO: delete functionality
+                    isDelete = !isDelete
                 }) {
                     Icon(
                         imageVector = Icons.Default.Delete, contentDescription = "Delete"
                     )
+                }
+                if (isDelete) {
+                    ConfirmationDialogIndividual(onConfirm = {
+                        coroutineScope.launch {
+                            val isDeleteSuccessful = delete(event.id, navController, current)
+                            if (isDeleteSuccessful) {
+                                val hidden = MainActivity.getPref().getStringSet("hidden", mutableSetOf(event.id))
+                                hidden?.add(event.id)
+                                val editor = MainActivity.getPref().edit()
+                                editor.putStringSet("hidden", hidden)
+                                editor.apply()
+                            }
+                        }
+                        // Remove the event from the database
+                        isDelete = false
+                    }, onDismiss = {
+                        isDelete = false
+                    })
                 }
 
                 Spacer(modifier = Modifier.padding(16.dp))
@@ -161,19 +200,77 @@ fun EventDetailCard(event: Event, navController: NavController) {
 }
 
 @Composable
-fun DeleteButton(
-    event: Event,
-    onDelete: (Event) -> Unit
+fun ConfirmationDialogIndividual(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
 ) {
-    Button(
-        onClick = {
-            event.deleteEvent()
-            onDelete(event)
-        },
-        modifier = Modifier
-            .padding(16.dp)
-            .width(200.dp)
-    ) {
-        Text(text = "Delete Event")
+    Dialog(onDismissRequest = {
+        onDismiss()
+    }) {
+        Card(
+            modifier = Modifier
+                .padding(16.dp)
+                .border(1.dp, Color.White)
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(stringResource(R.string.delete_confirm_text))
+                Spacer(modifier = Modifier.padding(8.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Button(
+                        onClick = { onDismiss() }, modifier = Modifier.padding(8.dp)
+                    ) {
+                        Text("No")
+                    }
+                    Button(
+                        onClick = { onConfirm() }, modifier = Modifier.padding(8.dp)
+                    ) {
+                        Text("Yes")
+                    }
+                }
+            }
+        }
+    }
+}
+
+suspend fun delete(eventId: String, navController: NavController, current: Context): Boolean {
+    return try {
+        val userRole = MainActivity.getPref().getString("userRole", Role.USER.name)?.let {
+            Role.valueOf(it) } ?: Role.USER
+        val deleteRequest = DeleteRequest(
+            id = eventId,
+            role = Role.ADMIN
+        )
+        val deleteResponse = DeleteService.create().delete(deleteRequest)
+        if (userRole != Role.ADMIN) {
+            Toast.makeText(current, R.string.unauthorized_toast, Toast.LENGTH_SHORT).show()
+            false
+        } else if (eventId.count() != 24) {
+            Toast.makeText(current, R.string.invalid_id_toast, Toast.LENGTH_SHORT).show()
+            false
+        } else if (deleteResponse != null) {
+            MainActivity.getPref().edit().putBoolean("isHidden", deleteResponse.isHidden).apply()
+            navController.navigate(Routes.HomePage.route)
+            Toast.makeText(current, R.string.delete_successful_toast, Toast.LENGTH_SHORT).show()
+            true
+        } else {
+            Toast.makeText(current, R.string.delete_failed_toast, Toast.LENGTH_SHORT).show()
+            false
+        }
+    } catch (e: HttpException) {
+        e.printStackTrace()
+        println("Error: ${e.message}")
+        Toast.makeText(current, "Delete failed. Error: ${e.message}", Toast.LENGTH_SHORT).show()
+        false
     }
 }
