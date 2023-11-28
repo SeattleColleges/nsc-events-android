@@ -33,6 +33,15 @@ fun ScreenMain(){
                 eventId = backStackEntry.arguments!!.getString("eventId")!!,
             )
         }
+        composable(
+            route = "${Routes.EventEdit.route}/{eventId}",
+            arguments = listOf(navArgument("eventId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            EventEditPage(
+                navController = navController,
+                eventId = backStackEntry.arguments!!.getString("eventId")!!
+            )
+        }
         composable(Routes.ForgotPassword.route) {
             ForgotPasswordPage(navController = navController)
         }
