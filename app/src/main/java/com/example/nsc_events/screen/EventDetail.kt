@@ -82,13 +82,7 @@ fun EventDetailPage(navController: NavController, eventId: String) {
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Button(onClick = {
-                    // TODO: delete functionality
-                }) {
-                    Icon(
-                        imageVector = Icons.Default.Delete, contentDescription = "Delete"
-                    )
-                }
+                DeleteButton(event = , onDelete = )
 
                 Spacer(modifier = Modifier.padding(16.dp))
                 Button(onClick = {
@@ -177,3 +171,4 @@ fun DeleteButton(
         Text(text = "Delete Event")
     }
 }
+
