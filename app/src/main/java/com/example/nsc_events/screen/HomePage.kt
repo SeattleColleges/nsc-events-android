@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.example.nsc_events.MainActivity
 import com.example.nsc_events.R
 import com.example.nsc_events.Routes
 import com.example.nsc_events.data.Datasource
@@ -195,6 +196,7 @@ fun EventCard(event: Event, navController: NavController) {
 
 @Composable
 fun EventList(events: List<Event>, navController: NavController) {
+    val hidden = MainActivity.getPref().getStringSet("hidden", setOf(""))
     LazyColumn(
         modifier = Modifier
             .padding(top = 70.dp)
@@ -202,7 +204,8 @@ fun EventList(events: List<Event>, navController: NavController) {
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        items(events) { event ->
+        items(events
+            .filter { !hidden!!.contains(it.id) }) { event ->
             EventCard(event = event, navController = navController)
             Spacer(modifier = Modifier.padding(16.dp))
         }
