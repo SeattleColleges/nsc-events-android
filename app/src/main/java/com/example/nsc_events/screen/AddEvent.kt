@@ -40,7 +40,10 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import com.example.nsc_events.R
 import android.app.TimePickerDialog
+import android.content.Context
 import android.net.Uri
+import android.net.http.HttpException
+import android.widget.Toast
 import androidx.compose.ui.graphics.PathEffect
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -71,6 +74,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import com.example.nsc_events.data.network.dto.event_dto.EventRequest
+import com.example.nsc_events.data.network.dto.event_dto.EventResponse
+import com.example.nsc_events.data.network.service.EventService
 import com.example.nsc_events.model.SocialMedia
 import java.util.Calendar
 import java.util.Date
@@ -137,6 +143,9 @@ fun AddEventPage(navController: NavHostController) {
     var eventAccessibility by remember { mutableStateOf("") }
     var eventVisibility by remember { mutableStateOf(true) }
 
+    val coroutineScope = rememberCoroutineScope()
+    val current = LocalContext.current
+
 
     /* navigating back to login page */
     TopAppBar(
@@ -188,21 +197,21 @@ fun AddEventPage(navController: NavHostController) {
         }
 
         item {
-        /* Date and time pickers */
-        Column {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                DatePicker(
-                    onDateSelected = { newDate ->
-                        eventDate = newDate
-                        isDateError = false  // Reset error state when a date is picked
-                    },
-                    isError = isDateError
-                )
+            /* Date and time pickers */
+            Column {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    DatePicker(
+                        onDateSelected = { newDate ->
+                            eventDate = newDate
+                            isDateError = false  // Reset error state when a date is picked
+                        },
+                        isError = isDateError
+                    )
+                }
             }
-        }
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -260,43 +269,82 @@ fun AddEventPage(navController: NavHostController) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Button(
-
                     onClick = {
                         eventTitleError = eventTitle.isEmpty()
                         eventDescriptionError = eventDescription.isEmpty()
                         isDateError = eventDate == null
                         isStartTimeError = eventStartTime.isEmpty()
                         isEndTimeError = eventEndTime.isEmpty()
+
                         val isInputValid = eventTitle.isNotEmpty() && eventDescription.isNotEmpty() && eventCategory.isNotEmpty() && eventDate != null && eventStartTime.isNotEmpty() && eventEndTime.isNotEmpty()
-                            newEvent = eventDate?.let {
-                                Event(
-                                    eventTitle,
-                                    eventDescription,
-                                    eventCategory,
-                                    it,
-                                    eventStartTime,
-                                    eventEndTime,
-                                    eventLocation,
-                                    eventCoverPhoto,
-                                    eventHost,
-                                    eventWebsite,
-                                    eventRegistration,
-                                    eventCapacity,
-                                    eventCost,
-                                    eventTags,
-                                    eventSchedule,
-                                    eventSpeakers,
-                                    eventPrerequisites,
-                                    eventCancellationPolicy,
-                                    eventContact,
-                                    eventSocialMedia,
-                                    eventPrivacy,
-                                    eventAccessibility,
-                                    eventVisibility
-                                )
+                        if (isInputValid) {
+                            coroutineScope.launch {
+                                eventDate?.let {
+                                    createEvent(
+                                        eventTitle,
+                                        eventDescription,
+                                        eventCategory,
+                                        it,
+                                        eventStartTime,
+                                        eventEndTime,
+                                        eventLocation,
+                                        eventCoverPhoto,
+                                        eventHost,
+                                        eventWebsite,
+                                        eventRegistration,
+                                        eventCapacity,
+                                        eventCost,
+                                        eventTags,
+                                        eventSchedule,
+                                        eventSpeakers,
+                                        eventPrerequisites,
+                                        eventCancellationPolicy,
+                                        eventContact,
+                                        eventSocialMedia,
+                                        eventPrivacy,
+                                        eventAccessibility,
+                                        eventVisibility,
+                                        navController,
+                                        current
+                                    )
+                                }
                             }
-                        showAlert = true
-                            /* TODO: save new product to db or use a list to hold products (ex: List<Product>) */
+                        }
+//                        eventTitleError = eventTitle.isEmpty()
+//                        eventDescriptionError = eventDescription.isEmpty()
+//                        isDateError = eventDate == null
+//                        isStartTimeError = eventStartTime.isEmpty()
+//                        isEndTimeError = eventEndTime.isEmpty()
+//                        val isInputValid = eventTitle.isNotEmpty() && eventDescription.isNotEmpty() && eventCategory.isNotEmpty() && eventDate != null && eventStartTime.isNotEmpty() && eventEndTime.isNotEmpty()
+//                        newEvent = eventDate?.let {
+//                            Event(
+//                                eventTitle,
+//                                eventDescription,
+//                                eventCategory,
+//                                it,
+//                                eventStartTime,
+//                                eventEndTime,
+//                                eventLocation,
+//                                eventCoverPhoto,
+//                                eventHost,
+//                                eventWebsite,
+//                                eventRegistration,
+//                                eventCapacity,
+//                                eventCost,
+//                                eventTags,
+//                                eventSchedule,
+//                                eventSpeakers,
+//                                eventPrerequisites,
+//                                eventCancellationPolicy,
+//                                eventContact,
+//                                eventSocialMedia,
+//                                eventPrivacy,
+//                                eventAccessibility,
+//                                eventVisibility
+//                            )
+//                        }
+//                        showAlert = true
+                        /* TODO: save new product to db or use a list to hold products (ex: List<Product>) */
                     },
                     modifier = Modifier
                         .padding(4.dp)
@@ -305,152 +353,142 @@ fun AddEventPage(navController: NavHostController) {
                 {
                     Text(text = "Add Event")
                 }
-                if (showAlert) {
-                    AlertDialog(
-                        onDismissRequest = { showAlert = false },
-                        title = {
-                            Text(text = "Event Details")
-                        },
-                        text = {
-                            Column {
-                                Text("Title: ${newEvent?.eventTitle}")
-                                Text("Description: ${newEvent?.eventDescription}")
-                                Text("Date: ${newEvent?.eventDate}")
-                                Text("Start Time: ${newEvent?.eventStartTime}")
-                                Text("End Time: ${newEvent?.eventEndTime}")
-                            }
-                        },
-                        confirmButton = {
-                            Button(onClick = { showAlert = false }) {
-                                Text("Close")
-                            }
-                        }
-                    )
+//                if (showAlert) {
+//                    AlertDialog(
+//                        onDismissRequest = { showAlert = false },
+//                        title = {
+//                            Text(text = "Event Details")
+//                        },
+//                        text = {
+//                            Column {
+//                                Text("Title: ${newEvent?.eventTitle}")
+//                                Text("Description: ${newEvent?.eventDescription}")
+//                                Text("Date: ${newEvent?.eventDate}")
+//                                Text("Start Time: ${newEvent?.eventStartTime}")
+//                                Text("End Time: ${newEvent?.eventEndTime}")
+//                            }
+//                        },
+//                        confirmButton = {
+//                            Button(onClick = { showAlert = false }) {
+//                                Text("Close")
+//                            }
+//                        }
+//                    )
+//                }
+            }
+        }
+
+        item {
+            EventHostField(
+                eventHost = eventHost,
+                onEventHostChange = { newHost -> eventHost = newHost }
+            )
+        }
+
+        item {
+            EventWebsiteField(
+                eventWebsite = eventWebsite,
+                onEventWebsiteChange = { newWebsite -> eventWebsite = newWebsite }
+            )
+        }
+
+        item {
+            EventRegistrationField(
+                eventRegistration = eventRegistration,
+                onEventRegistrationChange = { newRegistration ->
+                    eventRegistration = newRegistration
                 }
-            }
+            )
         }
 
-            item {
-                EventLocationField(
-                    eventLocation = eventLocation,
-                    onEventLocationChange = { newLocation -> eventLocation = newLocation }
-                )
-            }
-
-            item {
-                EventCoverPhotoField(
-                    eventCoverPhoto = eventCoverPhoto,
-                    onEventCoverPhotoChange = { newCoverPhoto -> eventCoverPhoto = newCoverPhoto }
-                )
-            }
-
-            item {
-                EventHostField(
-                    eventHost = eventHost,
-                    onEventHostChange = { newHost -> eventHost = newHost }
-                )
-            }
-
-            item {
-                EventWebsiteField(
-                    eventWebsite = eventWebsite,
-                    onEventWebsiteChange = { newWebsite -> eventWebsite = newWebsite }
-                )
-            }
-
-            item {
-                EventRegistrationField(
-                    eventRegistration = eventRegistration,
-                    onEventRegistrationChange = { newRegistration ->
-                        eventRegistration = newRegistration
-                    }
-                )
-            }
-
-            item {
-                EventCapacityField(
-                    eventCapacity = eventCapacity,
-                    onEventCapacityChange = { newCapacity -> eventCapacity = newCapacity }
-                )
-            }
-
-            item {
-                EventCostField(
-                    eventCost = eventCost,
-                    onEventCostChange = { newCost -> eventCost = newCost }
-                )
-            }
-
-            item {
-                TagsField(
-                    eventTags = eventTags,
-                    onEventTagsChange = { newTags -> eventTags = newTags }
-                )
-            }
-
-            item {
-                EventScheduleField(
-                    eventSchedule = eventSchedule,
-                    onEventScheduleChange = { newSchedule -> eventSchedule = newSchedule }
-                )
-            }
-
-            item {
-                SpeakersField(
-                    eventSpeakers = eventSpeakers,
-                    onEventSpeakersChange = { newSpeakers -> eventSpeakers = newSpeakers }
-                )
-            }
-
-            item {
-                EventPrerequisitesField(
-                    eventPrerequisites = eventPrerequisites,
-                    onEventPrerequisitesChange = { newPrerequisites ->
-                        eventPrerequisites = newPrerequisites
-                    }
-                )
-            }
-
-            item {
-                EventCancellationPolicyField(
-                    eventCancellationPolicy = eventCancellationPolicy,
-                    onEventCancellationPolicyChange = { newCancellationPolicy ->
-                        eventCancellationPolicy = newCancellationPolicy
-                    }
-                )
-            }
-
-            item {
-                EventContactField(
-                    eventContact = eventContact,
-                    onEventContactChange = { newContact -> eventContact = newContact }
-                )
-            }
-
-            item {
-                SocialMediaField(
-                    socialMedia = eventSocialMedia,
-                    onSocialMediaChange = { newSocialMedia -> eventSocialMedia = newSocialMedia }
-                )
-            }
-
-            item {
-                EventPrivacyField(
-                    eventPrivacy = eventPrivacy,
-                    onEventPrivacyChange = { newPrivacy -> eventPrivacy = newPrivacy }
-                )
-            }
-
-            item {
-                EventAccessibilityField(
-                    eventAccessibility = eventAccessibility,
-                    onEventAccessibilityChange = { newAccessibility ->
-                        eventAccessibility = newAccessibility
-                    }
-                )
-            }
+        item {
+            EventCapacityField(
+                eventCapacity = eventCapacity,
+                onEventCapacityChange = { newCapacity -> eventCapacity = newCapacity }
+            )
         }
+
+        item {
+            EventCostField(
+                eventCost = eventCost,
+                onEventCostChange = { newCost -> eventCost = newCost }
+            )
+        }
+
+        item {
+            TagsField(
+                eventTags = eventTags,
+                onEventTagsChange = { newTags -> eventTags = newTags }
+            )
+        }
+
+        item {
+            EventScheduleField(
+                eventSchedule = eventSchedule,
+                onEventScheduleChange = { newSchedule -> eventSchedule = newSchedule }
+            )
+        }
+
+        item {
+            SpeakersField(
+                eventSpeakers = eventSpeakers,
+                onEventSpeakersChange = { newSpeakers -> eventSpeakers = newSpeakers }
+            )
+        }
+
+        item {
+            EventPrerequisitesField(
+                eventPrerequisites = eventPrerequisites,
+                onEventPrerequisitesChange = { newPrerequisites ->
+                    eventPrerequisites = newPrerequisites
+                }
+            )
+        }
+
+        item {
+            EventCancellationPolicyField(
+                eventCancellationPolicy = eventCancellationPolicy,
+                onEventCancellationPolicyChange = { newCancellationPolicy ->
+                    eventCancellationPolicy = newCancellationPolicy
+                }
+            )
+        }
+
+        item {
+            EventContactField(
+                eventContact = eventContact,
+                onEventContactChange = { newContact -> eventContact = newContact }
+            )
+        }
+
+        item {
+            SocialMediaField(
+                socialMedia = eventSocialMedia,
+                onSocialMediaChange = { newSocialMedia -> eventSocialMedia = newSocialMedia }
+            )
+        }
+
+        item {
+            EventPrivacyField(
+                eventPrivacy = eventPrivacy,
+                onEventPrivacyChange = { newPrivacy -> eventPrivacy = newPrivacy }
+            )
+        }
+
+        item {
+            EventAccessibilityField(
+                eventAccessibility = eventAccessibility,
+                onEventAccessibilityChange = { newAccessibility ->
+                    eventAccessibility = newAccessibility
+                }
+            )
+        }
+
+
     }
+}
+
+
 
 
     /* Begin composables */
@@ -811,268 +849,324 @@ fun AddEventPage(navController: NavHostController) {
         )
     }
 
-    @Composable
-    fun EventLocationField(eventLocation: String, onEventLocationChange: (String) -> Unit) {
-        TextField(
-            value = eventLocation,
-            onValueChange = onEventLocationChange,
-            label = { Text(text = "Event location") },
-            singleLine = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        )
-    }
+@Composable
+fun EventHostField(eventHost: String, onEventHostChange: (String) -> Unit) {
+    TextField(
+        value = eventHost,
+        onValueChange = onEventHostChange,
+        label = { Text(text = "Event Host") },
+        singleLine = true,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    )
+}
 
-    @Composable
-    fun EventCoverPhotoField(eventCoverPhoto: String, onEventCoverPhotoChange: (String) -> Unit) {
-        TextField(
-            value = eventCoverPhoto,
-            onValueChange = onEventCoverPhotoChange,
-            label = { Text(text = "Event cover photo") },
-            singleLine = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        )
-    }
+@Composable
+fun EventWebsiteField(eventWebsite: String, onEventWebsiteChange: (String) -> Unit) {
+    TextField(
+        value = eventWebsite,
+        onValueChange = onEventWebsiteChange,
+        label = { Text(text = "Event Website") },
+        singleLine = true,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    )
+}
 
-    @Composable
-    fun EventHostField(eventHost: String, onEventHostChange: (String) -> Unit) {
-        TextField(
-            value = eventHost,
-            onValueChange = onEventHostChange,
-            label = { Text(text = "Event Host") },
-            singleLine = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        )
-    }
+@Composable
+fun EventRegistrationField(
+    eventRegistration: String,
+    onEventRegistrationChange: (String) -> Unit
+) {
+    TextField(
+        value = eventRegistration,
+        onValueChange = onEventRegistrationChange,
+        label = { Text(text = "Event Registration") },
+        singleLine = true,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    )
+}
 
-    @Composable
-    fun EventWebsiteField(eventWebsite: String, onEventWebsiteChange: (String) -> Unit) {
-        TextField(
-            value = eventWebsite,
-            onValueChange = onEventWebsiteChange,
-            label = { Text(text = "Event Website") },
-            singleLine = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        )
-    }
+@Composable
+fun EventCapacityField(eventCapacity: String, onEventCapacityChange: (String) -> Unit) {
+    TextField(
+        value = eventCapacity,
+        onValueChange = onEventCapacityChange,
+        label = { Text(text = "Event Capacity") },
+        singleLine = true,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    )
+}
 
-    @Composable
-    fun EventRegistrationField(
-        eventRegistration: String,
-        onEventRegistrationChange: (String) -> Unit
+@Composable
+fun EventCostField(eventCost: String, onEventCostChange: (String) -> Unit) {
+    TextField(
+        value = eventCost,
+        onValueChange = onEventCostChange,
+        label = { Text(text = "Event Cost") },
+        singleLine = true,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    )
+}
+
+@Composable
+fun TagsField(eventTags: Array<String>, onEventTagsChange: (Array<String>) -> Unit) {
+    TextField(
+        value = eventTags.joinToString(", "),
+        onValueChange = {
+            val tags = it.split(",").map { it.trim() }.toTypedArray()
+            onEventTagsChange(tags)
+        },
+        label = { Text(text = "Event Tags") },
+        singleLine = true,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    )
+}
+
+
+@Composable
+fun EventScheduleField(eventSchedule: String, onEventScheduleChange: (String) -> Unit) {
+    TextField(
+        value = eventSchedule,
+        onValueChange = onEventScheduleChange,
+        label = { Text(text = "Event Schedule") },
+        singleLine = true,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    )
+}
+
+@Composable
+fun SpeakersField(
+    eventSpeakers: Array<String>,
+    onEventSpeakersChange: (Array<String>) -> Unit
+) {
+    TextField(
+        value = eventSpeakers.joinToString(", "),
+        onValueChange = {
+            val speakers = it.split(",").map { it.trim() }.toTypedArray()
+            onEventSpeakersChange(speakers)
+        },
+        label = { Text(text = "Event Speakers") },
+        singleLine = true,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    )
+}
+
+
+@Composable
+fun EventPrerequisitesField(
+    eventPrerequisites: String,
+    onEventPrerequisitesChange: (String) -> Unit
+) {
+    TextField(
+        value = eventPrerequisites,
+        onValueChange = onEventPrerequisitesChange,
+        label = { Text(text = "Event Prerequisites") },
+        singleLine = true,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    )
+}
+
+@Composable
+fun EventCancellationPolicyField(
+    eventCancellationPolicy: String,
+    onEventCancellationPolicyChange: (String) -> Unit
+) {
+    TextField(
+        value = eventCancellationPolicy,
+        onValueChange = onEventCancellationPolicyChange,
+        label = { Text(text = "Event Cancellation Policy") },
+        singleLine = true,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    )
+}
+
+@Composable
+fun EventContactField(eventContact: String, onEventContactChange: (String) -> Unit) {
+    TextField(
+        value = eventContact,
+        onValueChange = onEventContactChange,
+        label = { Text(text = "Event Contact") },
+        singleLine = true,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    )
+}
+
+@Composable
+fun SocialMediaField(socialMedia: SocialMedia, onSocialMediaChange: (SocialMedia) -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
     ) {
         TextField(
-            value = eventRegistration,
-            onValueChange = onEventRegistrationChange,
-            label = { Text(text = "Event Registration") },
+            value = socialMedia.facebook,
+            onValueChange = { onSocialMediaChange(socialMedia.copy(facebook = it)) },
+            label = { Text(text = "Facebook") },
             singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
         )
-    }
 
-    @Composable
-    fun EventCapacityField(eventCapacity: String, onEventCapacityChange: (String) -> Unit) {
         TextField(
-            value = eventCapacity,
-            onValueChange = onEventCapacityChange,
-            label = { Text(text = "Event Capacity") },
+            value = socialMedia.twitter,
+            onValueChange = { onSocialMediaChange(socialMedia.copy(twitter = it)) },
+            label = { Text(text = "Twitter") },
             singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
         )
-    }
 
-    @Composable
-    fun EventCostField(eventCost: String, onEventCostChange: (String) -> Unit) {
         TextField(
-            value = eventCost,
-            onValueChange = onEventCostChange,
-            label = { Text(text = "Event Cost") },
+            value = socialMedia.instagram,
+            onValueChange = { onSocialMediaChange(socialMedia.copy(instagram = it)) },
+            label = { Text(text = "Instagram") },
             singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
         )
-    }
 
-    @Composable
-    fun TagsField(eventTags: Array<String>, onEventTagsChange: (Array<String>) -> Unit) {
         TextField(
-            value = eventTags.joinToString(", "),
-            onValueChange = {
-                val tags = it.split(",").map { it.trim() }.toTypedArray()
-                onEventTagsChange(tags)
-            },
-            label = { Text(text = "Event Tags") },
+            value = socialMedia.hashtag,
+            onValueChange = { onSocialMediaChange(socialMedia.copy(hashtag = it)) },
+            label = { Text(text = "Hashtag") },
             singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
         )
     }
+}
+
+@Composable
+fun EventPrivacyField(eventPrivacy: String, onEventPrivacyChange: (String) -> Unit) {
+    TextField(
+        value = eventPrivacy,
+        onValueChange = onEventPrivacyChange,
+        label = { Text(text = "Event Privacy") },
+        singleLine = true,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    )
+}
+@Composable
+fun EventAccessibilityField(
+    eventAccessibility: String,
+    onEventAccessibilityChange: (String) -> Unit
+) {
+    TextField(
+        value = eventAccessibility,
+        onValueChange = onEventAccessibilityChange,
+        label = { Text(text = "Event Accessibility") },
+        singleLine = true,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    )
+}
 
 
-    @Composable
-    fun EventScheduleField(eventSchedule: String, onEventScheduleChange: (String) -> Unit) {
-        TextField(
-            value = eventSchedule,
-            onValueChange = onEventScheduleChange,
-            label = { Text(text = "Event Schedule") },
-            singleLine = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        )
-    }
+fun validateInputs(eventTitle: String,
+                   eventDescription: String,
+                   eventCategory: String,
+                   eventDate: Date,
+                   eventStartTime: String,
+                   eventEndTime: String) : Boolean {
+    // todo: pass in more fields to check all fields
+    return eventTitle.isNotEmpty() && eventDescription.isNotEmpty() && eventCategory.isNotEmpty() && eventDate != null && eventStartTime.isNotEmpty() && eventEndTime.isNotEmpty();
+}
 
-    @Composable
-    fun SpeakersField(
-        eventSpeakers: Array<String>,
-        onEventSpeakersChange: (Array<String>) -> Unit
-    ) {
-        TextField(
-            value = eventSpeakers.joinToString(", "),
-            onValueChange = {
-                val speakers = it.split(",").map { it.trim() }.toTypedArray()
-                onEventSpeakersChange(speakers)
-            },
-            label = { Text(text = "Event Speakers") },
-            singleLine = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        )
-    }
+suspend fun createEvent(
+    eventTitle: String,
+    eventDescription: String,
+    eventCategory: String,
+    it: Date,
+    eventStartTime: String,
+    eventEndTime: String,
+    eventLocation: String,
+    eventCoverPhoto: String,
+    eventHost: String,
+    eventWebsite: String,
+    eventRegistration: String,
+    eventCapacity: String,
+    eventCost: String,
+    eventTags: Array<String>,
+    eventSchedule: String,
+    eventSpeakers: Array<String>,
+    eventPrerequisites: String,
+    eventCancellationPolicy: String,
+    eventContact: String,
+    eventSocialMedia: SocialMedia,
+    eventPrivacy: String,
+    eventAccessibility: String,
+    eventVisibility: Boolean,
+    navController: NavHostController,
+    current: Context
+) {
+    // constructing event request object from state vars
+    val eventRequest = EventRequest(
+        eventTitle = eventTitle,
+        eventDescription = eventDescription,
+        eventCategory = eventCategory,
+        eventDate = it,
+        eventStartTime = eventStartTime,
+        eventEndTime = eventEndTime,
+        eventLocation = eventLocation,
+        eventCoverPhoto = eventCoverPhoto,
+        eventHost = eventHost,
+        eventWebsite = eventWebsite,
+        eventRegistration = eventRegistration,
+        eventCapacity = eventCapacity,
+        eventCost = eventCost,
+        eventTags = eventTags,
+        eventSchedule = eventSchedule,
+        eventSpeakers = eventSpeakers,
+        eventPrerequisites = eventPrerequisites,
+        eventCancellationPolicy = eventCancellationPolicy,
+        eventContact = eventContact,
+        eventSocialMedia = eventSocialMedia,
+        eventPrivacy = eventPrivacy,
+        eventAccessibility = eventAccessibility,
+        isHidden = eventVisibility
+    )
 
-
-    @Composable
-    fun EventPrerequisitesField(
-        eventPrerequisites: String,
-        onEventPrerequisitesChange: (String) -> Unit
-    ) {
-        TextField(
-            value = eventPrerequisites,
-            onValueChange = onEventPrerequisitesChange,
-            label = { Text(text = "Event Prerequisites") },
-            singleLine = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        )
-    }
-
-    @Composable
-    fun EventCancellationPolicyField(
-        eventCancellationPolicy: String,
-        onEventCancellationPolicyChange: (String) -> Unit
-    ) {
-        TextField(
-            value = eventCancellationPolicy,
-            onValueChange = onEventCancellationPolicyChange,
-            label = { Text(text = "Event Cancellation Policy") },
-            singleLine = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        )
-    }
-
-    @Composable
-    fun EventContactField(eventContact: String, onEventContactChange: (String) -> Unit) {
-        TextField(
-            value = eventContact,
-            onValueChange = onEventContactChange,
-            label = { Text(text = "Event Contact") },
-            singleLine = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        )
-    }
-
-    @Composable
-    fun SocialMediaField(socialMedia: SocialMedia, onSocialMediaChange: (SocialMedia) -> Unit) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            TextField(
-                value = socialMedia.facebook,
-                onValueChange = { onSocialMediaChange(socialMedia.copy(facebook = it)) },
-                label = { Text(text = "Facebook") },
-                singleLine = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            )
-
-            TextField(
-                value = socialMedia.twitter,
-                onValueChange = { onSocialMediaChange(socialMedia.copy(twitter = it)) },
-                label = { Text(text = "Twitter") },
-                singleLine = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            )
-
-            TextField(
-                value = socialMedia.instagram,
-                onValueChange = { onSocialMediaChange(socialMedia.copy(instagram = it)) },
-                label = { Text(text = "Instagram") },
-                singleLine = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            )
-
-            TextField(
-                value = socialMedia.hashtag,
-                onValueChange = { onSocialMediaChange(socialMedia.copy(hashtag = it)) },
-                label = { Text(text = "Hashtag") },
-                singleLine = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            )
+    try {
+        val eventResponse = EventService.create().createNewEvent(eventRequest)
+        if (eventResponse != null) {
+            // todo: route to proper page (home page) after successfully creating an event
+            navController.navigate(Routes.HomePage.route)
+            Toast.makeText(current, "Event created successfully!", Toast.LENGTH_SHORT).show()
+            // create and show toast message displaying creation of event
+        } else {
+            // todo: validation needed on fields that are empty or not properly entered
+            Toast.makeText(current, "Failed to create event.", Toast.LENGTH_SHORT).show()
         }
+    } catch (e: HttpException) {
+        e.printStackTrace()
     }
 
-    @Composable
-    fun EventPrivacyField(eventPrivacy: String, onEventPrivacyChange: (String) -> Unit) {
-        TextField(
-            value = eventPrivacy,
-            onValueChange = onEventPrivacyChange,
-            label = { Text(text = "Event Privacy") },
-            singleLine = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        )
-    }
-    @Composable
-    fun EventAccessibilityField(
-        eventAccessibility: String,
-        onEventAccessibilityChange: (String) -> Unit
-    ) {
-        TextField(
-            value = eventAccessibility,
-            onValueChange = onEventAccessibilityChange,
-            label = { Text(text = "Event Accessibility") },
-            singleLine = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        )
-    }
+}
