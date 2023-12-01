@@ -8,5 +8,5 @@ object HttpRoutes {
     const val GET_EVENTS = "$BASE_URL/events"
     const val CREATE_EVENTS = "$BASE_URL/events/new"
     const val UPDATE_EVENTS = "$BASE_URL/events/update/:id"
-    const val DELETE_EVENTS = "$BASE_URL/events/remove/:id"
+    const val DELETE = "$BASE_URL/events/remove"
 }

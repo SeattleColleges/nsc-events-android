@@ -60,8 +60,10 @@ import com.example.nsc_events.R
 import com.example.nsc_events.Routes
 import com.example.nsc_events.data.network.auth.LoginService
 import com.example.nsc_events.data.network.dto.auth_dto.LoginRequest
+import com.example.nsc_events.data.network.dto.auth_dto.Role
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -297,6 +299,12 @@ suspend fun loginWithValidCredentials(email: String, password: String, navContro
         val loginRequest = LoginRequest(email, password)
         val loginResponse = LoginService.create().login(loginRequest)
         if (loginResponse != null) {
+            val token = loginResponse.token
+            saveToken(token)
+
+            val userRole = getUserRole(token)
+            MainActivity.getPref().edit().putString("userRole", userRole.name).apply()
+
             MainActivity.getPref().edit().putString("token", loginResponse.token).apply()
             navController.navigate(Routes.AddEvent.route)
             Toast.makeText(
@@ -304,6 +312,7 @@ suspend fun loginWithValidCredentials(email: String, password: String, navContro
                 "Welcome ${getName(loginResponse.token)} to NSC Events!",
                 Toast.LENGTH_SHORT
             ).show()
+            loginResponse.token
         } else {
             Toast.makeText(
                 current,
@@ -314,6 +323,23 @@ suspend fun loginWithValidCredentials(email: String, password: String, navContro
     } catch (e: Exception) {
         e.printStackTrace()
     }
+}
+
+fun getUserRole(token: String): Role {
+    return try {
+        val payload = token.split(".")[1]
+        val decodedPayload = String(Base64.decode(payload, Base64.DEFAULT))
+        val jsonObject = JSONObject(decodedPayload)
+        val roleString = jsonObject.getString("role")
+        Role.valueOf(roleString.uppercase(Locale.ROOT))
+    } catch (e: Exception) {
+        e.printStackTrace()
+        Role.USER
+    }
+}
+
+fun saveToken(token: String) {
+    MainActivity.getPref().edit().putString("token", token).apply()
 }
 
 fun getName(token: String): String? {
