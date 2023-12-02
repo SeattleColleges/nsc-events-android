@@ -9,9 +9,29 @@
     <string name="login_logo_description">packaging</string>
     <string name="login_email_error">Invalid email!</string>
     <string name="login_password_error">Invalid password!</string>
+    <string name="login_invalid_email_or_password_message">Invalid email or password</string>
+    <!--    HomePage Screen Strings    -->
+    <string name="event_cover_photo_description">Event</string>
     <!--    Forgot Password Screen Strings    -->
     <string name="forgot_password_title">Forgot Password?</string>
     <string name="forgot_password_button_text">Submit</string>
     <string name="forgot_password_email">Email</string>
     <string name="forgot_password_email_error">Invalid email!</string>
+
+    <!--    Sign Up Screen Strings    -->
+    <string name="signup_successful_toast">Sign up successful!</string>
+    <string name="signup_failed_toast">Sign up failed, please try again!</string>
+
+
+
+    <!--    Reset Password Screen Strings    -->
+    <string name="forgot_password_success_reset_token">Success reset token! Please check Logcat!</string>
+    <string name="forgot_password_invalid_email">Invalid email, please try again!</string>
+
+    <!--    Event Detail Strings    -->
+    <string name="delete_confirm_text">Are you sure you want to delete this activity?</string>
+    <string name="delete_successful_toast">Deletion successful!</string>
+    <string name="unauthorized_toast">Unauthorized!</string>
+    <string name="invalid_id_toast">Invalid ID!</string>
+    <string name="delete_failed_toast">Deletion failed, please try again!</string>
 </resources>

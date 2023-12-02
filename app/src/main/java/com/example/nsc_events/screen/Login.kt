@@ -1,6 +1,9 @@
 package com.example.nsc_events.screen
 
+import android.content.Context
+import android.util.Base64
 import android.util.Patterns
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -31,11 +34,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -48,16 +55,26 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.nsc_events.MainActivity
 import com.example.nsc_events.R
 import com.example.nsc_events.Routes
+import com.example.nsc_events.data.network.auth.LoginService
+import com.example.nsc_events.data.network.dto.auth_dto.LoginRequest
+import com.example.nsc_events.data.network.dto.auth_dto.Role
+import kotlinx.coroutines.launch
+import org.json.JSONObject
+import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun LoginPage(navController: NavHostController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isEmailValid by remember { mutableStateOf(true) }
     var isPasswordValid by remember { mutableStateOf(true) }
+    val coroutineScope = rememberCoroutineScope()
+    val current = LocalContext.current
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(
@@ -165,10 +182,13 @@ fun LoginPage(navController: NavHostController) {
                     // Login button
                     Button(
                         onClick = {
-                            try {
-                                // TODO: Add login functionality after verifying email and password
-                            } catch (e: Exception) {
-                                // TODO: Add error handling
+                            keyboardController?.hide()
+                            // Check if email and password are valid
+                            if (isEmailValid && isPasswordValid) {
+                                // Login with valid credentials
+                                coroutineScope.launch {
+                                    loginWithValidCredentials(email, password, navController, current)
+                                }
                             }
                         },
                         modifier = Modifier
@@ -271,4 +291,66 @@ fun ErrorDisplay(text: String) {
             .padding(start = 30.dp, end = 30.dp, bottom = 8.dp)
     )
 
+}
+
+suspend fun loginWithValidCredentials(email: String, password: String, navController: NavHostController, current: Context) {
+    // login with valid credentials
+    try {
+        val loginRequest = LoginRequest(email, password)
+        val loginResponse = LoginService.create().login(loginRequest)
+        if (loginResponse != null) {
+            val token = loginResponse.token
+            saveToken(token)
+
+            val userRole = getUserRole(token)
+            MainActivity.getPref().edit().putString("userRole", userRole.name).apply()
+
+            MainActivity.getPref().edit().putString("token", loginResponse.token).apply()
+            navController.navigate(Routes.AddEvent.route)
+            Toast.makeText(
+                current,
+                "Welcome ${getName(loginResponse.token)} to NSC Events!",
+                Toast.LENGTH_SHORT
+            ).show()
+            loginResponse.token
+        } else {
+            Toast.makeText(
+                current,
+                R.string.login_invalid_email_or_password_message,
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
+
+fun getUserRole(token: String): Role {
+    return try {
+        val payload = token.split(".")[1]
+        val decodedPayload = String(Base64.decode(payload, Base64.DEFAULT))
+        val jsonObject = JSONObject(decodedPayload)
+        val roleString = jsonObject.getString("role")
+        Role.valueOf(roleString.uppercase(Locale.ROOT))
+    } catch (e: Exception) {
+        e.printStackTrace()
+        Role.USER
+    }
+}
+
+fun saveToken(token: String) {
+    MainActivity.getPref().edit().putString("token", token).apply()
+}
+
+fun getName(token: String): String? {
+    // decode jwt token to get name
+    return try {
+        val payload = token.split(".")[1]
+        val decodedPayload = String(Base64.decode(payload, Base64.DEFAULT))
+        val jsonObject = JSONObject(decodedPayload)
+        jsonObject.getString("name")
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    }
 }
