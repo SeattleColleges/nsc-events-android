@@ -54,14 +54,39 @@ import com.example.nsc_events.R
 import com.example.nsc_events.Routes
 import com.example.nsc_events.data.Datasource
 import com.example.nsc_events.data.network.auth.DeleteService
+import com.example.nsc_events.data.network.dto.auth_dto.AttendanceResponse
+import com.example.nsc_events.data.network.dto.auth_dto.AttendeeDto
 import com.example.nsc_events.data.network.dto.auth_dto.DeleteRequest
 import com.example.nsc_events.data.network.dto.auth_dto.Role
 import com.example.nsc_events.model.Event
 import kotlinx.coroutines.launch
+import io.ktor.client.*
+import io.ktor.client.engine.android.*
+import io.ktor.client.features.logging.*
+import io.ktor.client.features.json.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.HttpResponse
+import io.ktor.http.*
+import io.ktor.util.InternalAPI
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, InternalAPI::class)
 @Composable
 fun EventDetailPage(navController: NavController, eventId: String) {
+
+    val httpClient = HttpClient(Android)
+    val tempEventID = "65307ae992b0811dc2b8712a"
+    val tempToken = ""
+    var ipAddress = "http://159.223.203.135:3000/api/events/attend/$eventId"
+
+    suspend fun attendEvent(eventId: String, token: String, attendee: AttendeeDto): HttpResponse {
+        return httpClient.post(ipAddress) {
+            header(HttpHeaders.Authorization, "Bearer $tempToken")
+            header(HttpHeaders.ContentType, ContentType.Application.Json)
+            body = attendee
+        }
+    }
+
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
