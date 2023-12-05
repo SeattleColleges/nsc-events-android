@@ -223,20 +223,6 @@ fun LoginPage(navController: NavHostController) {
                             .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
                             .align(Alignment.CenterHorizontally)
                     )
-
-
-                    /* Add event button */
-                    Button(
-                        onClick = {
-                            navController.navigate(Routes.AddEvent.route)
-                        },
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .width(200.dp)
-                            .align(Alignment.CenterHorizontally)
-                    ) {
-                        Text(text = "Add Event")
-                    }
                 }
             }
 
