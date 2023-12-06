@@ -15,11 +15,13 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -28,11 +30,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -79,12 +85,9 @@ import kotlinx.serialization.json.Json
 @OptIn(ExperimentalMaterial3Api::class, InternalAPI::class)
 @Composable
 fun EventDetailPage(navController: NavController, eventId: String) {
-
     val attendService = AttendService.create()
     val tempEventID = "651f56ba4ae5cab4a6319ce4"
     val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1M2M0YWQ4NWM5OTc1YjFjZDU2NzRjNyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTcwMTU1OTgwOSwiZXhwIjoxNzA5MzM1ODA5fQ.135R6aIYrL9EmTGPDa9za8zTPZwR9Gt1T6zQY4FmJ30"
-
-    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         modifier = Modifier
@@ -164,40 +167,7 @@ fun EventDetailPage(navController: NavController, eventId: String) {
                 }
             }
             EventDetailCard(event = event, navController = navController)
-            Row(
-                modifier = Modifier
-                    .wrapContentSize()
-                    .padding(2.dp)
-                    .fillMaxSize(),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Button(onClick = {
-                    // Construct your AttendeeDto based on user input or predefined data
-                    val attendee = AttendeeDto(firstName = "John", lastName = "Doe")
-
-                    // Launch the coroutine for network request
-                    coroutineScope.launch {
-                        try {
-                            // Call the attend event function from your service
-                            val response = attendService.attendEvent(tempEventID, token, attendee)
-
-                            // Check the response and act accordingly
-                            if (response.status == HttpStatusCode.OK) {
-                                // Handle successful attendance
-                                // For example, navigate back or show a success message
-                            } else {
-                                // Handle error case
-                                // For example, show an error message to the user
-                            }
-                        } catch (e: Exception) {
-                            // Handle exceptions, possibly by showing an error message to the user
-                        }
-                    }
-                }) {
-                    Text("Attend Event")
-                }
-            }
+            AttendEvent(attendService, tempEventID, token)
         }
     }
 }
@@ -240,6 +210,7 @@ fun EventDetailCard(event: Event, navController: NavController) {
             Text(text = "eventStartTime: ${event.eventStartTime}")
             Text(text = "eventEndTime: ${event.eventEndTime}")
             Text(text = "eventLocation: ${event.eventLocation}")
+
         }
     }
 }
@@ -317,5 +288,70 @@ suspend fun delete(eventId: String, navController: NavController, current: Conte
         println("Error: ${e.message}")
         Toast.makeText(current, "Delete failed. Error: ${e.message}", Toast.LENGTH_SHORT).show()
         false
+    }
+}
+
+@Composable
+fun AttendEvent(attendService: AttendService, eventId: String, token: String) {
+    var consentGiven by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+    var showInfoDialog by remember { mutableStateOf(false) }
+    Box {
+        Row(
+            modifier = Modifier
+                .wrapContentSize()
+                .padding(2.dp)
+                .fillMaxSize(),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = stringResource(R.string.consent_attend_button))
+            Checkbox(
+                checked = consentGiven,
+                onCheckedChange = { consentGiven = it }
+            )
+            Icon(
+                imageVector = Icons.Default.Info,
+                contentDescription = "Info",
+                modifier = Modifier
+                    .offset(x = (-10).dp, y = (-20).dp)
+                    .size(38.dp)
+                    .clickable { showInfoDialog = true }
+                    .padding(6.dp)
+            )
+
+            Button(onClick = {
+                // TODO: Remove TEMP VAR and add real user data
+                val attendee = AttendeeDto(firstName = "John", lastName = "Doe")
+
+                // Launch the coroutine for network request
+                coroutineScope.launch {
+                    try {
+                        val response = attendService.attendEvent(eventId, token, attendee)
+                        if (response.status == HttpStatusCode.OK) {
+                            // TODO: Handle successful attendance
+                        } else {
+                            // TODO: Handle error case
+                        }
+                    } catch (e: Exception) {
+                        // TODO: Handle exceptions
+                    }
+                }
+            }) {
+                Text(text = stringResource(R.string.attend_button))
+            }
+            if (showInfoDialog) {
+                AlertDialog(
+                    onDismissRequest = { showInfoDialog = false },
+                    title = { Text("Consent Information") },
+                    text = { Text("If you add your name to this event, this information is public and anyone can see this information, if you are worried about the public knowing you plan to attend this event DO NOT click this..") },
+                    confirmButton = {
+                        TextButton(onClick = { showInfoDialog = false }) {
+                            Text("OK")
+                        }
+                    }
+                )
+            }
+        }
     }
 }

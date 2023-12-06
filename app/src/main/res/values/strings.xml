@@ -34,4 +34,6 @@
     <string name="unauthorized_toast">Unauthorized!</string>
     <string name="invalid_id_toast">Invalid ID!</string>
     <string name="delete_failed_toast">Deletion failed, please try again!</string>
+    <string name="attend_button">Attend this event</string>
+    <string name="consent_attend_button">add my name</string>
 </resources>
