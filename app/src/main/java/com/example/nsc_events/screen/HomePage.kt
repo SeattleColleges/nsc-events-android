@@ -84,30 +84,6 @@ fun HomePage(navController: NavHostController) { // Create Navbar
             Text(text = "Sign-in / Sign-up")
         }
         Spacer(modifier = Modifier.height(16.dp))
-        Button(
-            onClick = {
-                navController.navigate(Routes.AdminView.route)
-            }
-        ) {
-            Text(text="Admin View")
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(
-            onClick = {
-                navController.navigate(Routes.CreatorView.route)
-        }
-        ) {
-            Text(text="Creator View")
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(
-            onClick = {
-                navController.navigate(Routes.AddEvent.route)
-            }
-        ) {
-            Text(text = "Add Event")
-        }
-
         val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
         Scaffold(
             modifier = Modifier
@@ -129,13 +105,6 @@ fun HomePage(navController: NavHostController) { // Create Navbar
                     actions = {
                         TextButton(onClick = { navController.navigate(Routes.Login.route) }) {
                             Text("Login", color = Color.Black)
-                        }
-                        // TODO: give this button an action when clicked
-                        IconButton(onClick = { }) {
-                            Icon(
-                                imageVector = Icons.Default.FavoriteBorder,
-                                contentDescription = "Mark as favorite"
-                            )
                         }
                         // TODO: give this button an action when clicked
                         IconButton(onClick = { }) {
