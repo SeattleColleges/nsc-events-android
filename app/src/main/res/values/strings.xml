@@ -36,4 +36,5 @@
     <string name="delete_failed_toast">Deletion failed, please try again!</string>
     <string name="attend_button">Attend this event</string>
     <string name="consent_attend_button">add my name</string>
+    <string name="consent_information_body">If you add your name to this event, this information is public and anyone can see this information, if you are worried about the public knowing you plan to attend this event DO NOT click this..</string>
 </resources>

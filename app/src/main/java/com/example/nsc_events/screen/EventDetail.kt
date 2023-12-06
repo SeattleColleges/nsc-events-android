@@ -317,17 +317,20 @@ fun AttendEvent(attendService: AttendService, eventId: String, token: String) {
                     .offset(x = (-10).dp, y = (-20).dp)
                     .size(38.dp)
                     .clickable { showInfoDialog = true }
-                    .padding(6.dp)
+                    .padding(6.dp),
+                tint = Color.Blue
             )
 
             Button(onClick = {
                 // TODO: Remove TEMP VAR and add real user data
-                val attendee = AttendeeDto(firstName = "John", lastName = "Doe")
+                val attendeeDto = AttendeeDto(
+                    attendee = AttendeeDto.Attendee(firstName = "John", lastName = "Doe")
+                )
 
                 // Launch the coroutine for network request
                 coroutineScope.launch {
                     try {
-                        val response = attendService.attendEvent(eventId, token, attendee)
+                        val response = attendService.attendEvent(eventId, token, attendeeDto)
                         if (response.status == HttpStatusCode.OK) {
                             // TODO: Handle successful attendance
                         } else {
@@ -344,7 +347,7 @@ fun AttendEvent(attendService: AttendService, eventId: String, token: String) {
                 AlertDialog(
                     onDismissRequest = { showInfoDialog = false },
                     title = { Text("Consent Information") },
-                    text = { Text("If you add your name to this event, this information is public and anyone can see this information, if you are worried about the public knowing you plan to attend this event DO NOT click this..") },
+                    text = { Text(stringResource(R.string.consent_information_body))},
                     confirmButton = {
                         TextButton(onClick = { showInfoDialog = false }) {
                             Text("OK")
