@@ -2,6 +2,7 @@ package com.example.nsc_events.screen
 
 import android.content.Context
 import android.net.http.HttpException
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -33,6 +34,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,8 +55,8 @@ import com.example.nsc_events.MainActivity
 import com.example.nsc_events.R
 import com.example.nsc_events.Routes
 import com.example.nsc_events.data.Datasource
+import com.example.nsc_events.data.network.auth.AttendService
 import com.example.nsc_events.data.network.auth.DeleteService
-import com.example.nsc_events.data.network.dto.auth_dto.AttendanceResponse
 import com.example.nsc_events.data.network.dto.auth_dto.AttendeeDto
 import com.example.nsc_events.data.network.dto.auth_dto.DeleteRequest
 import com.example.nsc_events.data.network.dto.auth_dto.Role
@@ -62,30 +64,27 @@ import com.example.nsc_events.model.Event
 import kotlinx.coroutines.launch
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
-import io.ktor.client.features.logging.*
-import io.ktor.client.features.json.*
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.*
 import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsText
+import io.ktor.client.statement.readText
 import io.ktor.http.*
+import io.ktor.http.ContentType.Application.Json
+import io.ktor.serialization.kotlinx.json.json
 import io.ktor.util.InternalAPI
+import kotlinx.serialization.json.Json
+
 
 @OptIn(ExperimentalMaterial3Api::class, InternalAPI::class)
 @Composable
 fun EventDetailPage(navController: NavController, eventId: String) {
 
-    val httpClient = HttpClient(Android)
-    val tempEventID = "65307ae992b0811dc2b8712a"
-    val tempToken = ""
-    var ipAddress = "http://159.223.203.135:3000/api/events/attend/$eventId"
+    val attendService = AttendService.create()
+    val tempEventID = "651f56ba4ae5cab4a6319ce4"
+    val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1M2M0YWQ4NWM5OTc1YjFjZDU2NzRjNyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTcwMTU1OTgwOSwiZXhwIjoxNzA5MzM1ODA5fQ.135R6aIYrL9EmTGPDa9za8zTPZwR9Gt1T6zQY4FmJ30"
 
-    suspend fun attendEvent(eventId: String, token: String, attendee: AttendeeDto): HttpResponse {
-        return httpClient.post(ipAddress) {
-            header(HttpHeaders.Authorization, "Bearer $tempToken")
-            header(HttpHeaders.ContentType, ContentType.Application.Json)
-            body = attendee
-        }
-    }
-
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         modifier = Modifier
@@ -140,7 +139,8 @@ fun EventDetailPage(navController: NavController, eventId: String) {
                         coroutineScope.launch {
                             val isDeleteSuccessful = delete(event.id, navController, current)
                             if (isDeleteSuccessful) {
-                                val hidden = MainActivity.getPref().getStringSet("hidden", mutableSetOf(event.id))
+                                val hidden = MainActivity.getPref()
+                                    .getStringSet("hidden", mutableSetOf(event.id))
                                 hidden?.add(event.id)
                                 val editor = MainActivity.getPref().edit()
                                 editor.putStringSet("hidden", hidden)
@@ -173,9 +173,29 @@ fun EventDetailPage(navController: NavController, eventId: String) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(onClick = {
-                    // TODO: save this locally or in teh cloud
+                    // Construct your AttendeeDto based on user input or predefined data
+                    val attendee = AttendeeDto(firstName = "John", lastName = "Doe")
+
+                    // Launch the coroutine for network request
+                    coroutineScope.launch {
+                        try {
+                            // Call the attend event function from your service
+                            val response = attendService.attendEvent(tempEventID, token, attendee)
+
+                            // Check the response and act accordingly
+                            if (response.status == HttpStatusCode.OK) {
+                                // Handle successful attendance
+                                // For example, navigate back or show a success message
+                            } else {
+                                // Handle error case
+                                // For example, show an error message to the user
+                            }
+                        } catch (e: Exception) {
+                            // Handle exceptions, possibly by showing an error message to the user
+                        }
+                    }
                 }) {
-                    Text("Attend")
+                    Text("Attend Event")
                 }
             }
         }
