@@ -75,15 +75,6 @@ fun HomePage(navController: NavHostController) { // Create Navbar
             )
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Button(
-            onClick = {
-
-                navController.navigate(Routes.Login.route)
-            }
-        ) {
-            Text(text = "Sign-in / Sign-up")
-        }
-        Spacer(modifier = Modifier.height(16.dp))
         val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
         Scaffold(
             modifier = Modifier
