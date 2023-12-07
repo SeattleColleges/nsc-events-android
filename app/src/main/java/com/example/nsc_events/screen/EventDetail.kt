@@ -87,7 +87,8 @@ import kotlinx.serialization.json.Json
 fun EventDetailPage(navController: NavController, eventId: String) {
     val attendService = AttendService.create()
     val tempEventID = "651f56ba4ae5cab4a6319ce4"
-    val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1M2M0YWQ4NWM5OTc1YjFjZDU2NzRjNyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTcwMTU1OTgwOSwiZXhwIjoxNzA5MzM1ODA5fQ.135R6aIYrL9EmTGPDa9za8zTPZwR9Gt1T6zQY4FmJ30"
+    val sharedPref = MainActivity.getPref()
+    val token = sharedPref.getString("token", "") ?: ""
 
     Scaffold(
         modifier = Modifier
