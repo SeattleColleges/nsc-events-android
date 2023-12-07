@@ -297,6 +297,7 @@ fun AttendEvent(attendService: AttendService, eventId: String, token: String) {
     var consentGiven by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     var showInfoDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
     Box {
         Row(
             modifier = Modifier
@@ -332,8 +333,9 @@ fun AttendEvent(attendService: AttendService, eventId: String, token: String) {
                 coroutineScope.launch {
                     try {
                         val response = attendService.attendEvent(eventId, token, attendeeDto)
-                        if (response.status == HttpStatusCode.OK) {
+                        if (response.status == HttpStatusCode.Created) {
                             // TODO: Handle successful attendance
+                            Toast.makeText(context, "Attendance recorded successfully!", Toast.LENGTH_SHORT).show()
                         } else {
                             // TODO: Handle error case
                         }
