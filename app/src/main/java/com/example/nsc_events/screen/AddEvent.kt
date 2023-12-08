@@ -66,6 +66,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
@@ -137,137 +138,145 @@ fun AddEventPage(navController: NavHostController) {
     var eventAccessibility by remember { mutableStateOf("") }
     var eventVisibility by remember { mutableStateOf(true) }
 
-
-    /* navigating back to login page */
-    TopAppBar(
-        title = { Text("Login") }, /* todo: change destination where arrow navigates to */
-        navigationIcon = {
-            IconButton(
-                onClick = {
-                    navController.navigate(Routes.Login.route)
-                }
-            ) {
-                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
-            }
-        }
-    )
-
-    /* Center Column */
-    LazyColumn(
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    Scaffold(
         modifier = Modifier
-            .padding(
-                top = 72.dp,
-                start = 16.dp,
-                end = 16.dp,
-                bottom = 16.dp
-            )
-        //avoid overlapping top app bar
-    ) {
-
-        // Banner with text
-        item {
-            NSCBanner()
-        }
-
-        item {
-            // Event Name with error
-            EventInfoField(
-                eventName = eventTitle,
-                onEventNameChange = onEventNameChange,
-                isError = eventTitleError
+            .fillMaxSize()
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            /* navigating back to login page */
+            TopAppBar(
+                title = { Text("Login") }, /* todo: change destination where arrow navigates to */
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            navController.navigate(Routes.Login.route)
+                        }
+                    ) {
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                }
             )
         }
+    ) { innerPadding ->
+        val modifier = Modifier.padding(innerPadding)
+        /* Center Column */
+        LazyColumn(
+            modifier = Modifier
+                .padding(
+                    top = 72.dp,
+                    start = 16.dp,
+                    end = 16.dp,
+                    bottom = 16.dp
+                )
+            //avoid overlapping top app bar
+        ) {
 
-        item {
-            // Event Description with error
-            EventDescriptionField(
-                eventDescription = eventDescription,
-                onEventDescriptionChange = onEventDescriptionChange,
-                isError = eventDescriptionError
-            )
-        }
+            // Banner with text
+            item {
+                NSCBanner()
+            }
 
-        item {
-        /* Date and time pickers */
-        Column {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                DatePicker(
-                    onDateSelected = { newDate ->
-                        eventDate = newDate
-                        isDateError = false  // Reset error state when a date is picked
-                    },
-                    isError = isDateError
+            item {
+                // Event Name with error
+                EventInfoField(
+                    eventName = eventTitle,
+                    onEventNameChange = onEventNameChange,
+                    isError = eventTitleError
                 )
             }
-        }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                // TimePicker for the start time
-                Column(modifier = Modifier.wrapContentWidth()) {
-                    TimePicker(
-                        label = "Start Time",
-                        selectedTime = eventStartTime,
-                        isError = isStartTimeError,
-                        onTimeSelected = { time ->
-                            eventStartTime = time
-                            isStartTimeError = time.isEmpty()
-                        }
-                    )
+            item {
+                // Event Description with error
+                EventDescriptionField(
+                    eventDescription = eventDescription,
+                    onEventDescriptionChange = onEventDescriptionChange,
+                    isError = eventDescriptionError
+                )
+            }
+
+            item {
+                /* Date and time pickers */
+                Column {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        DatePicker(
+                            onDateSelected = { newDate ->
+                                eventDate = newDate
+                                isDateError = false  // Reset error state when a date is picked
+                            },
+                            isError = isDateError
+                        )
+                    }
                 }
 
-                Spacer(modifier = Modifier.width(4.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    // TimePicker for the start time
+                    Column(modifier = Modifier.wrapContentWidth()) {
+                        TimePicker(
+                            label = "Start Time",
+                            selectedTime = eventStartTime,
+                            isError = isStartTimeError,
+                            onTimeSelected = { time ->
+                                eventStartTime = time
+                                isStartTimeError = time.isEmpty()
+                            }
+                        )
+                    }
 
-                // TimePicker for the end time
-                Column(modifier = Modifier.wrapContentWidth()) {
-                    TimePicker(
-                        label = "End Time",
-                        selectedTime = eventEndTime,
-                        isError = isEndTimeError,
-                        onTimeSelected = { time ->
-                            eventEndTime = time
-                            isEndTimeError = time.isEmpty()
-                        }
-                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+
+                    // TimePicker for the end time
+                    Column(modifier = Modifier.wrapContentWidth()) {
+                        TimePicker(
+                            label = "End Time",
+                            selectedTime = eventEndTime,
+                            isError = isEndTimeError,
+                            onTimeSelected = { time ->
+                                eventEndTime = time
+                                isEndTimeError = time.isEmpty()
+                            }
+                        )
+                    }
                 }
             }
-        }
 
-        item {
-            /*          Category field          */
-            CategoryDropDown()
-        }
+            item {
+                /*          Category field          */
+                CategoryDropDown()
+            }
 
-        item {
-            /*          Location field          */
-            LocationInputField(onLocationChange = { newLocation ->
-                eventLocation = newLocation
-            })
-        }
+            item {
+                /*          Location field          */
+                LocationInputField(onLocationChange = { newLocation ->
+                    eventLocation = newLocation
+                })
+            }
 
-        item {
-            /*          Image upload button     */
-            ImageUploadButton(onImagePicked = { uri -> /* TODO: Do something with this */ })
+            item {
+                /*          Image upload button     */
+                ImageUploadButton(onImagePicked = { uri -> /* TODO: Do something with this */ })
 
-            /* TODO: finish up product button and validation logic */
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Button(
+                /* TODO: finish up product button and validation logic */
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Button(
 
-                    onClick = {
-                        eventTitleError = eventTitle.isEmpty()
-                        eventDescriptionError = eventDescription.isEmpty()
-                        isDateError = eventDate == null
-                        isStartTimeError = eventStartTime.isEmpty()
-                        isEndTimeError = eventEndTime.isEmpty()
-                        val isInputValid = eventTitle.isNotEmpty() && eventDescription.isNotEmpty() && eventCategory.isNotEmpty() && eventDate != null && eventStartTime.isNotEmpty() && eventEndTime.isNotEmpty()
+                        onClick = {
+                            eventTitleError = eventTitle.isEmpty()
+                            eventDescriptionError = eventDescription.isEmpty()
+                            isDateError = eventDate == null
+                            isStartTimeError = eventStartTime.isEmpty()
+                            isEndTimeError = eventEndTime.isEmpty()
+                            val isInputValid =
+                                eventTitle.isNotEmpty() && eventDescription.isNotEmpty() && eventCategory.isNotEmpty() && eventDate != null && eventStartTime.isNotEmpty() && eventEndTime.isNotEmpty()
                             newEvent = eventDate?.let {
                                 Event(
                                     eventTitle,
@@ -295,40 +304,40 @@ fun AddEventPage(navController: NavHostController) {
                                     eventVisibility
                                 )
                             }
-                        showAlert = true
+                            showAlert = true
                             /* TODO: save new product to db or use a list to hold products (ex: List<Product>) */
-                    },
-                    modifier = Modifier
-                        .padding(4.dp)
-                        .width(240.dp)
-                )
-                {
-                    Text(text = "Add Event")
-                }
-                if (showAlert) {
-                    AlertDialog(
-                        onDismissRequest = { showAlert = false },
-                        title = {
-                            Text(text = "Event Details")
                         },
-                        text = {
-                            Column {
-                                Text("Title: ${newEvent?.eventTitle}")
-                                Text("Description: ${newEvent?.eventDescription}")
-                                Text("Date: ${newEvent?.eventDate}")
-                                Text("Start Time: ${newEvent?.eventStartTime}")
-                                Text("End Time: ${newEvent?.eventEndTime}")
-                            }
-                        },
-                        confirmButton = {
-                            Button(onClick = { showAlert = false }) {
-                                Text("Close")
-                            }
-                        }
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .width(240.dp)
                     )
+                    {
+                        Text(text = "Add Event")
+                    }
+                    if (showAlert) {
+                        AlertDialog(
+                            onDismissRequest = { showAlert = false },
+                            title = {
+                                Text(text = "Event Details")
+                            },
+                            text = {
+                                Column {
+                                    Text("Title: ${newEvent?.eventTitle}")
+                                    Text("Description: ${newEvent?.eventDescription}")
+                                    Text("Date: ${newEvent?.eventDate}")
+                                    Text("Start Time: ${newEvent?.eventStartTime}")
+                                    Text("End Time: ${newEvent?.eventEndTime}")
+                                }
+                            },
+                            confirmButton = {
+                                Button(onClick = { showAlert = false }) {
+                                    Text("Close")
+                                }
+                            }
+                        )
+                    }
                 }
             }
-        }
 
             item {
                 EventLocationField(
@@ -451,6 +460,7 @@ fun AddEventPage(navController: NavHostController) {
             }
         }
     }
+}
 
 
     /* Begin composables */
