@@ -37,4 +37,8 @@
     <string name="attend_button">Attend this event</string>
     <string name="consent_attend_button">add my name</string>
     <string name="consent_information_body">If you add your name to this event, this information is public and anyone can see this information, if you are worried about the public knowing you plan to attend this event DO NOT click this..</string>
+    <string name="attend_success">Added to attendee list!</string>
+    <string name="attend_failure">Failed to attend</string>
+    <string name="attend_exception">Exception failure</string>
+
 </resources>

@@ -326,21 +326,29 @@ fun AttendEvent(attendService: AttendService, eventId: String, token: String) {
             Button(onClick = {
                 // TODO: Remove TEMP VAR and add real user data
                 val attendeeDto = AttendeeDto(
-                    attendee = AttendeeDto.Attendee(firstName = "John", lastName = "Doe")
+                    attendee = AttendeeDto.Attendee(firstName = "Jane", lastName = "Doe")
                 )
 
                 // Launch the coroutine for network request
                 coroutineScope.launch {
-                    try {
-                        val response = attendService.attendEvent(eventId, token, attendeeDto)
-                        if (response.status == HttpStatusCode.Created) {
-                            // TODO: Handle successful attendance
-                            Toast.makeText(context, "Attendance recorded successfully!", Toast.LENGTH_SHORT).show()
-                        } else {
-                            // TODO: Handle error case
+                    if (consentGiven) {
+                        try {
+                            val response = attendService.attendEvent(eventId, token, attendeeDto)
+                            if (response.status == HttpStatusCode.Created) {
+                                Toast.makeText(context, R.string.attend_success, Toast.LENGTH_SHORT)
+                                    .show()
+                            } else {
+                                // TODO: Handle error case
+                                Toast.makeText(context, R.string.attend_failure, Toast.LENGTH_SHORT)
+                                    .show()
+                            }
+                        } catch (e: Exception) {
+                            // TODO: Handle exceptions
+                            Toast.makeText(context, R.string.attend_exception, Toast.LENGTH_SHORT)
+                                .show()
                         }
-                    } catch (e: Exception) {
-                        // TODO: Handle exceptions
+                    }
+                    else {
                     }
                 }
             }) {
