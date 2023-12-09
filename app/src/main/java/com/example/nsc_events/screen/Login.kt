@@ -292,7 +292,14 @@ suspend fun loginWithValidCredentials(email: String, password: String, navContro
             MainActivity.getPref().edit().putString("userRole", userRole.name).apply()
 
             MainActivity.getPref().edit().putString("token", loginResponse.token).apply()
-            navController.navigate(Routes.AddEvent.route)
+
+            // navigating to proper page based on user's role
+            when (userRole) {
+                Role.ADMIN -> navController.navigate(Routes.AdminView.route)
+                Role.CREATOR -> navController.navigate(Routes.CreatorView.route)
+                else -> navController.navigate(Routes.HomePage.route)
+            }
+
             Toast.makeText(
                 current,
                 "Welcome ${getName(loginResponse.token)} to NSC Events!",
