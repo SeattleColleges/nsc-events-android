@@ -328,6 +328,10 @@ fun AttendEvent(attendService: AttendService, eventId: String, token: String) {
                 val attendeeDto = AttendeeDto(
                     attendee = AttendeeDto.Attendee(firstName = "Jane", lastName = "Doe")
                 )
+                // TODO: refactor this
+                val attendeDto2 = AttendeeDto(
+                    attendee = AttendeeDto.Attendee(firstName = "", lastName = "")
+                )
 
                 // Launch the coroutine for network request
                 coroutineScope.launch {
@@ -349,6 +353,22 @@ fun AttendEvent(attendService: AttendService, eventId: String, token: String) {
                         }
                     }
                     else {
+                        try {
+                            val response = attendService.attendEvent(eventId, token, attendeDto2)
+                            if (response.status == HttpStatusCode.Created) {
+                                Toast.makeText(context, R.string.attend_success, Toast.LENGTH_SHORT)
+                                    .show()
+                            } else {
+                                // TODO: Handle error case
+                                Toast.makeText(context, R.string.attend_failure, Toast.LENGTH_SHORT)
+                                    .show()
+                            }
+                        } catch (e: Exception) {
+                            // TODO: Handle exceptions
+                            Toast.makeText(context, R.string.attend_exception, Toast.LENGTH_SHORT)
+                                .show()
+                        }
+
                     }
                 }
             }) {
