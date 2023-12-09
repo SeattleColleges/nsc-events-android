@@ -2,7 +2,6 @@ package com.example.nsc_events.screen
 
 import android.content.Context
 import android.net.http.HttpException
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -24,8 +23,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
@@ -40,7 +37,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -68,24 +64,15 @@ import com.example.nsc_events.data.network.dto.auth_dto.DeleteRequest
 import com.example.nsc_events.data.network.dto.auth_dto.Role
 import com.example.nsc_events.model.Event
 import kotlinx.coroutines.launch
-import io.ktor.client.*
-import io.ktor.client.engine.android.*
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.request.*
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.bodyAsText
-import io.ktor.client.statement.readText
 import io.ktor.http.*
-import io.ktor.http.ContentType.Application.Json
-import io.ktor.serialization.kotlinx.json.json
 import io.ktor.util.InternalAPI
-import kotlinx.serialization.json.Json
 
 
 @OptIn(ExperimentalMaterial3Api::class, InternalAPI::class)
 @Composable
 fun EventDetailPage(navController: NavController, eventId: String) {
     val attendService = AttendService.create()
+    // TODO: Retrieve the actual event id here!
     val tempEventID = "651f56ba4ae5cab4a6319ce4"
     val sharedPref = MainActivity.getPref()
     val token = sharedPref.getString("token", "") ?: ""
@@ -324,18 +311,16 @@ fun AttendEvent(attendService: AttendService, eventId: String, token: String) {
             )
 
             Button(onClick = {
-                // TODO: Remove TEMP VAR and add real user data
-                val attendeeDto = AttendeeDto(
-                    attendee = AttendeeDto.Attendee(firstName = "Jane", lastName = "Doe")
-                )
-                // TODO: refactor this
-                val attendeDto2 = AttendeeDto(
-                    attendee = AttendeeDto.Attendee(firstName = "", lastName = "")
-                )
+
+                val attendeeDto = if (consentGiven) {
+                    AttendeeDto(AttendeeDto.Attendee(firstName = "Jane", lastName = "Doe"))
+                } else {
+                    AttendeeDto(AttendeeDto.Attendee(firstName = "", lastName = ""))
+                }
+
 
                 // Launch the coroutine for network request
                 coroutineScope.launch {
-                    if (consentGiven) {
                         try {
                             val response = attendService.attendEvent(eventId, token, attendeeDto)
                             if (response.status == HttpStatusCode.Created) {
@@ -352,25 +337,7 @@ fun AttendEvent(attendService: AttendService, eventId: String, token: String) {
                                 .show()
                         }
                     }
-                    else {
-                        try {
-                            val response = attendService.attendEvent(eventId, token, attendeDto2)
-                            if (response.status == HttpStatusCode.Created) {
-                                Toast.makeText(context, R.string.attend_success, Toast.LENGTH_SHORT)
-                                    .show()
-                            } else {
-                                // TODO: Handle error case
-                                Toast.makeText(context, R.string.attend_failure, Toast.LENGTH_SHORT)
-                                    .show()
-                            }
-                        } catch (e: Exception) {
-                            // TODO: Handle exceptions
-                            Toast.makeText(context, R.string.attend_exception, Toast.LENGTH_SHORT)
-                                .show()
-                        }
 
-                    }
-                }
             }) {
                 Text(text = stringResource(R.string.attend_button))
             }
