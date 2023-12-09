@@ -223,20 +223,6 @@ fun LoginPage(navController: NavHostController) {
                             .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
                             .align(Alignment.CenterHorizontally)
                     )
-
-
-                    /* Add event button */
-                    Button(
-                        onClick = {
-                            navController.navigate(Routes.AddEvent.route)
-                        },
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .width(200.dp)
-                            .align(Alignment.CenterHorizontally)
-                    ) {
-                        Text(text = "Add Event")
-                    }
                 }
             }
 
@@ -306,7 +292,14 @@ suspend fun loginWithValidCredentials(email: String, password: String, navContro
             MainActivity.getPref().edit().putString("userRole", userRole.name).apply()
 
             MainActivity.getPref().edit().putString("token", loginResponse.token).apply()
-            navController.navigate(Routes.AddEvent.route)
+
+            // navigating to proper page based on user's role
+            when (userRole) {
+                Role.ADMIN -> navController.navigate(Routes.AdminView.route)
+                Role.CREATOR -> navController.navigate(Routes.CreatorView.route)
+                else -> navController.navigate(Routes.HomePage.route)
+            }
+
             Toast.makeText(
                 current,
                 "Welcome ${getName(loginResponse.token)} to NSC Events!",
