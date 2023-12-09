@@ -48,5 +48,9 @@ fun ScreenMain(){
         composable(Routes.CreatorView.route) {
             CreatorView(navController = navController)
         }
+
+        composable(Routes.AdminView.route) {
+            AdminView(navController = navController)
+        }
     }
 }

@@ -70,6 +70,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
@@ -151,55 +152,53 @@ fun AddEventPage(navController: NavHostController) {
 
     var selectedCategory by remember { mutableStateOf<String?>(null)}
 
-
-    /* navigating back to login page */
-    TopAppBar(
-        title = { Text("Login") }, /* todo: change destination where arrow navigates to */
-        navigationIcon = {
-            IconButton(
-                onClick = {
-                    navController.navigate(Routes.Login.route)
-                }
-            ) {
-                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
-            }
-        }
-    )
-
-    /* Center Column */
-    LazyColumn(
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    Scaffold(
         modifier = Modifier
-            .padding(
-                top = 72.dp,
-                start = 16.dp,
-                end = 16.dp,
-                bottom = 16.dp
-            )
-        //avoid overlapping top app bar
-    ) {
-
-        // Banner with text
-        item {
-            NSCBanner()
-        }
-
-        item {
-            // Event Name with error
-            EventInfoField(
-                eventName = eventTitle,
-                onEventNameChange = onEventNameChange,
-                isError = eventTitleError
+            .fillMaxSize()
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            /* navigating back to login page */
+            TopAppBar(
+                title = { Text("Login") }, /* todo: change destination where arrow navigates to */
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            navController.navigate(Routes.Login.route)
+                        }
+                    ) {
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                }
             )
         }
+    ) { innerPadding ->
+        val modifier = Modifier.padding(innerPadding)
+        /* Center Column */
+        LazyColumn(
+            modifier = Modifier
+                .padding(
+                    top = 72.dp,
+                    start = 16.dp,
+                    end = 16.dp,
+                    bottom = 16.dp
+                )
+            //avoid overlapping top app bar
+        ) {
 
-        item {
-            // Event Description with error
-            EventDescriptionField(
-                eventDescription = eventDescription,
-                onEventDescriptionChange = onEventDescriptionChange,
-                isError = eventDescriptionError
-            )
-        }
+            // Banner with text
+            item {
+                NSCBanner()
+            }
+
+            item {
+                // Event Name with error
+                EventInfoField(
+                    eventName = eventTitle,
+                    onEventNameChange = onEventNameChange,
+                    isError = eventTitleError
+                )
+            }
 
         item {
             /* Date and time pickers */
@@ -216,41 +215,66 @@ fun AddEventPage(navController: NavHostController) {
                         isError = isDateError
                     )
                 }
+                
+            item {
+                // Event Description with error
+                EventDescriptionField(
+                    eventDescription = eventDescription,
+                    onEventDescriptionChange = onEventDescriptionChange,
+                    isError = eventDescriptionError
+                )
             }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                // TimePicker for the start time
-                Column(modifier = Modifier.wrapContentWidth()) {
-                    TimePicker(
-                        label = "Start Time",
-                        selectedTime = eventStartTime,
-                        isError = isStartTimeError,
-                        onTimeSelected = { time ->
-                            eventStartTime = time
-                            isStartTimeError = time.isEmpty()
-                        }
-                    )
+            item {
+                /* Date and time pickers */
+                Column {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        DatePicker(
+                            onDateSelected = { newDate ->
+                                eventDate = newDate
+                                isDateError = false  // Reset error state when a date is picked
+                            },
+                            isError = isDateError
+                        )
+                    }
                 }
 
-                Spacer(modifier = Modifier.width(4.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    // TimePicker for the start time
+                    Column(modifier = Modifier.wrapContentWidth()) {
+                        TimePicker(
+                            label = "Start Time",
+                            selectedTime = eventStartTime,
+                            isError = isStartTimeError,
+                            onTimeSelected = { time ->
+                                eventStartTime = time
+                                isStartTimeError = time.isEmpty()
+                            }
+                        )
+                    }
 
-                // TimePicker for the end time
-                Column(modifier = Modifier.wrapContentWidth()) {
-                    TimePicker(
-                        label = "End Time",
-                        selectedTime = eventEndTime,
-                        isError = isEndTimeError,
-                        onTimeSelected = { time ->
-                            eventEndTime = time
-                            isEndTimeError = time.isEmpty()
-                        }
-                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+
+                    // TimePicker for the end time
+                    Column(modifier = Modifier.wrapContentWidth()) {
+                        TimePicker(
+                            label = "End Time",
+                            selectedTime = eventEndTime,
+                            isError = isEndTimeError,
+                            onTimeSelected = { time ->
+                                eventEndTime = time
+                                isEndTimeError = time.isEmpty()
+                            }
+                        )
+                    }
                 }
             }
-        }
 
         item {
             /*          Category field          */
@@ -262,18 +286,17 @@ fun AddEventPage(navController: NavHostController) {
             )
         }
 
-        item {
-            /*          Location field          */
-            LocationInputField(onLocationChange = { newLocation ->
-                eventLocation = newLocation
-            })
-        }
+            item {
+                /*          Location field          */
+                LocationInputField(onLocationChange = { newLocation ->
+                    eventLocation = newLocation
+                })
+            }
 
         item {
             /*          Image upload button     */
             ImageUploadButton(onImagePicked = { uri -> /* TODO: Do something with this */ })
         }
-
         item {
             Button(
                 onClick = {
