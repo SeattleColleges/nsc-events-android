@@ -150,7 +150,7 @@ fun AddEventPage(navController: NavHostController) {
     val coroutineScope = rememberCoroutineScope()
     val current = LocalContext.current
 
-    var selectedCategory by remember { mutableStateOf<String?>(null)}
+    var selectedCategory by remember { mutableStateOf<String?>(null) }
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(
@@ -260,15 +260,15 @@ fun AddEventPage(navController: NavHostController) {
                 }
             }
 
-        item {
-            /*          Category field          */
-            CategoryDropDown(
-                selectedCategory = selectedCategory,
-                onCategorySelected = { category ->
-                    selectedCategory = category
-                }
-            )
-        }
+            item {
+                /*          Category field          */
+                CategoryDropDown(
+                    selectedCategory = selectedCategory,
+                    onCategorySelected = { category ->
+                        selectedCategory = category
+                    }
+                )
+            }
 
             item {
                 /*          Location field          */
@@ -277,174 +277,175 @@ fun AddEventPage(navController: NavHostController) {
                 })
             }
 
-        item {
-            /*          Image upload button     */
-            ImageUploadButton(onImagePicked = { uri -> /* TODO: Do something with this */ })
-        }
-        item {
-            Button(
-                onClick = {
-                    newEvent =
-                        Event(
-                            eventTitle,
-                            eventDescription,
-                            eventCategory,
-                            eventDate!!,
-                            eventStartTime,
-                            eventEndTime,
-                            eventLocation,
-                            eventCoverPhoto,
-                            eventHost,
-                            eventWebsite,
-                            eventRegistration,
-                            eventCapacity,
-                            eventCost,
-                            eventTags,
-                            eventSchedule,
-                            eventSpeakers,
-                            eventPrerequisites,
-                            eventCancellationPolicy,
-                            eventContact,
-                            eventSocialMedia,
-                            eventPrivacy,
-                            eventAccessibility,
-                            isHidden
-                        )
-
-                    eventTitleError = eventTitle.isEmpty()
-                    eventDescriptionError = eventDescription.isEmpty()
-                    isDateError = eventDate == null
-                    isStartTimeError = eventStartTime.isEmpty()
-                    isEndTimeError = eventEndTime.isEmpty()
-
-                    coroutineScope.launch {
-                        createEvent(newEvent!!, navController, current)
-                    }
-                    /* TODO: save new product to db or use a list to hold products (ex: List<Product>) */
-                },
-                modifier = Modifier
-                    .padding(4.dp)
-                    .width(240.dp)
-            )
-            {
-                Text(text = "Add Event")
+            item {
+                /*          Image upload button     */
+                ImageUploadButton(onImagePicked = { uri -> /* TODO: Do something with this */ })
             }
-        }
+            item {
+                Button(
+                    onClick = {
+                        newEvent =
+                            Event(
+                                eventTitle,
+                                eventDescription,
+                                eventCategory,
+                                eventDate!!,
+                                eventStartTime,
+                                eventEndTime,
+                                eventLocation,
+                                eventCoverPhoto,
+                                eventHost,
+                                eventWebsite,
+                                eventRegistration,
+                                eventCapacity,
+                                eventCost,
+                                eventTags,
+                                eventSchedule,
+                                eventSpeakers,
+                                eventPrerequisites,
+                                eventCancellationPolicy,
+                                eventContact,
+                                eventSocialMedia,
+                                eventPrivacy,
+                                eventAccessibility,
+                                isHidden
+                            )
 
-        item {
-            EventCoverPhotoField(
-                eventCoverPhoto = eventCoverPhoto,
-                onEventCoverPhotoChange = { newCoverPhoto -> eventCoverPhoto = newCoverPhoto }
-            )
-        }
+                        eventTitleError = eventTitle.isEmpty()
+                        eventDescriptionError = eventDescription.isEmpty()
+                        isDateError = eventDate == null
+                        isStartTimeError = eventStartTime.isEmpty()
+                        isEndTimeError = eventEndTime.isEmpty()
 
-        item {
-            EventHostField(
-                eventHost = eventHost,
-                onEventHostChange = { newHost -> eventHost = newHost }
-            )
-        }
-
-        item {
-            EventWebsiteField(
-                eventWebsite = eventWebsite,
-                onEventWebsiteChange = { newWebsite -> eventWebsite = newWebsite }
-            )
-        }
-
-        item {
-            EventRegistrationField(
-                eventRegistration = eventRegistration,
-                onEventRegistrationChange = { newRegistration ->
-                    eventRegistration = newRegistration
+                        coroutineScope.launch {
+                            createEvent(newEvent!!, navController, current)
+                        }
+                        /* TODO: save new product to db or use a list to hold products (ex: List<Product>) */
+                    },
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .width(240.dp)
+                )
+                {
+                    Text(text = "Add Event")
                 }
-            )
+            }
+
+            item {
+                EventCoverPhotoField(
+                    eventCoverPhoto = eventCoverPhoto,
+                    onEventCoverPhotoChange = { newCoverPhoto -> eventCoverPhoto = newCoverPhoto }
+                )
+            }
+
+            item {
+                EventHostField(
+                    eventHost = eventHost,
+                    onEventHostChange = { newHost -> eventHost = newHost }
+                )
+            }
+
+            item {
+                EventWebsiteField(
+                    eventWebsite = eventWebsite,
+                    onEventWebsiteChange = { newWebsite -> eventWebsite = newWebsite }
+                )
+            }
+
+            item {
+                EventRegistrationField(
+                    eventRegistration = eventRegistration,
+                    onEventRegistrationChange = { newRegistration ->
+                        eventRegistration = newRegistration
+                    }
+                )
+            }
+
+            item {
+                EventCapacityField(
+                    eventCapacity = eventCapacity,
+                    onEventCapacityChange = { newCapacity -> eventCapacity = newCapacity }
+                )
+            }
+
+            item {
+                EventCostField(
+                    eventCost = eventCost,
+                    onEventCostChange = { newCost -> eventCost = newCost }
+                )
+            }
+
+            item {
+                TagsField(
+                    eventTags = eventTags,
+                    onEventTagsChange = { newTags -> eventTags = newTags }
+                )
+            }
+
+            item {
+                EventScheduleField(
+                    eventSchedule = eventSchedule,
+                    onEventScheduleChange = { newSchedule -> eventSchedule = newSchedule }
+                )
+            }
+
+            item {
+                SpeakersField(
+                    eventSpeakers = eventSpeakers,
+                    onEventSpeakersChange = { newSpeakers -> eventSpeakers = newSpeakers }
+                )
+            }
+
+            item {
+                EventPrerequisitesField(
+                    eventPrerequisites = eventPrerequisites,
+                    onEventPrerequisitesChange = { newPrerequisites ->
+                        eventPrerequisites = newPrerequisites
+                    }
+                )
+            }
+
+            item {
+                EventCancellationPolicyField(
+                    eventCancellationPolicy = eventCancellationPolicy,
+                    onEventCancellationPolicyChange = { newCancellationPolicy ->
+                        eventCancellationPolicy = newCancellationPolicy
+                    }
+                )
+            }
+
+            item {
+                EventContactField(
+                    eventContact = eventContact,
+                    onEventContactChange = { newContact -> eventContact = newContact }
+                )
+            }
+
+            item {
+                SocialMediaField(
+                    socialMedia = eventSocialMedia,
+                    onSocialMediaChange = { newSocialMedia -> eventSocialMedia = newSocialMedia }
+                )
+            }
+
+            item {
+                EventPrivacyField(
+                    eventPrivacy = eventPrivacy,
+                    onEventPrivacyChange = { newPrivacy -> eventPrivacy = newPrivacy }
+                )
+            }
+
+            item {
+                EventAccessibilityField(
+                    eventAccessibility = eventAccessibility,
+                    onEventAccessibilityChange = { newAccessibility ->
+                        eventAccessibility = newAccessibility
+                    }
+                )
+            }
+
+
         }
-
-        item {
-            EventCapacityField(
-                eventCapacity = eventCapacity,
-                onEventCapacityChange = { newCapacity -> eventCapacity = newCapacity }
-            )
-        }
-
-        item {
-            EventCostField(
-                eventCost = eventCost,
-                onEventCostChange = { newCost -> eventCost = newCost }
-            )
-        }
-
-        item {
-            TagsField(
-                eventTags = eventTags,
-                onEventTagsChange = { newTags -> eventTags = newTags }
-            )
-        }
-
-        item {
-            EventScheduleField(
-                eventSchedule = eventSchedule,
-                onEventScheduleChange = { newSchedule -> eventSchedule = newSchedule }
-            )
-        }
-
-        item {
-            SpeakersField(
-                eventSpeakers = eventSpeakers,
-                onEventSpeakersChange = { newSpeakers -> eventSpeakers = newSpeakers }
-            )
-        }
-
-        item {
-            EventPrerequisitesField(
-                eventPrerequisites = eventPrerequisites,
-                onEventPrerequisitesChange = { newPrerequisites ->
-                    eventPrerequisites = newPrerequisites
-                }
-            )
-        }
-
-        item {
-            EventCancellationPolicyField(
-                eventCancellationPolicy = eventCancellationPolicy,
-                onEventCancellationPolicyChange = { newCancellationPolicy ->
-                    eventCancellationPolicy = newCancellationPolicy
-                }
-            )
-        }
-
-        item {
-            EventContactField(
-                eventContact = eventContact,
-                onEventContactChange = { newContact -> eventContact = newContact }
-            )
-        }
-
-        item {
-            SocialMediaField(
-                socialMedia = eventSocialMedia,
-                onSocialMediaChange = { newSocialMedia -> eventSocialMedia = newSocialMedia }
-            )
-        }
-
-        item {
-            EventPrivacyField(
-                eventPrivacy = eventPrivacy,
-                onEventPrivacyChange = { newPrivacy -> eventPrivacy = newPrivacy }
-            )
-        }
-
-        item {
-            EventAccessibilityField(
-                eventAccessibility = eventAccessibility,
-                onEventAccessibilityChange = { newAccessibility ->
-                    eventAccessibility = newAccessibility
-                }
-            )
-        }
-
-
     }
 }
 
@@ -776,6 +777,7 @@ fun ImageUploadButton(onImagePicked: (Uri?) -> Unit) {
         }
     }
 }
+
 @Composable
 fun Modifier.drawDottedBorder(
     strokeWidth: Dp,
@@ -1042,6 +1044,7 @@ fun EventPrivacyField(eventPrivacy: String, onEventPrivacyChange: (String) -> Un
             .padding(16.dp)
     )
 }
+
 @Composable
 fun EventAccessibilityField(
     eventAccessibility: String,
@@ -1109,3 +1112,4 @@ suspend fun createEvent(
     }
 
 }
+
