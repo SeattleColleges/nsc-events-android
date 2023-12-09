@@ -6,4 +6,5 @@ object HttpRoutes {
     const val LOGIN = "$BASE_URL/auth/login"
     const val FORGOT_PASSWORD = "$BASE_URL/auth/forgot-password"
     const val DELETE = "$BASE_URL/events/remove"
+    const val ATTEND_EVENT = "$BASE_URL/events/attend"
 }

@@ -14,24 +14,28 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,15 +57,26 @@ import com.example.nsc_events.MainActivity
 import com.example.nsc_events.R
 import com.example.nsc_events.Routes
 import com.example.nsc_events.data.Datasource
+import com.example.nsc_events.data.network.auth.AttendService
 import com.example.nsc_events.data.network.auth.DeleteService
+import com.example.nsc_events.data.network.dto.auth_dto.AttendeeDto
 import com.example.nsc_events.data.network.dto.auth_dto.DeleteRequest
 import com.example.nsc_events.data.network.dto.auth_dto.Role
 import com.example.nsc_events.model.Event
 import kotlinx.coroutines.launch
+import io.ktor.http.*
+import io.ktor.util.InternalAPI
 
-@OptIn(ExperimentalMaterial3Api::class)
+
+@OptIn(ExperimentalMaterial3Api::class, InternalAPI::class)
 @Composable
 fun EventDetailPage(navController: NavController, eventId: String) {
+    val attendService = AttendService.create()
+    // TODO: Retrieve the actual event id here!
+    val tempEventID = "651f56ba4ae5cab4a6319ce4"
+    val sharedPref = MainActivity.getPref()
+    val token = sharedPref.getString("token", "") ?: ""
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
@@ -115,7 +130,8 @@ fun EventDetailPage(navController: NavController, eventId: String) {
                         coroutineScope.launch {
                             val isDeleteSuccessful = delete(event.id, navController, current)
                             if (isDeleteSuccessful) {
-                                val hidden = MainActivity.getPref().getStringSet("hidden", mutableSetOf(event.id))
+                                val hidden = MainActivity.getPref()
+                                    .getStringSet("hidden", mutableSetOf(event.id))
                                 hidden?.add(event.id)
                                 val editor = MainActivity.getPref().edit()
                                 editor.putStringSet("hidden", hidden)
@@ -139,20 +155,7 @@ fun EventDetailPage(navController: NavController, eventId: String) {
                 }
             }
             EventDetailCard(event = event, navController = navController)
-            Row(
-                modifier = Modifier
-                    .wrapContentSize()
-                    .padding(2.dp)
-                    .fillMaxSize(),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Button(onClick = {
-                    // TODO: save this locally or in teh cloud
-                }) {
-                    Text("Attend")
-                }
-            }
+            AttendEvent(attendService, tempEventID, token)
         }
     }
 }
@@ -195,6 +198,7 @@ fun EventDetailCard(event: Event, navController: NavController) {
             Text(text = "eventStartTime: ${event.eventStartTime}")
             Text(text = "eventEndTime: ${event.eventEndTime}")
             Text(text = "eventLocation: ${event.eventLocation}")
+
         }
     }
 }
@@ -272,5 +276,83 @@ suspend fun delete(eventId: String, navController: NavController, current: Conte
         println("Error: ${e.message}")
         Toast.makeText(current, "Delete failed. Error: ${e.message}", Toast.LENGTH_SHORT).show()
         false
+    }
+}
+
+@Composable
+fun AttendEvent(attendService: AttendService, eventId: String, token: String) {
+    var consentGiven by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+    var showInfoDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    Box {
+        Row(
+            modifier = Modifier
+                .wrapContentSize()
+                .padding(2.dp)
+                .fillMaxSize(),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = stringResource(R.string.consent_attend_button))
+            Checkbox(
+                checked = consentGiven,
+                onCheckedChange = { consentGiven = it }
+            )
+            Icon(
+                imageVector = Icons.Default.Info,
+                contentDescription = "Info",
+                modifier = Modifier
+                    .offset(x = (-10).dp, y = (-20).dp)
+                    .size(38.dp)
+                    .clickable { showInfoDialog = true }
+                    .padding(6.dp),
+                tint = Color.Blue
+            )
+
+            Button(onClick = {
+
+                val attendeeDto = if (consentGiven) {
+                    AttendeeDto(AttendeeDto.Attendee(firstName = "Jane", lastName = "Doe"))
+                } else {
+                    AttendeeDto(AttendeeDto.Attendee(firstName = "", lastName = ""))
+                }
+
+
+                // Launch the coroutine for network request
+                coroutineScope.launch {
+                        try {
+                            val response = attendService.attendEvent(eventId, token, attendeeDto)
+                            if (response.status == HttpStatusCode.Created) {
+                                Toast.makeText(context, R.string.attend_success, Toast.LENGTH_SHORT)
+                                    .show()
+                            } else {
+                                // TODO: Handle error case
+                                Toast.makeText(context, R.string.attend_failure, Toast.LENGTH_SHORT)
+                                    .show()
+                            }
+                        } catch (e: Exception) {
+                            // TODO: Handle exceptions
+                            Toast.makeText(context, R.string.attend_exception, Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                    }
+
+            }) {
+                Text(text = stringResource(R.string.attend_button))
+            }
+            if (showInfoDialog) {
+                AlertDialog(
+                    onDismissRequest = { showInfoDialog = false },
+                    title = { Text("Consent Information") },
+                    text = { Text(stringResource(R.string.consent_information_body))},
+                    confirmButton = {
+                        TextButton(onClick = { showInfoDialog = false }) {
+                            Text("OK")
+                        }
+                    }
+                )
+            }
+        }
     }
 }
