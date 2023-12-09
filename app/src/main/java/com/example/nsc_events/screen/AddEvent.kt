@@ -1052,16 +1052,6 @@ fun EventAccessibilityField(
 }
 
 
-fun validateInputs(eventTitle: String,
-                   eventDescription: String,
-                   eventCategory: String,
-                   eventDate: Date,
-                   eventStartTime: String,
-                   eventEndTime: String) : Boolean {
-    // todo: pass in more fields to check all fields
-    return eventTitle.isNotEmpty() && eventDescription.isNotEmpty() && eventCategory.isNotEmpty() && eventDate != null && eventStartTime.isNotEmpty() && eventEndTime.isNotEmpty();
-}
-
 suspend fun createEvent(
     newEvent: Event,
     navController: NavHostController,
