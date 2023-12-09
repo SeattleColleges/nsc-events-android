@@ -38,11 +38,11 @@ data class Event(
     val eventSocialMedia: SocialMedia,
     val eventPrivacy: String,
     val eventAccessibility: String,
-    var eventVisibility: Boolean,
+    var isHidden: Boolean,
     var id: String = "0",
 ){
     fun deleteEvent() {
-        this.eventVisibility = false
+        this.isHidden = false
 
     }
 }

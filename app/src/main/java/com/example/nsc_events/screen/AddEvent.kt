@@ -144,7 +144,7 @@ fun AddEventPage(navController: NavHostController) {
     var eventSocialMedia by remember { mutableStateOf(SocialMedia("", "", "", "")) }
     var eventPrivacy by remember { mutableStateOf("") }
     var eventAccessibility by remember { mutableStateOf("") }
-    var eventVisibility by remember { mutableStateOf(true) }
+    var isHidden by remember { mutableStateOf(true) }
 
     val coroutineScope = rememberCoroutineScope()
     val current = LocalContext.current
@@ -301,7 +301,7 @@ fun AddEventPage(navController: NavHostController) {
                             eventSocialMedia,
                             eventPrivacy,
                             eventAccessibility,
-                            eventVisibility
+                            isHidden
                         )
 
                     eventTitleError = eventTitle.isEmpty()
@@ -1093,7 +1093,7 @@ suspend fun createEvent(
             eventSocialMedia = newEvent.eventSocialMedia,
             eventPrivacy = newEvent.eventPrivacy,
             eventAccessibility = newEvent.eventAccessibility,
-            isHidden = newEvent.eventVisibility
+            isHidden = newEvent.isHidden
         )
 
         val eventResponse = EventService.create().createNewEvent(eventRequest)
