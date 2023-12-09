@@ -200,22 +200,6 @@ fun AddEventPage(navController: NavHostController) {
                 )
             }
 
-        item {
-            /* Date and time pickers */
-            Column {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    DatePicker(
-                        onDateSelected = { newDate ->
-                            eventDate = newDate
-                            isDateError = false  // Reset error state when a date is picked
-                        },
-                        isError = isDateError
-                    )
-                }
-                
             item {
                 // Event Description with error
                 EventDescriptionField(
