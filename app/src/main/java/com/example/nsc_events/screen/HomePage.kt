@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -30,6 +31,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.nsc_events.MainActivity
@@ -49,10 +53,16 @@ import com.example.nsc_events.R
 import com.example.nsc_events.Routes
 import com.example.nsc_events.data.Datasource
 import com.example.nsc_events.model.Event
+import com.example.nsc_events.model.EventsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomePage(navController: NavHostController) { // Create Navbar
+fun HomePage(navController: NavHostController) {
+
+    val eventsViewModel = viewModel<EventsViewModel>()
+    val events by eventsViewModel.events.observeAsState(emptyList())
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -97,6 +107,7 @@ fun HomePage(navController: NavHostController) { // Create Navbar
                         TextButton(onClick = { navController.navigate(Routes.Login.route) }) {
                             Text("Login", color = Color.Black)
                         }
+                        // TODO maybe hide this button if the user doesn't have any events or can't edit them.
                         // TODO: give this button an action when clicked
                         IconButton(onClick = { }) {
                             Icon(
@@ -115,12 +126,10 @@ fun HomePage(navController: NavHostController) { // Create Navbar
                     .padding(values)
             ) {
             }
-            EventList(events = Datasource().loadEvents(), navController = navController)
+            EventList(events = events, navController = navController)
         }
     }
 }
-
-
 @Composable
 fun CustomTextField(text: String, fontSize: TextUnit = 20.sp) {
     Text(
@@ -149,14 +158,14 @@ fun EventCard(event: Event, navController: NavController) {
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                painter = painterResource(id = event.eventCoverPhoto.toInt()),
-                contentDescription = stringResource(id = R.string.event_cover_photo_description),
-                modifier = Modifier
-                    .size(200.dp)
-                    .padding(16.dp),
-
-                )
+//            Image(
+//                painter = painterResource(id = event.eventCoverPhoto.toInt()),
+//                contentDescription = stringResource(id = R.string.event_cover_photo_description),
+//                modifier = Modifier
+//                    .size(200.dp)
+//                    .padding(16.dp),
+//
+//                )
             Text(
                 text = "eventTitle: ${event.eventTitle}",
                 style = TextStyle(

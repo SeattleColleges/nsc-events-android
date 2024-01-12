@@ -80,8 +80,8 @@ fun EventEditPage(navController: NavController, eventId: String) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             CustomTextField(text = eventId)
-            val event = Datasource().loadEvents().find { it.eventTitle == eventId }!!
-            EventEditCard(event = event, navController = navController)
+            // val event = Datasource().loadEvents().find { it.eventTitle == eventId }!!
+            // EventEditCard(event = event, navController = navController)
         }
     }
 }

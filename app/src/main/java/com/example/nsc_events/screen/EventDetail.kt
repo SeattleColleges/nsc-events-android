@@ -2,6 +2,7 @@ package com.example.nsc_events.screen
 
 import android.content.Context
 import android.net.http.HttpException
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -33,7 +34,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -48,6 +51,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.nsc_events.MainActivity
 import com.example.nsc_events.R
@@ -57,6 +61,7 @@ import com.example.nsc_events.data.network.auth.DeleteService
 import com.example.nsc_events.data.network.dto.auth_dto.DeleteRequest
 import com.example.nsc_events.data.network.dto.auth_dto.Role
 import com.example.nsc_events.model.Event
+import com.example.nsc_events.model.EventsViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -92,10 +97,30 @@ fun EventDetailPage(navController: NavController, eventId: String) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             CustomTextField(text = eventId)
-            val event = Datasource().loadEvents().find { it.eventTitle == eventId }!!
+
             var isDelete by remember { mutableStateOf(false) }
             val coroutineScope = rememberCoroutineScope()
             val current = LocalContext.current
+            val eventsViewModel = viewModel<EventsViewModel>()
+            val events by eventsViewModel.events.observeAsState(emptyList())
+
+            // We declare this state to hold the Event once we find it
+            var event by remember { mutableStateOf<Event?>(null) }
+
+            // LaunchedEffect is used to launch a coroutine in the context of the Composable
+            LaunchedEffect(key1 = eventId) {
+                // Now we match the event ID instead of the title
+                event = events.find { it.id == eventId }
+                // Add logging here
+                if (event != null) {
+                    Log.d("EventDetail", "Event found: ${event!!.eventTitle}")
+                } else {
+                    Log.d("EventDetail", "Event not found for id: $eventId")
+                }
+            }
+            event?.let { currentEvent ->
+                EventDetailCard(event = currentEvent, navController = navController)
+            }
             Row(
                 modifier = Modifier
                     .wrapContentSize()
@@ -110,24 +135,24 @@ fun EventDetailPage(navController: NavController, eventId: String) {
                         imageVector = Icons.Default.Delete, contentDescription = "Delete"
                     )
                 }
-                if (isDelete) {
-                    ConfirmationDialogIndividual(onConfirm = {
-                        coroutineScope.launch {
-                            val isDeleteSuccessful = delete(event.id, navController, current)
-                            if (isDeleteSuccessful) {
-                                val hidden = MainActivity.getPref().getStringSet("hidden", mutableSetOf(event.id))
-                                hidden?.add(event.id)
-                                val editor = MainActivity.getPref().edit()
-                                editor.putStringSet("hidden", hidden)
-                                editor.apply()
-                            }
-                        }
-                        // Remove the event from the database
-                        isDelete = false
-                    }, onDismiss = {
-                        isDelete = false
-                    })
-                }
+//                if (isDelete) {
+//                    ConfirmationDialogIndividual(onConfirm = {
+//                        coroutineScope.launch {
+//                            val isDeleteSuccessful = delete(event.id, navController, current)
+//                            if (isDeleteSuccessful) {
+//                                val hidden = MainActivity.getPref().getStringSet("hidden", mutableSetOf(event.id))
+//                                hidden?.add(event.id)
+//                                val editor = MainActivity.getPref().edit()
+//                                editor.putStringSet("hidden", hidden)
+//                                editor.apply()
+//                            }
+//                        }
+//                        // Remove the event from the database
+//                        isDelete = false
+//                    }, onDismiss = {
+//                        isDelete = false
+//                    })
+//                }
 
                 Spacer(modifier = Modifier.padding(16.dp))
                 Button(onClick = {
@@ -138,7 +163,6 @@ fun EventDetailPage(navController: NavController, eventId: String) {
                     )
                 }
             }
-            EventDetailCard(event = event, navController = navController)
             Row(
                 modifier = Modifier
                     .wrapContentSize()

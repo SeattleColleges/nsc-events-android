@@ -23,9 +23,9 @@ fun ScreenMain(){
         composable(Routes.SignUp.route) {
             SignUpPage(navController = navController)
         }
-        composable(Routes.AddEvent.route) {
-            AddEventPage(navController = navController)
-        }
+//        composable(Routes.AddEvent.route) {
+//            AddEventPage(navController = navController)
+//        }
         composable(Routes.EventDetail.route+"/{eventId}",
             arguments = listOf(navArgument("eventId") { type = NavType.StringType })
         ) { backStackEntry ->
