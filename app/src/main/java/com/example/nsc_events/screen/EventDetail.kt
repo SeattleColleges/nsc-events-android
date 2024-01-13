@@ -35,6 +35,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -60,6 +61,7 @@ import com.example.nsc_events.data.Datasource
 import com.example.nsc_events.data.network.auth.DeleteService
 import com.example.nsc_events.data.network.dto.auth_dto.DeleteRequest
 import com.example.nsc_events.data.network.dto.auth_dto.Role
+import com.example.nsc_events.model.DataState
 import com.example.nsc_events.model.Event
 import com.example.nsc_events.model.EventsViewModel
 import kotlinx.coroutines.launch
@@ -67,6 +69,11 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EventDetailPage(navController: NavController, eventId: String) {
+
+    val eventsViewModel: EventsViewModel = viewModel()
+    val eventsState = eventsViewModel.eventsState.collectAsState().value
+
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
@@ -96,30 +103,25 @@ fun EventDetailPage(navController: NavController, eventId: String) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            CustomTextField(text = eventId)
 
+            // Other states
             var isDelete by remember { mutableStateOf(false) }
-            val coroutineScope = rememberCoroutineScope()
-            val current = LocalContext.current
-            val eventsViewModel = viewModel<EventsViewModel>()
-            val events by eventsViewModel.events.observeAsState(emptyList())
+            // val coroutineScope = rememberCoroutineScope()
+            // val current = LocalContext.current
 
-            // We declare this state to hold the Event once we find it
-            var event by remember { mutableStateOf<Event?>(null) }
-
-            // LaunchedEffect is used to launch a coroutine in the context of the Composable
-            LaunchedEffect(key1 = eventId) {
-                // Now we match the event ID instead of the title
-                event = events.find { it.id == eventId }
-                // Add logging here
-                if (event != null) {
-                    Log.d("EventDetail", "Event found: ${event!!.eventTitle}")
-                } else {
-                    Log.d("EventDetail", "Event not found for id: $eventId")
+            when (eventsState) {
+                is DataState.Loading -> {
+                    // TODO: Show loading UI
                 }
-            }
-            event?.let { currentEvent ->
-                EventDetailCard(event = currentEvent, navController = navController)
+                is DataState.Success -> {
+                    // Find the event by eventId
+                    eventsState.data.find { it.eventId == eventId }?.let { event ->
+                        EventDetailCard(event = event, navController = navController)
+                    } ?: Text("Event not found")
+                }
+                is DataState.Error -> {
+                    // TODO: Handle error state
+                }
             }
             Row(
                 modifier = Modifier
@@ -152,7 +154,7 @@ fun EventDetailPage(navController: NavController, eventId: String) {
 //                    }, onDismiss = {
 //                        isDelete = false
 //                    })
-//                }
+                }
 
                 Spacer(modifier = Modifier.padding(16.dp))
                 Button(onClick = {
@@ -186,9 +188,6 @@ fun EventDetailCard(event: Event, navController: NavController) {
     Card(
         modifier = Modifier
             .padding(8.dp)
-            .clickable {
-                navController.navigate(Routes.EventDetail.route)
-            },
     ) {
         Column(
             modifier = Modifier
@@ -196,9 +195,10 @@ fun EventDetailCard(event: Event, navController: NavController) {
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // TODO: Change me into actual images
             Image(
-                painter = painterResource(id = event.eventCoverPhoto.toInt()),
-                contentDescription = stringResource(id = R.string.event_cover_photo_description),
+                painter = painterResource(id = R.drawable.placeholder_image),
+                contentDescription = stringResource(id =  R.string.event_cover_photo_description),
                 modifier = Modifier
                     .size(200.dp)
                     .padding(16.dp),

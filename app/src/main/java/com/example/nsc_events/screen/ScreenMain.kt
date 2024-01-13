@@ -1,21 +1,24 @@
 package com.example.nsc_events.screen
 
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.nsc_events.Routes
+import com.example.nsc_events.model.EventsViewModel
 
 @Composable
 fun ScreenMain(){
     val navController = rememberNavController()
+    val eventsViewModel: EventsViewModel = viewModel()
 
     NavHost(navController = navController, startDestination = Routes.HomePage.route) {
 
         composable(Routes.HomePage.route) {
-            HomePage(navController  = navController)
+            HomePage(navController  = navController, eventsViewModel = eventsViewModel)
         }
         composable(Routes.Login.route) {
             LoginPage(navController = navController)

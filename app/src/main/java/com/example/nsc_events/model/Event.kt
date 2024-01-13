@@ -18,7 +18,7 @@ data class Attendee(
 
 @Serializable
 data class Event(
-    @SerialName("_id") val id: String,
+    @SerialName("_id") val eventId: String,
     @SerialName("__v") val version: Int? = null,
     @SerialName("attendanceCount") val count: Int,
     val attendees: List<Attendee>,
@@ -48,4 +48,6 @@ data class Event(
     val eventPrivacy: String?,
     val eventAccessibility: String,
     @SerialName("isHidden") var eventVisibility: Boolean
-)
+) {
+    val id: String = eventId
+}
