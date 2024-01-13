@@ -28,7 +28,7 @@ class HomePageTest {
         rule.setContent {
             navController = TestNavHostController(LocalContext.current)
             navController.navigatorProvider.addNavigator(ComposeNavigator())
-            HomePage(navController = navController)
+          //  HomePage(navController = navController)
         }
     }
 

@@ -154,7 +154,7 @@ fun EventDetailPage(navController: NavController, eventId: String) {
 //                    }, onDismiss = {
 //                        isDelete = false
 //                    })
-                }
+//                }
 
                 Spacer(modifier = Modifier.padding(16.dp))
                 Button(onClick = {
