@@ -56,11 +56,7 @@ import com.example.nsc_events.model.DataState
 import com.example.nsc_events.model.Event
 import com.example.nsc_events.model.EventsViewModel
 import android.util.Base64
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.sharp.Edit
@@ -200,13 +196,12 @@ fun EventDetailCard(event: Event, navController: NavController) {
     ElevatedCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         modifier = Modifier
-            .padding(8.dp)
+            .padding(10.dp)
     ) {
         Column(
             modifier = Modifier
-                .padding(12.dp),
+                .padding(2.dp),
             verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // TODO: Change me into actual images
             Image(
@@ -214,20 +209,33 @@ fun EventDetailCard(event: Event, navController: NavController) {
                 contentDescription = stringResource(id =  R.string.event_cover_photo_description),
                 modifier = Modifier
                     .size(400.dp)
-                    .padding(16.dp),
+                    .padding(16.dp)
+                    .align(Alignment.CenterHorizontally),
             )
             Text(
                 text = " ${event.eventTitle} ",
                 style = TextStyle(
-                    fontSize = 18.sp,
+                    fontSize = 26.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.Default,
                     color = if (isSystemInDarkTheme()) Color.White else Color.Black
                 ),
                 modifier = Modifier
                     .wrapContentSize()
+                    .align(Alignment.CenterHorizontally),
             )
-            Text(text = " ${event.eventDescription } ")
+            Text(
+                text = " ${event.eventDescription} ",
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    fontFamily = FontFamily.Default,
+                    color = if (isSystemInDarkTheme()) Color.White else Color.Black
+                ),
+                modifier = Modifier
+                    .padding(6.dp)
+                    .wrapContentSize()
+                    .align(Alignment.Start),
+            )
             Text(text = "Category: ${event.eventCategory}")
             Text(text = "Date: ${event.eventDate}")
             Text(text = "Starting Time: ${event.eventStartTime}")
@@ -251,8 +259,6 @@ fun EventDetailCard(event: Event, navController: NavController) {
             Text(text = "Event Accessibility: ${event.eventAccessibility}")
             Text(text = "Attendance Count: ${event.count}")
             Text(text = "Last Updated: ${event.updatedAt}")
-            Text(text = "Created By: ${event.createdByUser}")
-            Text(text = "Created At: ${event.createdAt}")
         }
     }
 }
@@ -345,8 +351,8 @@ fun AdminComponent(eventId: String, navController: NavController) {
                     tint = Color.Black
                 )
             }
-//                if (isDelete) {
-//                    ConfirmationDialogIndividual(onConfirm = {
+                if (isDelete) {
+                    ConfirmationDialogIndividual(onConfirm = {
 //                        coroutineScope.launch {
 //                            val isDeleteSuccessful = delete(event.id, navController, current)
 //                            if (isDeleteSuccessful) {
@@ -357,12 +363,12 @@ fun AdminComponent(eventId: String, navController: NavController) {
 //                                editor.apply()
 //                            }
 //                        }
-//                        // Remove the event from the database
-//                        isDelete = false
-//                    }, onDismiss = {
-//                        isDelete = false
-//                    })
-//                }
+                        // TODO: Remove the event from the database
+                        isDelete = false
+                    }, onDismiss = {
+                        isDelete = false
+                    })
+                }
             IconButton(onClick = {
                 navController.navigate("${Routes.EventEdit.route}/$eventId")
             }) {
