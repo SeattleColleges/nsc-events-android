@@ -10,7 +10,6 @@ class Datasource {
     private val eventsApiService: EventsService = EventsService.create()
     suspend fun loadEvents(): List<Event> {
 
-        // TODO: Replace with API call to get products from backend
         val apiEvents = try {
             eventsApiService.getEvents()
         } catch (e: Exception) {
