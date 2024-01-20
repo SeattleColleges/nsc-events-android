@@ -9,4 +9,5 @@ object HttpRoutes {
     const val CREATE_EVENTS = "$BASE_URL/events/new"
     const val UPDATE_EVENTS = "$BASE_URL/events/update/:id"
     const val DELETE = "$BASE_URL/events/remove"
+    const val ATTEND_EVENT = "$BASE_URL/events/attend"
 }
