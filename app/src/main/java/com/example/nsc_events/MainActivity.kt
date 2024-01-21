@@ -37,6 +37,10 @@ class MainActivity : ComponentActivity() {
         fun getPref(): SharedPreferences {
             return pref
         }
+
+        fun getToken(): String? {
+            return pref.getString("token", null)
+        }
     }
 }
 
