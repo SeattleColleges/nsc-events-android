@@ -183,7 +183,7 @@ fun EventDetailCard(event: Event, navController: NavController) {
                     .padding(16.dp),
             )
             Text(
-                text = "eventTitle: ${event.eventTitle}",
+                text = "Title: ${event.eventTitle}",
                 style = TextStyle(
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
@@ -193,11 +193,11 @@ fun EventDetailCard(event: Event, navController: NavController) {
                 modifier = Modifier
                     .wrapContentSize()
             )
-            Text(text = "eventDescription: ${event.eventDescription}")
-            Text(text = "eventDate: ${event.eventDate}")
-            Text(text = "eventStartTime: ${event.eventStartTime}")
-            Text(text = "eventEndTime: ${event.eventEndTime}")
-            Text(text = "eventLocation: ${event.eventLocation}")
+            Text(text = "Description: ${event.eventDescription}")
+            Text(text = "Date: ${event.eventDate}")
+            Text(text = "Start Time: ${event.eventStartTime}")
+            Text(text = "End Time: ${event.eventEndTime}")
+            Text(text = "Location: ${event.eventLocation}")
 
         }
     }
