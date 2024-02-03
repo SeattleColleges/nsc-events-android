@@ -70,7 +70,9 @@ fun AdminView(navController: NavHostController) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                Button(onClick = {/* TODO */ }) {
+                Button(onClick = {
+                    navController.navigate(Routes.EditUserRole.route)
+                }) {
                     Text(text = "Edit User Role",
                         style = TextStyle(
                             fontSize = 14.sp,

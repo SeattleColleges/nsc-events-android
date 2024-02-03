@@ -52,5 +52,8 @@ fun ScreenMain(){
         composable(Routes.AdminView.route) {
             AdminView(navController = navController)
         }
+        composable(Routes.EditUserRole.route) {
+            EditUserRole(navController = navController)
+        }
     }
 }
