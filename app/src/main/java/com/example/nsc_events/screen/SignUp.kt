@@ -287,9 +287,9 @@ fun SignUpPage(navController: NavHostController) {
                             onClick =
                             {
                               keyboardController?.hide()
-                              if (firstName.isNotBlank() && validateEmail(email) && validatePassword(password) && validateConfirmPassword(password, confirmPassword)) {
+                              if (firstName.isNotBlank() && lastName.isNotBlank() && validateEmail(email) && validatePassword(password) && validateConfirmPassword(password, confirmPassword)) {
                                 coroutineScope.launch {
-                                  signUp(firstName, email, password, navController, current)
+                                  signUp(firstName, lastName, email, password, navController, current)
                                 }
                               } else {
                                 // Update error flags to show error messages
@@ -327,19 +327,20 @@ fun validateConfirmPassword(password: String, confirmPassword: String): Boolean 
     return password.isNotEmpty() && password.isNotBlank() && password == confirmPassword
 }
 
-fun validateFirstName(name: String): Boolean {
+fun validateFirstName(firstName: String): Boolean {
     // Add your validation logic here
-    return name.isNotBlank()
+    return firstName.isNotBlank()
 }
 
-fun validateLastName(name: String): Boolean {
+fun validateLastName(lastName: String): Boolean {
     // Add your validation logic here
-    return name.isNotBlank()
+    return lastName.isNotBlank()
 }
 
 
 suspend fun signUp(
-    name: String,
+    firstName: String,
+    lastName: String,
     email: String,
     password: String,
     navController: NavHostController,
@@ -347,7 +348,8 @@ suspend fun signUp(
 ) {
     return try {
         val signUpRequest = SignUpRequest(
-            name = name,
+            firstName = firstName,
+            lastName = lastName,
             email = email,
             password = password,
             role = Role.ADMIN

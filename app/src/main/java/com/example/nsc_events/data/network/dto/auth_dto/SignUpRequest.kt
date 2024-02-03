@@ -17,8 +17,11 @@ enum class Role(val role: String) {
 
 @Serializable
 data class SignUpRequest(
-    @SerialName("name")
-    val name: String,
+    @SerialName("firstName")
+    val firstName: String,
+
+    @SerialName("lastName")
+    val lastName: String,
 
     @SerialName("email")
     val email: String,

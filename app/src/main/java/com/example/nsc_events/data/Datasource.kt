@@ -1,8 +1,10 @@
 package com.example.nsc_events.data
 
 import com.example.nsc_events.R
+import com.example.nsc_events.data.network.dto.auth_dto.Role
 import com.example.nsc_events.model.Event
 import com.example.nsc_events.model.SocialMedia
+import com.example.nsc_events.model.User
 import java.util.Date
 
 class Datasource {
@@ -28,5 +30,68 @@ class Datasource {
                 "teacher", SocialMedia("my facebook","my twitter", "my instagram", "my hashtag"),
                 "no privacy", "not very good", true, "1"),
         )
+    }
+
+    // User data is hard coded for now
+    private val userList = mutableListOf<User>()
+    // Adding Users to UserList
+    init {
+        userList.add(
+            User(
+                userFirstName = "John",
+                userLastName = "Smith",
+                userEmail = "hiJohn123@gmail.com",
+                Role.ADMIN,
+                userId = "1"
+            )
+        )
+        userList.add(
+            User(
+                userFirstName = "Alex",
+                userLastName = "Brown",
+                userEmail = "AlexB@gmail.com",
+                Role.USER,
+                userId = "2"
+            )
+        )
+        userList.add(
+            User(
+                userFirstName = "Jason",
+                userLastName = "Ni",
+                userEmail = "JNi@gmail.com",
+                Role.ADMIN,
+                userId = "3"
+            )
+        )
+        userList.add(
+            User(
+                userFirstName = "Kim",
+                userLastName = "Johnson",
+                userEmail = "KimJohnson@gmail.com",
+                Role.ADMIN,
+                userId = "4"
+            )
+        )
+        userList.add(
+            User(
+                userFirstName = "Ellen",
+                userLastName = "Jones",
+                userEmail = "Ellen_J@gmail.com",
+                Role.USER,
+                userId = "5"
+            )
+        )
+        userList.add(
+            User(
+                userFirstName = "Taylor",
+                userLastName = "Wright",
+                userEmail = "TayW265@gmail.com",
+                Role.USER,
+                userId = "6"
+            )
+        )
+    }
+    fun loadUsers(): List<User> {
+        return userList
     }
 }

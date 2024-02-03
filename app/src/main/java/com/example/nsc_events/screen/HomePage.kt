@@ -158,7 +158,7 @@ fun EventCard(event: Event, navController: NavController) {
 
                 )
             Text(
-                text = "eventTitle: ${event.eventTitle}",
+                text = "${event.eventTitle}",
                 style = TextStyle(
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
