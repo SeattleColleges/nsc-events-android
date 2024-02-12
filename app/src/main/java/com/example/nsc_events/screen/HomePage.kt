@@ -16,11 +16,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,6 +29,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -53,6 +56,8 @@ import com.example.nsc_events.model.Event
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePage(navController: NavHostController) { // Create Navbar
+    var isExpanded by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -86,11 +91,26 @@ fun HomePage(navController: NavHostController) { // Create Navbar
                     },
                     navigationIcon = {
                         // TODO: give this button an action when clicked
-                        IconButton(onClick = { }) {
+                        IconButton(onClick = {
+                            isExpanded = true
+                        }) {
                             Icon(
                                 imageVector = Icons.Default.Menu,
                                 contentDescription = "Open Menu"
                             )
+                        }
+                        DropdownMenu(
+                            expanded = isExpanded,
+                            onDismissRequest = { isExpanded = false },
+                            modifier = Modifier.padding(8.dp)
+                        ) {
+                            // Dropdown menu items
+                            TextButton(onClick = { navController.navigate(Routes.SignUp.route) }) {
+                                Text("Sign Up", color = Color.Black)
+                            }
+                            TextButton(onClick = { navController.navigate(Routes.Login.route) }) {
+                                Text("Login", color = Color.Black)
+                            }
                         }
                     },
                     actions = {
@@ -188,6 +208,3 @@ fun EventList(events: List<Event>, navController: NavController) {
         }
     }
 }
-
-
-
