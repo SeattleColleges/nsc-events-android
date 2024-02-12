@@ -93,18 +93,6 @@ fun HomePage(navController: NavHostController) { // Create Navbar
                             )
                         }
                     },
-                    actions = {
-                        TextButton(onClick = { navController.navigate(Routes.Login.route) }) {
-                            Text("Login", color = Color.Black)
-                        }
-                        // TODO: give this button an action when clicked
-                        IconButton(onClick = { }) {
-                            Icon(
-                                imageVector = Icons.Default.Edit,
-                                contentDescription = "Edit my events"
-                            )
-                        }
-                    },
                     scrollBehavior = scrollBehavior
                 )
             }
