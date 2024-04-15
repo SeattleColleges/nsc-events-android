@@ -37,17 +37,11 @@ data class EventRequest(
     @SerialName("eventHost")
     val eventHost: String,
 
-    @SerialName("eventWebsite")
-    val eventWebsite: String?,
-
     @SerialName("eventRegistration")
     val eventRegistration: String,
 
     @SerialName("eventCapacity")
     val eventCapacity: String,
-
-    @SerialName("eventCost")
-    val eventCost: String?,
 
     @SerialName("eventTags")
     val eventTags: Array<String>,
@@ -75,6 +69,9 @@ data class EventRequest(
 
     @SerialName("eventAccessibility")
     val eventAccessibility: String,
+
+    @SerialName("eventNote")
+    val eventNote: String?,
 
     @SerialName("isHidden")
     val isHidden: Boolean?

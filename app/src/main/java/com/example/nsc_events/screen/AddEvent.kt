@@ -132,10 +132,8 @@ fun AddEventPage(navController: NavHostController) {
     var eventCategory by remember { mutableStateOf("") }
     var eventCoverPhoto by remember { mutableStateOf("") }
     var eventHost by remember { mutableStateOf("") }
-    var eventWebsite by remember { mutableStateOf("") }
     var eventRegistration by remember { mutableStateOf("") }
     var eventCapacity by remember { mutableStateOf("") }
-    var eventCost by remember { mutableStateOf("") }
     var eventTags by remember { mutableStateOf(arrayOf<String>()) }
     var eventSchedule by remember { mutableStateOf("") }
     var eventSpeakers by remember { mutableStateOf(arrayOf<String>()) }
@@ -145,6 +143,7 @@ fun AddEventPage(navController: NavHostController) {
     var eventSocialMedia by remember { mutableStateOf(SocialMedia("", "", "", "")) }
     var eventPrivacy by remember { mutableStateOf("") }
     var eventAccessibility by remember { mutableStateOf("") }
+    var eventNote by remember { mutableStateOf("") }
     var isHidden by remember { mutableStateOf(true) }
 
     val coroutineScope = rememberCoroutineScope()
@@ -281,55 +280,6 @@ fun AddEventPage(navController: NavHostController) {
                 /*          Image upload button     */
                 ImageUploadButton(onImagePicked = { uri -> /* TODO: Do something with this */ })
             }
-            item {
-                Button(
-                    onClick = {
-                        newEvent =
-                            Event(
-                                eventTitle,
-                                eventDescription,
-                                eventCategory,
-                                eventDate!!,
-                                eventStartTime,
-                                eventEndTime,
-                                eventLocation,
-                                eventCoverPhoto,
-                                eventHost,
-                                eventWebsite,
-                                eventRegistration,
-                                eventCapacity,
-                                eventCost,
-                                eventTags,
-                                eventSchedule,
-                                eventSpeakers,
-                                eventPrerequisites,
-                                eventCancellationPolicy,
-                                eventContact,
-                                eventSocialMedia,
-                                eventPrivacy,
-                                eventAccessibility,
-                                isHidden
-                            )
-
-                        eventTitleError = eventTitle.isEmpty()
-                        eventDescriptionError = eventDescription.isEmpty()
-                        isDateError = eventDate == null
-                        isStartTimeError = eventStartTime.isEmpty()
-                        isEndTimeError = eventEndTime.isEmpty()
-
-                        coroutineScope.launch {
-                            createEvent(newEvent!!, navController, current)
-                        }
-                        /* TODO: save new product to db or use a list to hold products (ex: List<Product>) */
-                    },
-                    modifier = Modifier
-                        .padding(4.dp)
-                        .width(240.dp)
-                )
-                {
-                    Text(text = "Add Event")
-                }
-            }
 
             item {
                 EventCoverPhotoField(
@@ -346,13 +296,6 @@ fun AddEventPage(navController: NavHostController) {
             }
 
             item {
-                EventWebsiteField(
-                    eventWebsite = eventWebsite,
-                    onEventWebsiteChange = { newWebsite -> eventWebsite = newWebsite }
-                )
-            }
-
-            item {
                 EventRegistrationField(
                     eventRegistration = eventRegistration,
                     onEventRegistrationChange = { newRegistration ->
@@ -365,13 +308,6 @@ fun AddEventPage(navController: NavHostController) {
                 EventCapacityField(
                     eventCapacity = eventCapacity,
                     onEventCapacityChange = { newCapacity -> eventCapacity = newCapacity }
-                )
-            }
-
-            item {
-                EventCostField(
-                    eventCost = eventCost,
-                    onEventCostChange = { newCost -> eventCost = newCost }
                 )
             }
 
@@ -444,6 +380,63 @@ fun AddEventPage(navController: NavHostController) {
                 )
             }
 
+            item {
+                EventNoteField(
+                    eventNote = eventNote,
+                    onEventNoteChange = { newNote ->
+                        eventNote = newNote
+                    }
+                )
+            }
+
+            item {
+                Button(
+                    onClick = {
+                        newEvent =
+                            Event(
+                                eventTitle,
+                                eventDescription,
+                                eventCategory,
+                                eventDate!!,
+                                eventStartTime,
+                                eventEndTime,
+                                eventLocation,
+                                eventCoverPhoto,
+                                eventHost,
+                                eventRegistration,
+                                eventCapacity,
+                                eventTags,
+                                eventSchedule,
+                                eventSpeakers,
+                                eventPrerequisites,
+                                eventCancellationPolicy,
+                                eventContact,
+                                eventSocialMedia,
+                                eventPrivacy,
+                                eventAccessibility,
+                                eventNote,
+                                isHidden
+                            )
+
+                        eventTitleError = eventTitle.isEmpty()
+                        eventDescriptionError = eventDescription.isEmpty()
+                        isDateError = eventDate == null
+                        isStartTimeError = eventStartTime.isEmpty()
+                        isEndTimeError = eventEndTime.isEmpty()
+
+                        coroutineScope.launch {
+                            createEvent(newEvent!!, navController, current)
+                        }
+                        /* TODO: save new product to db or use a list to hold products (ex: List<Product>) */
+                    },
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .width(240.dp)
+                )
+                {
+                    Text(text = "Add Event")
+                }
+            }
 
         }
     }
@@ -834,19 +827,6 @@ fun EventCoverPhotoField(eventCoverPhoto: String, onEventCoverPhotoChange: (Stri
 }
 
 @Composable
-fun EventWebsiteField(eventWebsite: String, onEventWebsiteChange: (String) -> Unit) {
-    TextField(
-        value = eventWebsite,
-        onValueChange = onEventWebsiteChange,
-        label = { Text(text = "Event Website") },
-        singleLine = true,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    )
-}
-
-@Composable
 fun EventRegistrationField(
     eventRegistration: String,
     onEventRegistrationChange: (String) -> Unit
@@ -868,19 +848,6 @@ fun EventCapacityField(eventCapacity: String, onEventCapacityChange: (String) ->
         value = eventCapacity,
         onValueChange = onEventCapacityChange,
         label = { Text(text = "Event Capacity") },
-        singleLine = true,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    )
-}
-
-@Composable
-fun EventCostField(eventCost: String, onEventCostChange: (String) -> Unit) {
-    TextField(
-        value = eventCost,
-        onValueChange = onEventCostChange,
-        label = { Text(text = "Event Cost") },
         singleLine = true,
         modifier = Modifier
             .fillMaxWidth()
@@ -1061,6 +1028,22 @@ fun EventAccessibilityField(
     )
 }
 
+@Composable
+fun EventNoteField(
+    eventNote: String,
+    onEventNoteChange: (String) -> Unit
+) {
+    TextField(
+        value = eventNote,
+        onValueChange = onEventNoteChange,
+        label = { Text(text = "Event Note") },
+        singleLine = true,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    )
+}
+
 
 suspend fun createEvent(
     newEvent: Event,
@@ -1080,10 +1063,8 @@ suspend fun createEvent(
             eventLocation = newEvent.eventLocation,
             eventCoverPhoto = newEvent.eventCoverPhoto,
             eventHost = newEvent.eventHost,
-            eventWebsite = newEvent.eventWebsite,
             eventRegistration = newEvent.eventRegistration,
             eventCapacity = newEvent.eventCapacity,
-            eventCost = newEvent.eventCost,
             eventTags = newEvent.eventTags,
             eventSchedule = newEvent.eventSchedule,
             eventSpeakers = newEvent.eventSpeakers,
@@ -1093,6 +1074,7 @@ suspend fun createEvent(
             eventSocialMedia = newEvent.eventSocialMedia,
             eventPrivacy = newEvent.eventPrivacy,
             eventAccessibility = newEvent.eventAccessibility,
+            eventNote = newEvent.eventNote,
             isHidden = newEvent.isHidden
         )
 
