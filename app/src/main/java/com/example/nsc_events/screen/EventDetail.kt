@@ -179,11 +179,11 @@ fun EventDetailCard(event: Event, navController: NavController) {
                 painter = painterResource(id = event.eventCoverPhoto.toInt()),
                 contentDescription = stringResource(id = R.string.event_cover_photo_description),
                 modifier = Modifier
-                    .size(200.dp)
+                    .size(400.dp)
                     .padding(16.dp),
             )
             Text(
-                text = "Title: ${event.eventTitle}",
+                text = "${event.eventTitle}",
                 style = TextStyle(
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
@@ -193,7 +193,7 @@ fun EventDetailCard(event: Event, navController: NavController) {
                 modifier = Modifier
                     .wrapContentSize()
             )
-            Text(text = "Description: ${event.eventDescription}")
+            Text(text = "${event.eventDescription}")
             Text(text = "Date: ${event.eventDate}")
             Text(text = "Start Time: ${event.eventStartTime}")
             Text(text = "End Time: ${event.eventEndTime}")
