@@ -869,10 +869,11 @@ fun EventCapacityField(eventCapacity: String, onEventCapacityChange: (String) ->
 fun EventTagsSelectionField(tagsList: List<String>, eventTags: MutableList<String>,
                             onTagsChange: (List<String>) -> Unit) {
     val tagState = remember {
-        mutableStateListOf<Pair<String, Boolean>>().also { list ->
+        val initialState = mutableStateListOf<Pair<String, Boolean>>()
         tagsList.forEach { tag ->
-            list.add(tag to eventTags.contains(tag)) }
+            initialState.add(tag to eventTags.contains(tag))
         }
+        initialState
     }
 
     Column(modifier = Modifier.padding(16.dp)) {
@@ -884,8 +885,8 @@ fun EventTagsSelectionField(tagsList: List<String>, eventTags: MutableList<Strin
                 FilterChip(
                     selected = tag.second,
                     onClick = {
-                        val newTagState = tagState[index].copy(second = !tag.second)
-                        tagState[index] = newTagState
+                        val updatedState = tag.copy(second = !tag.second)
+                        tagState[index] = updatedState
                         onTagsChange(tagState.filter { it.second }.map { it.first })
                     },
                     label = { Text(tag.first) }
