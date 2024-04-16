@@ -154,7 +154,7 @@ fun AddEventPage(navController: NavHostController) {
 
     /* updating eventTags to be a button options from a text field */
     val tagsList = listOf("Professional Development", "Club", "Social", "Tech", "Cultural", "Study", "Coffee", "Networking")
-    var eventTags = remember { mutableListOf<String>() }
+    var eventTags by remember { mutableStateOf( mutableListOf<String>() ) }
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(
