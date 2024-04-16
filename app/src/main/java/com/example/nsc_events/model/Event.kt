@@ -27,7 +27,7 @@ data class Event(
     val eventHost: String,
     val eventRegistration: String,
     val eventCapacity: String,
-    val eventTags: Array<String>,
+    val eventTags: List<String>,
     val eventSchedule: String,
     val eventSpeakers: Array<String>,
     val eventPrerequisites: String,

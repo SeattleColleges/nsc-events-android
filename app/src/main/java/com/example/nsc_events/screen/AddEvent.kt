@@ -41,6 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.example.nsc_events.R
 import android.app.TimePickerDialog
 import android.content.Context
+import android.graphics.Paint.Style
 import android.media.MediaSyncEvent.createEvent
 import android.net.Uri
 import android.net.http.HttpException
@@ -64,6 +65,7 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
@@ -134,7 +136,6 @@ fun AddEventPage(navController: NavHostController) {
     var eventHost by remember { mutableStateOf("") }
     var eventRegistration by remember { mutableStateOf("") }
     var eventCapacity by remember { mutableStateOf("") }
-    var eventTags by remember { mutableStateOf(arrayOf<String>()) }
     var eventSchedule by remember { mutableStateOf("") }
     var eventSpeakers by remember { mutableStateOf(arrayOf<String>()) }
     var eventPrerequisites by remember { mutableStateOf("") }
@@ -150,6 +151,10 @@ fun AddEventPage(navController: NavHostController) {
     val current = LocalContext.current
 
     var selectedCategory by remember { mutableStateOf<String?>(null) }
+
+    /* updating eventTags to be a button options from a text field */
+    val tagsList = listOf("Professional Development", "Club", "Social", "Tech", "Cultural", "Study", "Coffee", "Networking")
+    var eventTags = remember { mutableListOf<String>() }
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(
@@ -312,9 +317,13 @@ fun AddEventPage(navController: NavHostController) {
             }
 
             item {
-                TagsField(
+                EventTagsSelectionField(
+                    tagsList = tagsList,
                     eventTags = eventTags,
-                    onEventTagsChange = { newTags -> eventTags = newTags }
+                    onTagsChange = { updatedTags ->
+                        eventTags.clear()
+                        eventTags.addAll(updatedTags)
+                    }
                 )
             }
 
@@ -855,20 +864,32 @@ fun EventCapacityField(eventCapacity: String, onEventCapacityChange: (String) ->
     )
 }
 
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun TagsField(eventTags: Array<String>, onEventTagsChange: (Array<String>) -> Unit) {
-    TextField(
-        value = eventTags.joinToString(", "),
-        onValueChange = {
-            val tags = it.split(",").map { it.trim() }.toTypedArray()
-            onEventTagsChange(tags)
-        },
-        label = { Text(text = "Event Tags") },
-        singleLine = true,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    )
+fun EventTagsSelectionField(tagsList: List<String>, eventTags: MutableList<String>,
+                            onTagsChange: (List<String>) -> Unit) {
+    val tagState = remember { mutableStateListOf<Pair<String, Boolean>>().apply {
+        tagsList.forEach { add(it to eventTags.contains(it)) }
+    }}
+
+    Column(modifier = Modifier.padding(16.dp)) {
+        Text(text = "Event Tags", style = MaterialTheme.typography.bodyLarge)
+        FlowRow(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            tagState.forEachIndexed{ index, tag ->
+                FilterChip(
+                    selected = tag.second,
+                    onClick = {
+                        val newTagState = tagState[index].copy(second = !tag.second)
+                        tagState[index] = newTagState
+                        onTagsChange(tagState.filter { it.second }.map { it.first })
+                    },
+                    label = { Text(tag.first) }
+                )
+            }
+        }
+    }
 }
 
 

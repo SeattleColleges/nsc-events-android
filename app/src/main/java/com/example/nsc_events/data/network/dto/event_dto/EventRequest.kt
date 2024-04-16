@@ -44,7 +44,7 @@ data class EventRequest(
     val eventCapacity: String,
 
     @SerialName("eventTags")
-    val eventTags: Array<String>,
+    val eventTags: List<String>,
 
     @SerialName("eventSchedule")
     val eventSchedule: String?,
