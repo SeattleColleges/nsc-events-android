@@ -868,9 +868,12 @@ fun EventCapacityField(eventCapacity: String, onEventCapacityChange: (String) ->
 @Composable
 fun EventTagsSelectionField(tagsList: List<String>, eventTags: MutableList<String>,
                             onTagsChange: (List<String>) -> Unit) {
-    val tagState = remember { mutableStateListOf<Pair<String, Boolean>>().apply {
-        tagsList.forEach { add(it to eventTags.contains(it)) }
-    }}
+    val tagState = remember {
+        mutableStateListOf<Pair<String, Boolean>>().also { list ->
+        tagsList.forEach { tag ->
+            list.add(tag to eventTags.contains(tag)) }
+        }
+    }
 
     Column(modifier = Modifier.padding(16.dp)) {
         Text(text = "Event Tags", style = MaterialTheme.typography.bodyLarge)
