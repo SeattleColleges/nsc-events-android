@@ -105,9 +105,6 @@ fun HomePage(navController: NavHostController) { // Create Navbar
                             modifier = Modifier.padding(8.dp)
                         ) {
                             // Dropdown menu items
-                            TextButton(onClick = { navController.navigate(Routes.SignUp.route) }) {
-                                Text("Sign Up", color = Color.Black)
-                            }
                             TextButton(onClick = { navController.navigate(Routes.Login.route) }) {
                                 Text("Login", color = Color.Black)
                             }
