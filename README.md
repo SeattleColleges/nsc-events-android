@@ -20,7 +20,7 @@ A student-developed application for advertising and viewing events hosted by the
 
 📈 **Outcome**: By participating in this project, students gain hands-on experience, learning best practices and methodologies that are crucial in today's fast-paced software development landscape.
 
----
+--- 
 
 ## Table of Contents
 
