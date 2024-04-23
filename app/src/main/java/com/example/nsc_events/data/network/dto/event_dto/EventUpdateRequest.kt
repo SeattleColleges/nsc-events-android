@@ -37,6 +37,9 @@ data class EventUpdateRequest(
     @SerialName("eventHost")
     val eventHost: String?,
 
+    @SerialName("eventMeetingURL")
+    val eventMeetingURL: String,
+
     @SerialName("eventRegistration")
     val eventRegistration: String?,
 

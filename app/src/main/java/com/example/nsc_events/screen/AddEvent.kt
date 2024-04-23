@@ -134,6 +134,7 @@ fun AddEventPage(navController: NavHostController) {
     var eventCategory by remember { mutableStateOf("") }
     var eventCoverPhoto by remember { mutableStateOf("") }
     var eventHost by remember { mutableStateOf("") }
+    var eventMeetingURL by remember { mutableStateOf("") }
     var eventRegistration by remember { mutableStateOf("") }
     var eventCapacity by remember { mutableStateOf("") }
     var eventSchedule by remember { mutableStateOf("") }
@@ -153,7 +154,8 @@ fun AddEventPage(navController: NavHostController) {
     var selectedCategory by remember { mutableStateOf<String?>(null) }
 
     /* updating eventTags to be a button options from a text field */
-    val tagsList = listOf("Professional Development", "Club", "Social", "Tech", "Cultural", "Study", "Coffee", "Networking")
+    val tagsList = listOf("Professional Development", "Club", "Social", "Tech", "Cultural", "Study", "Coffee", "Networking",
+                            "Art/Creative", "Conference", "Craft", "Pizza", "Free Food", "LGBTQIA")
     var eventTags by remember { mutableStateOf( mutableListOf<String>() ) }
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -198,7 +200,7 @@ fun AddEventPage(navController: NavHostController) {
             item {
                 // Event Name with error
                 EventInfoField(
-                    eventName = eventTitle,
+                    eventTitle = eventTitle,
                     onEventNameChange = onEventNameChange,
                     isError = eventTitleError
                 )
@@ -297,6 +299,13 @@ fun AddEventPage(navController: NavHostController) {
                 EventHostField(
                     eventHost = eventHost,
                     onEventHostChange = { newHost -> eventHost = newHost }
+                )
+            }
+
+            item {
+                EventMeetingURLField(
+                    eventMeetingURL = eventMeetingURL,
+                    onEventMeetingURLChange = { newEvent -> eventMeetingURL = newEvent }
                 )
             }
 
@@ -412,6 +421,7 @@ fun AddEventPage(navController: NavHostController) {
                                 eventLocation,
                                 eventCoverPhoto,
                                 eventHost,
+                                eventMeetingURL,
                                 eventRegistration,
                                 eventCapacity,
                                 eventTags,
@@ -481,21 +491,21 @@ fun NSCBanner() {
 
 @Composable
 fun EventInfoField(
-    eventName: String,
+    eventTitle: String,
     onEventNameChange: (String) -> Unit,
     isError: Boolean
 ) {
     OutlinedTextField(
-        value = eventName,
+        value = eventTitle,
         onValueChange = onEventNameChange,
         label = {
-            Text("Event name *")
+            Text("Event title *")
         },
         singleLine = true,
         modifier = Modifier.width(400.dp),
         isError = isError,
         trailingIcon = {
-            if (eventName.isNotEmpty() && !isError) {
+            if (eventTitle.isNotEmpty() && !isError) {
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = null,
@@ -506,7 +516,7 @@ fun EventInfoField(
     )
     if (isError) {
         Text(
-            text = "Event name is required.",
+            text = "Event title is required.",
             color = MaterialTheme.colorScheme.error,
             style = MaterialTheme.typography.labelSmall
         )
@@ -823,6 +833,19 @@ fun EventHostField(eventHost: String, onEventHostChange: (String) -> Unit) {
 }
 
 @Composable
+fun EventMeetingURLField(eventMeetingURL: String, onEventMeetingURLChange: (String) -> Unit) {
+    TextField(
+        value = eventMeetingURL,
+        onValueChange = onEventMeetingURLChange,
+        label = { Text(text = "Event Meeting URL") },
+        singleLine = true,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    )
+}
+
+@Composable
 fun EventCoverPhotoField(eventCoverPhoto: String, onEventCoverPhotoChange: (String) -> Unit) {
     TextField(
         value = eventCoverPhoto,
@@ -1088,6 +1111,7 @@ suspend fun createEvent(
             eventLocation = newEvent.eventLocation,
             eventCoverPhoto = newEvent.eventCoverPhoto,
             eventHost = newEvent.eventHost,
+            eventMeetingURL = newEvent.eventMeetingURL,
             eventRegistration = newEvent.eventRegistration,
             eventCapacity = newEvent.eventCapacity,
             eventTags = newEvent.eventTags,

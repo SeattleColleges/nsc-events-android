@@ -1,6 +1,7 @@
 package com.example.nsc_events.model
 
 import DateSerializer
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.util.Date
 
@@ -25,6 +26,7 @@ data class Event(
     val eventLocation: String,
     val eventCoverPhoto: String,
     val eventHost: String,
+    val eventMeetingURL: String,
     val eventRegistration: String,
     val eventCapacity: String,
     val eventTags: List<String>,
