@@ -111,6 +111,9 @@ fun EventDetailPage(navController: NavController, eventId: String) {
             var isDelete by remember { mutableStateOf(false) }
             val coroutineScope = rememberCoroutineScope()
             val current = LocalContext.current
+            val userRole = MainActivity.getPref().getString("userRole",Role.USER.name)?.let {
+                Role.valueOf(it)
+            } ?: Role.USER
             Row(
                 modifier = Modifier
                     .wrapContentSize()
@@ -118,40 +121,44 @@ fun EventDetailPage(navController: NavController, eventId: String) {
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Button(onClick = {
-                    isDelete = !isDelete
-                }) {
-                    Icon(
-                        imageVector = Icons.Default.Delete, contentDescription = "Delete"
-                    )
-                }
-                if (isDelete) {
-                    ConfirmationDialogIndividual(onConfirm = {
-                        coroutineScope.launch {
-                            val isDeleteSuccessful = delete(event.id, navController, current)
-                            if (isDeleteSuccessful) {
-                                val hidden = MainActivity.getPref()
-                                    .getStringSet("hidden", mutableSetOf(event.id))
-                                hidden?.add(event.id)
-                                val editor = MainActivity.getPref().edit()
-                                editor.putStringSet("hidden", hidden)
-                                editor.apply()
+                if (userRole == Role.ADMIN || userRole == Role.CREATOR) {
+                    Button(onClick = {
+                        isDelete = !isDelete
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Delete, contentDescription = "Delete"
+                        )
+                    }
+                    if (isDelete) {
+                        ConfirmationDialogIndividual(onConfirm = {
+                            coroutineScope.launch {
+                                val isDeleteSuccessful = delete(event.id, navController, current)
+                                if (isDeleteSuccessful) {
+                                    val hidden = MainActivity.getPref()
+                                        .getStringSet("hidden", mutableSetOf(event.id))
+                                    hidden?.add(event.id)
+                                    val editor = MainActivity.getPref().edit()
+                                    editor.putStringSet("hidden", hidden)
+                                    editor.apply()
+                                }
                             }
-                        }
-                        // Remove the event from the database
-                        isDelete = false
-                    }, onDismiss = {
-                        isDelete = false
-                    })
+                            // Remove the event from the database
+                            isDelete = false
+                        }, onDismiss = {
+                            isDelete = false
+                        })
+                    }
                 }
 
                 Spacer(modifier = Modifier.padding(16.dp))
-                Button(onClick = {
-                    navController.navigate("${Routes.EventEdit.route}/$eventId")
-                }) {
-                    Icon(
-                        imageVector = Icons.Default.Edit, contentDescription = "Edit"
-                    )
+                if (userRole == Role.ADMIN || userRole == Role.CREATOR) {
+                    Button(onClick = {
+                        navController.navigate("${Routes.EventEdit.route}/$eventId")
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Edit, contentDescription = "Edit"
+                        )
+                    }
                 }
             }
             EventDetailCard(event = event, navController = navController)
@@ -179,11 +186,11 @@ fun EventDetailCard(event: Event, navController: NavController) {
                 painter = painterResource(id = event.eventCoverPhoto.toInt()),
                 contentDescription = stringResource(id = R.string.event_cover_photo_description),
                 modifier = Modifier
-                    .size(200.dp)
+                    .size(400.dp)
                     .padding(16.dp),
             )
             Text(
-                text = "Title: ${event.eventTitle}",
+                text = "${event.eventTitle}",
                 style = TextStyle(
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
@@ -193,7 +200,7 @@ fun EventDetailCard(event: Event, navController: NavController) {
                 modifier = Modifier
                     .wrapContentSize()
             )
-            Text(text = "Description: ${event.eventDescription}")
+            Text(text = "${event.eventDescription}")
             Text(text = "Date: ${event.eventDate}")
             Text(text = "Start Time: ${event.eventStartTime}")
             Text(text = "End Time: ${event.eventEndTime}")
