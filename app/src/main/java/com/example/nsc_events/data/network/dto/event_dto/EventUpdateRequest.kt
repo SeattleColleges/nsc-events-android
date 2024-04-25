@@ -37,17 +37,14 @@ data class EventUpdateRequest(
     @SerialName("eventHost")
     val eventHost: String?,
 
-    @SerialName("eventWebsite")
-    val eventWebsite: String?,
+    @SerialName("eventMeetingURL")
+    val eventMeetingURL: String,
 
     @SerialName("eventRegistration")
     val eventRegistration: String?,
 
     @SerialName("eventCapacity")
     val eventCapacity: String?,
-
-    @SerialName("eventCost")
-    val eventCost: String?,
 
     @SerialName("eventTags")
     val eventTags: List<String>?,
@@ -75,6 +72,9 @@ data class EventUpdateRequest(
 
     @SerialName("eventAccessibility")
     val eventAccessibility: String?,
+
+    @SerialName("eventNote")
+    val eventNote: String?,
 
     @SerialName("isHidden")
     val isHidden: Boolean?
