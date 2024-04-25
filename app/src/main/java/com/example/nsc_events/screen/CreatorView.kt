@@ -95,7 +95,7 @@ fun CreatorView(navController: NavHostController) {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(onClick = { navController.navigate(Routes.HomePage.route) }) {
-                    Text(text = "View All Events.",
+                    Text(text = "View All Events",
                         style = TextStyle(
                             fontSize = 14.sp,
                             fontFamily = FontFamily.Default,
