@@ -80,6 +80,7 @@ fun SignUpPage(navController: NavHostController) {
     var isFirstNameValid by remember { mutableStateOf(true) }
     var isLastNameValid by remember { mutableStateOf(true) }
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    var pronouns by remember { mutableStateOf("") }
 
 
     Scaffold(
@@ -152,6 +153,22 @@ fun SignUpPage(navController: NavHostController) {
                             },
                             // todo: add actual Last Name text into string resources values.xml folder
                             label = { Text(text = "Last Name") },
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                imeAction = ImeAction.Next
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 30.dp, end = 30.dp, bottom = 16.dp)
+                        )
+
+                        // Pronoun Field
+                        TextField(
+                            value = pronouns,
+                            onValueChange = {
+                                pronouns = it
+                            },
+                            label = { Text(text = "Pronouns") },
                             singleLine = true,
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 imeAction = ImeAction.Next
@@ -312,7 +329,7 @@ fun SignUpPage(navController: NavHostController) {
                                 )
                             )
                         }
-                    
+
                     }
 
                 }
