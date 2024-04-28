@@ -41,6 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.example.nsc_events.R
 import android.app.TimePickerDialog
 import android.content.Context
+import android.graphics.Paint.Style
 import android.media.MediaSyncEvent.createEvent
 import android.net.Uri
 import android.net.http.HttpException
@@ -64,6 +65,7 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
@@ -132,11 +134,9 @@ fun AddEventPage(navController: NavHostController) {
     var eventCategory by remember { mutableStateOf("") }
     var eventCoverPhoto by remember { mutableStateOf("") }
     var eventHost by remember { mutableStateOf("") }
-    var eventWebsite by remember { mutableStateOf("") }
+    var eventMeetingURL by remember { mutableStateOf("") }
     var eventRegistration by remember { mutableStateOf("") }
     var eventCapacity by remember { mutableStateOf("") }
-    var eventCost by remember { mutableStateOf("") }
-    var eventTags by remember { mutableStateOf(arrayOf<String>()) }
     var eventSchedule by remember { mutableStateOf("") }
     var eventSpeakers by remember { mutableStateOf(arrayOf<String>()) }
     var eventPrerequisites by remember { mutableStateOf("") }
@@ -145,12 +145,18 @@ fun AddEventPage(navController: NavHostController) {
     var eventSocialMedia by remember { mutableStateOf(SocialMedia("", "", "", "")) }
     var eventPrivacy by remember { mutableStateOf("") }
     var eventAccessibility by remember { mutableStateOf("") }
+    var eventNote by remember { mutableStateOf("") }
     var isHidden by remember { mutableStateOf(true) }
 
     val coroutineScope = rememberCoroutineScope()
     val current = LocalContext.current
 
     var selectedCategory by remember { mutableStateOf<String?>(null) }
+
+    /* updating eventTags to be a button options from a text field */
+    val tagsList = listOf("Professional Development", "Club", "Social", "Tech", "Cultural", "Study", "Coffee", "Networking",
+                            "Art/Creative", "Conference", "Craft", "Pizza", "Free Food", "LGBTQIA")
+    var eventTags by remember { mutableStateOf( mutableListOf<String>() ) }
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(
@@ -194,7 +200,7 @@ fun AddEventPage(navController: NavHostController) {
             item {
                 // Event Name with error
                 EventInfoField(
-                    eventName = eventTitle,
+                    eventTitle = eventTitle,
                     onEventNameChange = onEventNameChange,
                     isError = eventTitleError
                 )
@@ -281,55 +287,6 @@ fun AddEventPage(navController: NavHostController) {
                 /*          Image upload button     */
                 ImageUploadButton(onImagePicked = { uri -> /* TODO: Do something with this */ })
             }
-            item {
-                Button(
-                    onClick = {
-                        newEvent =
-                            Event(
-                                eventTitle,
-                                eventDescription,
-                                eventCategory,
-                                eventDate!!,
-                                eventStartTime,
-                                eventEndTime,
-                                eventLocation,
-                                eventCoverPhoto,
-                                eventHost,
-                                eventWebsite,
-                                eventRegistration,
-                                eventCapacity,
-                                eventCost,
-                                eventTags,
-                                eventSchedule,
-                                eventSpeakers,
-                                eventPrerequisites,
-                                eventCancellationPolicy,
-                                eventContact,
-                                eventSocialMedia,
-                                eventPrivacy,
-                                eventAccessibility,
-                                isHidden
-                            )
-
-                        eventTitleError = eventTitle.isEmpty()
-                        eventDescriptionError = eventDescription.isEmpty()
-                        isDateError = eventDate == null
-                        isStartTimeError = eventStartTime.isEmpty()
-                        isEndTimeError = eventEndTime.isEmpty()
-
-                        coroutineScope.launch {
-                            createEvent(newEvent!!, navController, current)
-                        }
-                        /* TODO: save new product to db or use a list to hold products (ex: List<Product>) */
-                    },
-                    modifier = Modifier
-                        .padding(4.dp)
-                        .width(240.dp)
-                )
-                {
-                    Text(text = "Add Event")
-                }
-            }
 
             item {
                 EventCoverPhotoField(
@@ -346,9 +303,9 @@ fun AddEventPage(navController: NavHostController) {
             }
 
             item {
-                EventWebsiteField(
-                    eventWebsite = eventWebsite,
-                    onEventWebsiteChange = { newWebsite -> eventWebsite = newWebsite }
+                EventMeetingURLField(
+                    eventMeetingURL = eventMeetingURL,
+                    onEventMeetingURLChange = { newEvent -> eventMeetingURL = newEvent }
                 )
             }
 
@@ -369,16 +326,13 @@ fun AddEventPage(navController: NavHostController) {
             }
 
             item {
-                EventCostField(
-                    eventCost = eventCost,
-                    onEventCostChange = { newCost -> eventCost = newCost }
-                )
-            }
-
-            item {
-                TagsField(
+                EventTagsSelectionField(
+                    tagsList = tagsList,
                     eventTags = eventTags,
-                    onEventTagsChange = { newTags -> eventTags = newTags }
+                    onTagsChange = { updatedTags ->
+                        eventTags.clear()
+                        eventTags.addAll(updatedTags)
+                    }
                 )
             }
 
@@ -444,6 +398,64 @@ fun AddEventPage(navController: NavHostController) {
                 )
             }
 
+            item {
+                EventNoteField(
+                    eventNote = eventNote,
+                    onEventNoteChange = { newNote ->
+                        eventNote = newNote
+                    }
+                )
+            }
+
+            item {
+                Button(
+                    onClick = {
+                        newEvent =
+                            Event(
+                                eventTitle,
+                                eventDescription,
+                                eventCategory,
+                                eventDate!!,
+                                eventStartTime,
+                                eventEndTime,
+                                eventLocation,
+                                eventCoverPhoto,
+                                eventHost,
+                                eventMeetingURL,
+                                eventRegistration,
+                                eventCapacity,
+                                eventTags,
+                                eventSchedule,
+                                eventSpeakers,
+                                eventPrerequisites,
+                                eventCancellationPolicy,
+                                eventContact,
+                                eventSocialMedia,
+                                eventPrivacy,
+                                eventAccessibility,
+                                eventNote,
+                                isHidden
+                            )
+
+                        eventTitleError = eventTitle.isEmpty()
+                        eventDescriptionError = eventDescription.isEmpty()
+                        isDateError = eventDate == null
+                        isStartTimeError = eventStartTime.isEmpty()
+                        isEndTimeError = eventEndTime.isEmpty()
+
+                        coroutineScope.launch {
+                            createEvent(newEvent!!, navController, current)
+                        }
+                        /* TODO: save new product to db or use a list to hold products (ex: List<Product>) */
+                    },
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .width(240.dp)
+                )
+                {
+                    Text(text = "Add Event")
+                }
+            }
 
         }
     }
@@ -479,21 +491,21 @@ fun NSCBanner() {
 
 @Composable
 fun EventInfoField(
-    eventName: String,
+    eventTitle: String,
     onEventNameChange: (String) -> Unit,
     isError: Boolean
 ) {
     OutlinedTextField(
-        value = eventName,
+        value = eventTitle,
         onValueChange = onEventNameChange,
         label = {
-            Text("Event name *")
+            Text("Event title *")
         },
         singleLine = true,
         modifier = Modifier.width(400.dp),
         isError = isError,
         trailingIcon = {
-            if (eventName.isNotEmpty() && !isError) {
+            if (eventTitle.isNotEmpty() && !isError) {
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = null,
@@ -504,7 +516,7 @@ fun EventInfoField(
     )
     if (isError) {
         Text(
-            text = "Event name is required.",
+            text = "Event title is required.",
             color = MaterialTheme.colorScheme.error,
             style = MaterialTheme.typography.labelSmall
         )
@@ -821,11 +833,11 @@ fun EventHostField(eventHost: String, onEventHostChange: (String) -> Unit) {
 }
 
 @Composable
-fun EventCoverPhotoField(eventCoverPhoto: String, onEventCoverPhotoChange: (String) -> Unit) {
+fun EventMeetingURLField(eventMeetingURL: String, onEventMeetingURLChange: (String) -> Unit) {
     TextField(
-        value = eventCoverPhoto,
-        onValueChange = onEventCoverPhotoChange,
-        label = { Text(text = "Event cover photo") },
+        value = eventMeetingURL,
+        onValueChange = onEventMeetingURLChange,
+        label = { Text(text = "Event Meeting URL") },
         singleLine = true,
         modifier = Modifier
             .fillMaxWidth()
@@ -834,11 +846,11 @@ fun EventCoverPhotoField(eventCoverPhoto: String, onEventCoverPhotoChange: (Stri
 }
 
 @Composable
-fun EventWebsiteField(eventWebsite: String, onEventWebsiteChange: (String) -> Unit) {
+fun EventCoverPhotoField(eventCoverPhoto: String, onEventCoverPhotoChange: (String) -> Unit) {
     TextField(
-        value = eventWebsite,
-        onValueChange = onEventWebsiteChange,
-        label = { Text(text = "Event Website") },
+        value = eventCoverPhoto,
+        onValueChange = onEventCoverPhotoChange,
+        label = { Text(text = "Event cover photo") },
         singleLine = true,
         modifier = Modifier
             .fillMaxWidth()
@@ -875,33 +887,36 @@ fun EventCapacityField(eventCapacity: String, onEventCapacityChange: (String) ->
     )
 }
 
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun EventCostField(eventCost: String, onEventCostChange: (String) -> Unit) {
-    TextField(
-        value = eventCost,
-        onValueChange = onEventCostChange,
-        label = { Text(text = "Event Cost") },
-        singleLine = true,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    )
-}
+fun EventTagsSelectionField(tagsList: List<String>, eventTags: MutableList<String>,
+                            onTagsChange: (List<String>) -> Unit) {
+    val tagState = remember {
+        val initialState = mutableStateListOf<Pair<String, Boolean>>()
+        tagsList.forEach { tag ->
+            initialState.add(tag to eventTags.contains(tag))
+        }
+        initialState
+    }
 
-@Composable
-fun TagsField(eventTags: Array<String>, onEventTagsChange: (Array<String>) -> Unit) {
-    TextField(
-        value = eventTags.joinToString(", "),
-        onValueChange = {
-            val tags = it.split(",").map { it.trim() }.toTypedArray()
-            onEventTagsChange(tags)
-        },
-        label = { Text(text = "Event Tags") },
-        singleLine = true,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    )
+    Column(modifier = Modifier.padding(16.dp)) {
+        Text(text = "Event Tags", style = MaterialTheme.typography.bodyLarge)
+        FlowRow(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            tagState.forEachIndexed{ index, tag ->
+                FilterChip(
+                    selected = tag.second,
+                    onClick = {
+                        val updatedState = tag.copy(second = !tag.second)
+                        tagState[index] = updatedState
+                        onTagsChange(tagState.filter { it.second }.map { it.first })
+                    },
+                    label = { Text(tag.first) }
+                )
+            }
+        }
+    }
 }
 
 
@@ -1061,6 +1076,22 @@ fun EventAccessibilityField(
     )
 }
 
+@Composable
+fun EventNoteField(
+    eventNote: String,
+    onEventNoteChange: (String) -> Unit
+) {
+    TextField(
+        value = eventNote,
+        onValueChange = onEventNoteChange,
+        label = { Text(text = "Event Note") },
+        singleLine = true,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    )
+}
+
 
 suspend fun createEvent(
     newEvent: Event,
@@ -1080,10 +1111,9 @@ suspend fun createEvent(
             eventLocation = newEvent.eventLocation,
             eventCoverPhoto = newEvent.eventCoverPhoto,
             eventHost = newEvent.eventHost,
-            eventWebsite = newEvent.eventWebsite,
+            eventMeetingURL = newEvent.eventMeetingURL,
             eventRegistration = newEvent.eventRegistration,
             eventCapacity = newEvent.eventCapacity,
-            eventCost = newEvent.eventCost,
             eventTags = newEvent.eventTags,
             eventSchedule = newEvent.eventSchedule,
             eventSpeakers = newEvent.eventSpeakers,
@@ -1093,6 +1123,7 @@ suspend fun createEvent(
             eventSocialMedia = newEvent.eventSocialMedia,
             eventPrivacy = newEvent.eventPrivacy,
             eventAccessibility = newEvent.eventAccessibility,
+            eventNote = newEvent.eventNote,
             isHidden = newEvent.isHidden
         )
 
