@@ -63,6 +63,7 @@ fun SignUpPage(navController: NavHostController) {
 
     var firstName by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
+    var pronouns by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
@@ -80,6 +81,7 @@ fun SignUpPage(navController: NavHostController) {
     var isFirstNameValid by remember { mutableStateOf(true) }
     var isLastNameValid by remember { mutableStateOf(true) }
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+
 
 
     Scaffold(
@@ -152,6 +154,22 @@ fun SignUpPage(navController: NavHostController) {
                             },
                             // todo: add actual Last Name text into string resources values.xml folder
                             label = { Text(text = "Last Name") },
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                imeAction = ImeAction.Next
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 30.dp, end = 30.dp, bottom = 16.dp)
+                        )
+
+                        // Pronoun Field
+                        TextField(
+                            value = pronouns,
+                            onValueChange = {
+                                pronouns = it
+                            },
+                            label = { Text(text = "Pronouns") },
                             singleLine = true,
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 imeAction = ImeAction.Next
@@ -289,7 +307,7 @@ fun SignUpPage(navController: NavHostController) {
                               keyboardController?.hide()
                               if (firstName.isNotBlank() && lastName.isNotBlank() && validateEmail(email) && validatePassword(password) && validateConfirmPassword(password, confirmPassword)) {
                                 coroutineScope.launch {
-                                  signUp(firstName, lastName, email, password, navController, current)
+                                  signUp(firstName, lastName, pronouns, email, password, navController, current)
                                 }
                               } else {
                                 // Update error flags to show error messages
@@ -312,7 +330,7 @@ fun SignUpPage(navController: NavHostController) {
                                 )
                             )
                         }
-                    
+
                     }
 
                 }
@@ -341,6 +359,7 @@ fun validateLastName(lastName: String): Boolean {
 suspend fun signUp(
     firstName: String,
     lastName: String,
+    pronouns: String,
     email: String,
     password: String,
     navController: NavHostController,
@@ -350,6 +369,7 @@ suspend fun signUp(
         val signUpRequest = SignUpRequest(
             firstName = firstName,
             lastName = lastName,
+            pronouns = pronouns,
             email = email,
             password = password,
             role = Role.ADMIN
