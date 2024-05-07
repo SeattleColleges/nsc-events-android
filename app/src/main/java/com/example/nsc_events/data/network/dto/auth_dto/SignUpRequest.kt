@@ -23,6 +23,9 @@ data class SignUpRequest(
     @SerialName("lastName")
     val lastName: String,
 
+    @SerialName("pronouns")
+    val pronouns: String,
+
     @SerialName("email")
     val email: String,
 
