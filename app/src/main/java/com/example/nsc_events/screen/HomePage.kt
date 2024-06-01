@@ -108,6 +108,9 @@ fun HomePage(navController: NavHostController) { // Create Navbar
                             TextButton(onClick = { navController.navigate(Routes.Login.route) }) {
                                 Text("Login", color = Color.Black)
                             }
+                            TextButton(onClick = { navController.navigate(Routes)}) {
+                                
+                            }
                         }
                     },
                     scrollBehavior = scrollBehavior
