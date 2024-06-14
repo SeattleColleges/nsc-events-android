@@ -11,4 +11,5 @@ sealed class Routes(val route: String) {
     object CreatorView: Routes("Creator View")
     object AdminView: Routes("Admin View")
     object EditUserRole: Routes("Edit User Role")
+
 }
