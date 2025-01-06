@@ -20,19 +20,25 @@ jobs:
 
     strategy:
       matrix:
-        gradle-version: [ 8.1.1 ]
+        gradle-version: [ 8.4 ]
 
     steps:
       - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
       - uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
 
       - name: Validate Gradle wrapper
-        uses: gradle/wrapper-validation-action@ccb4328a959376b642e027874838f60f8e596de3
+        uses: gradle/wrapper-validation-action@v1
       - name: Run the Gradle package task
-        uses: gradle/gradle-build-action@749f47bda3e44aa060e82d7b3ef7e40d953bd629
+        uses: gradle/gradle-build-action@v2
       #          #        with:
       #        # Can include this if we decide to add our own customized gradle package
       #      #          arguments: -b ci.gradle package
@@ -54,10 +60,10 @@ jobs:
       # Gradle will automatically compile Kotlin when running tasks like build. This step explicitly validates Kotlin.
       # If there are Kotlin compile errors, this step will fail and you'll see the compilation issues in the logs.
       - name: Build with Gradle
-        uses: gradle/gradle-build-action@749f47bda3e44aa060e82d7b3ef7e40d953bd629
+        uses: gradle/gradle-build-action@v2
         with:
           arguments: build
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: Unsigned_APK
           path: app/build/outputs/apk/release/app-release-unsigned.apk
